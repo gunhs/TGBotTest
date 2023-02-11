@@ -3,16 +3,11 @@ package ru.sharanov.SearchForMessagesBot.service;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.MessageId;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Storage.DBEvents;
+import ru.sharanov.SearchForMessagesBot.Storage.DBparticipant;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
-import org.telegram.api.messages.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,13 +43,30 @@ public class TelegramBot extends TelegramLongPollingBot {
 //                case "/Katya" -> katyaCommandReceived(chatId);
 //                case "/Anya" -> anyaCommandReceived(chatId);
 //                case "/Настя" -> find36(chatId);
-                    case "/add" -> getEvents(chatId);
+                    case "/Мероприятия" -> getEvents(chatId);
+                    case "/Добавить меня" -> addParticipant(chatId, update.getMessage().getFrom().getFirstName());
+                    case "/Список" -> getParticipant(chatId);
                     default -> sendMessage(chatId, "Sorry, command was not recognized");
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void getParticipant(long chatId) throws IOException {
+        DBparticipant dBparticipant = new DBparticipant();
+        ArrayList<String> participants = dBparticipant.getParticipants();
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < participants.size(); i++) {
+            answer.append(i + 1).append(". ").append(participants.get(i)).append("\n");
+        }
+        sendMessage(chatId, answer.toString().trim());
+    }
+
+    private void addParticipant(long chatId, String firstName) throws IOException {
+        DBparticipant dBparticipant= new DBparticipant();
+        dBparticipant.addParticipant(firstName);
     }
 
     private void find36(long chatId) {
