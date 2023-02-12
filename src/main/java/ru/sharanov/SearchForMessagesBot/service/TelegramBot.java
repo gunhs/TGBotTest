@@ -11,13 +11,16 @@ import ru.sharanov.SearchForMessagesBot.config.BotConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
 
-    public TelegramBot(BotConfig config) {
+    private final DBparticipant dBparticipant = new DBparticipant();
+
+    public TelegramBot(BotConfig config) throws IOException {
         this.config = config;
     }
 
@@ -35,15 +38,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             if (update.hasMessage() && update.getMessage().hasText()) {
-                String messageText = update.getMessage().getText();
+                String messageText = update.getMessage().getText().toLowerCase(Locale.ROOT);
                 long chatId = update.getMessage().getChatId();
                 System.out.println(messageText);
                 switch (messageText) {
                     case "/start" -> startCommandReceived(chatId, update.getMessage().getFrom().getFirstName());
-                    case "/Мероприятия" -> getEvents(chatId);
-                    case "/Добавить меня" -> addParticipant(update.getMessage().getFrom().getFirstName(), update.getMessage().getFrom().getUserName(), chatId);
-                    case "/Список" -> getParticipant(chatId);
-                    case "/Исключить меня" -> removeParticipant(chatId, update.getMessage().getFrom().getUserName());
+                    case "/мероприятия" -> getEvents(chatId);
+                    case "/добавь меня" -> addParticipant(update.getMessage().getFrom().getFirstName(), update.getMessage().getFrom().getUserName(), chatId);
+                    case "/список" -> getParticipant(chatId);
+                    case "/удали меня" -> removeParticipant(chatId, update.getMessage().getFrom().getUserName());
                     case "/help" -> showCommand(chatId);
                     default -> sendMessage(chatId, "Sorry, command was not recognized");
                 }
@@ -57,28 +60,30 @@ public class TelegramBot extends TelegramLongPollingBot {
         String answer = """
                 Список комманд:
                 /Мероприятия - показать список ближайших мероприятий
-                /Добавить меня - добавить участника на ближайшее мероприятие
+                /Добавь меня - добавить участника на ближайшее мероприятие
                 /Список - показать список участников ближайшего мероприятия
-                /Исключить меня - исключить участника из участников ближайшего мероприятия""";
+                /Удали меня - исключить из участников ближайшего мероприятия""";
         sendMessage(chatId, answer.trim());
     }
 
-    private void removeParticipant(long chatId, String userName) {
-        StringBuilder answer = new StringBuilder("Список участников билжайшого мероприятия:\n");
+    private void removeParticipant(long chatId, String userName) throws IOException {
+        dBparticipant.removeParticipants(userName);
+        sendMessage(chatId, "Вы исключены из ближайшего мероприятия");
     }
 
     private void getParticipant(long chatId) throws IOException {
-        DBparticipant dBparticipant = new DBparticipant();
         ArrayList<String> participants = dBparticipant.getParticipants();
-        StringBuilder answer = new StringBuilder("Список участников билжайшого мероприятия:\n");
+        StringBuilder answer = new StringBuilder("Список участников ближайшего мероприятия:\n");
         for (int i = 0; i < participants.size(); i++) {
             answer.append(i + 1).append(". ").append(participants.get(i)).append("\n");
+        }
+        if (participants.isEmpty()) {
+            answer = new StringBuilder("Список участников ближайшего мероприятия пуст");
         }
         sendMessage(chatId, answer.toString().trim());
     }
 
     private void addParticipant(String firstName, String nickName, long chatId) throws IOException {
-        DBparticipant dBparticipant = new DBparticipant();
         if (!dBparticipant.addParticipant(firstName, nickName).isEmpty()) {
             String answer = "Вы уже добавлены";
             sendMessage(chatId, answer);
@@ -96,9 +101,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void getEvents(long chatId) throws IOException {
         DBEvents dbEvents = new DBEvents();
         ArrayList<String> events = dbEvents.getEvents();
-        StringBuilder answer = new StringBuilder("Список билжайших мероприятий:\n");
+        StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
         for (int i = 0; i < events.size(); i++) {
             answer.append(i + 1).append(". ").append(events.get(i)).append("\n");
+        }
+        if (events.isEmpty()) {
+            answer = new StringBuilder("Список ближайших мероприятий пуст");
         }
         sendMessage(chatId, answer.toString().trim());
     }

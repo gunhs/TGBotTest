@@ -19,14 +19,15 @@ public class DBEvents {
     private String readFile(Path path) throws IOException {
         List<String> strings = Files.readAllLines(path);
         StringBuilder result = new StringBuilder();
-        strings.forEach(s->result.append(s).append("\n"));
+        strings.forEach(s -> result.append(s).append("\n"));
         return result.toString();
     }
 
-    public void addEvents(String event){
+    public void addEvents(String event) {
         events.add(event);
     }
-    public ArrayList<String> getEvents(){
+
+    public ArrayList<String> getEvents() {
         return new ArrayList<>(events);
     }
 }
