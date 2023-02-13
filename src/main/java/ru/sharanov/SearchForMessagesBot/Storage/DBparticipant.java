@@ -10,7 +10,6 @@ import java.util.List;
 
 public class DBparticipant {
     List<String> participants;
-    HashMap<String, String> participantsMap;
     List<String> nickNames;
     private static final String PATH = "data/participant.txt";
     private static final String PATHTONICKNAMES = "data/nicknames.txt";

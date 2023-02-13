@@ -3,13 +3,11 @@ package ru.sharanov.SearchForMessagesBot.service;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Storage.DBEvents;
 import ru.sharanov.SearchForMessagesBot.Storage.DBparticipant;
@@ -20,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static java.lang.Thread.sleep;
+
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
 
     private final DBparticipant dBparticipant = new DBparticipant();
-
-    private InlineKeyboardMarkup replyKeyboardMarkup;
 
     public TelegramBot(BotConfig config) throws IOException {
         this.config = config;
@@ -46,175 +44,126 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-
-            if(update.getMessage().getText().equals("Hello")){
-                try {
-//                    execute(sendInlineKeyBoardMessage(update.getMessage().getText().toLowerCase(Locale.ROOT), update.getMessage().getChatId()));
-                    execute(sendInlineKeyBoardMessage(update.getCallbackQuery().getMessage().getText().toLowerCase(Locale.ROOT), update.getMessage().getChatId()));
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+        if (update.hasMessage()) {
+            if (update.getMessage().hasText()) {
+                if (update.getMessage().getText().equals("/бот")) {
+                    try {
+                        execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
+                        sleep(10000);
+                        DeleteMessage deleteMessage = new DeleteMessage();
+                        deleteMessage.setChatId(update.getMessage().getChatId());
+                        deleteMessage.setMessageId(update.getMessage().getMessageId());
+                        execute(deleteMessage);
+                    } catch (TelegramApiException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-
-
-//                String messageText = update.getMessage().getText().toLowerCase(Locale.ROOT);
-//                long chatId = update.getMessage().getChatId();
-
-//                System.out.println(messageText);
-//                switch (messageText) {
-//                    case "/start" -> startCommandReceived(chatId, update.getMessage().getFrom().getFirstName());
-//                    case "/мероприятия" -> getEvents(chatId);
-//                    case "/добавь меня" -> addParticipant(update.getMessage().getFrom().getFirstName(), update.getMessage().getFrom().getUserName(), chatId);
-//                    case "/список" -> getParticipant(chatId);
-//                    case "/удали меня" -> removeParticipant(chatId, update.getMessage().getFrom().getUserName());
-////                    case "/help" -> showCommand(chatId);
-//                    default -> sendMessage(chatId, "Sorry, command was not recognized");
-//                }
+        } else if (update.hasCallbackQuery()) {
+            try {
+                String messageText = update.getCallbackQuery().getData().toLowerCase(Locale.ROOT);
+                long chatId = update.getCallbackQuery().getMessage().getChatId();
+                System.out.println(update.getCallbackQuery().getFrom().getUserName() + " " +  messageText);
+                switch (messageText) {
+                    case "list events" -> getEvents(chatId);
+                    case "you join to event" -> addParticipant(
+                            update.getCallbackQuery().getFrom().getFirstName(),
+                            update.getCallbackQuery().getFrom().getUserName(), chatId);
+                    case "list participants" -> getParticipant(chatId);
+                    case "you left event" -> removeParticipant(chatId,
+                            update.getCallbackQuery().getFrom().getUserName(),
+                            update.getCallbackQuery().getFrom().getFirstName()
+                    );
+                }
+            } catch (TelegramApiException | IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-//    private void showCommand(long chatId) {
-//        String answer = """
-//                Список комманд:
-//                /Мероприятия - показать список ближайших мероприятий
-//                /Добавь меня - добавить участника на ближайшее мероприятие
-//                /Список - показать список участников ближайшего мероприятия
-//                /Удали меня - исключить из участников ближайшего мероприятия""";
-//        sendMessage(chatId, answer.trim());
-//    }
-//
-//    private void removeParticipant(long chatId, String userName) throws IOException {
-//        dBparticipant.removeParticipants(userName);
-//        sendMessage(chatId, "Вы исключены из ближайшего мероприятия");
-//    }
-//
-//    private void getParticipant(long chatId) throws IOException {
-//        ArrayList<String> participants = dBparticipant.getParticipants();
-//        StringBuilder answer = new StringBuilder("Список участников ближайшего мероприятия:\n");
-//        for (int i = 0; i < participants.size(); i++) {
-//            answer.append(i + 1).append(". ").append(participants.get(i)).append("\n");
-//        }
-//        if (participants.isEmpty()) {
-//            answer = new StringBuilder("Список участников ближайшего мероприятия пуст");
-//        }
-//        sendMessage(chatId, answer.toString().trim());
-//    }
-//
-//    private void addParticipant(String firstName, String nickName, long chatId) throws IOException {
-//        if (!dBparticipant.addParticipant(firstName, nickName).isEmpty()) {
-//            String answer = "Вы уже добавлены";
-//            sendMessage(chatId, answer);
-//        } else {
-//            String answer = "Вы успешно добавлены";
-//            sendMessage(chatId, answer);
-//        }
-//    }
-//
-//    private void startCommandReceived(long chatId, String name) {
-//        String answer = "Hi," + name + ", nice to meet you";
-//        sendMessage(chatId, answer);
-//    }
-//
-//    private void getEvents(long chatId) throws IOException {
-//        DBEvents dbEvents = new DBEvents();
-//        ArrayList<String> events = dbEvents.getEvents();
-//        StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
-//        for (int i = 0; i < events.size(); i++) {
-//            answer.append(i + 1).append(". ").append(events.get(i)).append("\n");
-//        }
-//        if (events.isEmpty()) {
-//            answer = new StringBuilder("Список ближайших мероприятий пуст");
-//        }
-//        sendMessage(chatId, answer.toString().trim());
-//    }
+    private void removeParticipant(long chatId, String userName, String name) throws IOException, TelegramApiException, InterruptedException {
+        dBparticipant.removeParticipants(userName);
+        String answer = name + "  больше не участвует в мероприятии";
+        showMessage(chatId, answer);
+    }
 
-    private SendMessage sendInlineKeyBoardMessage(String textToSend, long chatId ) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton helpButton = new InlineKeyboardButton();
-        InlineKeyboardButton addButton = new InlineKeyboardButton();
-        helpButton.setText("help");
-        helpButton.setCallbackData("Button \"Тык\" has been pressed");
-        helpButton.setText("Добавь меня");
-        helpButton.setCallbackData("/Добавь меня");
-        List<InlineKeyboardButton> keyboardRowFirst = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardRowSecond = new ArrayList<>();
-        keyboardRowFirst.add(helpButton);
-        keyboardRowSecond.add(addButton);
-        List<List <InlineKeyboardButton>> keyboardRows = new ArrayList<>();
-        keyboardRows.add(keyboardRowFirst);
-        keyboardRows.add(keyboardRowSecond);
-        inlineKeyboardMarkup.setKeyboard(keyboardRows);
+    private void getParticipant(long chatId) throws IOException, TelegramApiException, InterruptedException {
+        ArrayList<String> participants = dBparticipant.getParticipants();
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < participants.size(); i++) {
+            answer.append(i + 1).append(". ").append(participants.get(i)).append("\n");
+        }
+        if (participants.isEmpty()) {
+            answer = new StringBuilder("Список участников ближайшего мероприятия пуст");
+        }
+        showMessage(chatId, answer.toString().trim());
+    }
 
+    private void addParticipant(String firstName, String nickName, long chatId) throws IOException, TelegramApiException, InterruptedException {
+        if (!dBparticipant.addParticipant(firstName, nickName).isEmpty()) {
+            String answer = "Вы уже добавлены";
+            showMessage(chatId, answer);
+        } else {
+            String answer = firstName + "  теперь участвует в мероприятии";
+            showMessage(chatId, answer);
+        }
+    }
+
+    private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
+        DBEvents dbEvents = new DBEvents();
+        ArrayList<String> events = dbEvents.getEvents();
+        StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
+        for (int i = 0; i < events.size(); i++) {
+            answer.append(i + 1).append(". ").append(events.get(i)).append("\n");
+        }
+        if (events.isEmpty()) {
+            answer = new StringBuilder("Список ближайших мероприятий пуст");
+        }
+        showMessage(chatId, answer.toString().trim());
+    }
+
+    private void showMessage(long chatId, String textToSend) throws TelegramApiException, InterruptedException {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textToSend);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-        return message;
+        Message sentOutMessage = execute(message);
+        if (textToSend.equals(message.getText())) {
+            DeleteMessage deleteMessage = new DeleteMessage();
+            deleteMessage.setChatId(sentOutMessage.getChatId());
+            deleteMessage.setMessageId(sentOutMessage.getMessageId());
+            sleep(30000);
+            execute(deleteMessage);
+        }
     }
 
-
-
-
-
-//    private void sendMessage(long chatId, String textToSend) {
-//        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-//        InlineKeyboardButton helpButton = new InlineKeyboardButton();
-//        InlineKeyboardButton addButton = new InlineKeyboardButton();
-//        helpButton.setText("help");
-//        helpButton.setCallbackData("/help");
-//        helpButton.setText("Добавь меня");
-//        helpButton.setCallbackData("/Добавь меня");
-//        List<InlineKeyboardButton> keyboardRowFirst = new ArrayList<>();
-//        List<InlineKeyboardButton> keyboardRowSecond = new ArrayList<>();
-//        keyboardRowFirst.add(helpButton);
-//        keyboardRowSecond.add(addButton);
-//        List<List <InlineKeyboardButton>> keyboardRows = new ArrayList<>();
-//        keyboardRows.add(keyboardRowFirst);
-//        keyboardRows.add(keyboardRowSecond);
-//        inlineKeyboardMarkup.setKeyboard(keyboardRows);
-//
-//        SendMessage message = new SendMessage();
-//        message.setChatId(String.valueOf(chatId));
-//        message.setText(textToSend);
-//        message.setReplyMarkup(inlineKeyboardMarkup);
-//
-//        try {
-//            execute(message);
-//        } catch (TelegramApiException exception) {
-//            System.out.println(exception.getMessage());
-//        }
-//    }
-
-//    void initKeyboard() {
-        //Создаем объект будущей клавиатуры и выставляем нужные настройки
-//        replyKeyboardMarkup = new InlineKeyboardMarkup();
-//        replyKeyboardMarkup.setResizeKeyboard(true); //подгоняем размер
-//        replyKeyboardMarkup.setOneTimeKeyboard(false); //скрываем после использования
-
-        //Создаем список с рядами кнопок
-//        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-//        InlineKeyboardButton helpButton = new InlineKeyboardButton();
-//        InlineKeyboardButton addButton = new InlineKeyboardButton();
-//        helpButton.setText("help");
-//        helpButton.setCallbackData("/help");
-//        helpButton.setText("Добавь меня");
-//        helpButton.setCallbackData("/Добавь меня");
-//        List<InlineKeyboardButton> keyboardRowFirst = new ArrayList<>();
-//        List<InlineKeyboardButton> keyboardRowSecond = new ArrayList<>();
-//        keyboardRowFirst.add(helpButton);
-//        keyboardRowSecond.add(addButton);
-//        List<List <InlineKeyboardButton>> keyboardRows = new ArrayList<>();
-//        keyboardRows.add(keyboardRowFirst);
-//        keyboardRows.add(keyboardRowSecond);
-//        replyKeyboardMarkup.setKeyboard(keyboardRows);
-        //Создаем один ряд кнопок и добавляем его в список
-
-        //Добавляем одну кнопку с текстом "help" наш ряд
-
-//        keyboardRowSecond.add(new InlineKeyboardButton("Delete me"));
-
-        //добавляем лист с одним рядом кнопок в главный объект
-//        replyKeyboardMarkup.setKeyboard(keyboardRows);
-//    }
+    public static SendMessage sendInlineKeyBoardMessage(long chatId) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        inlineKeyboardButton1.setText("Добавить меня");
+        inlineKeyboardButton1.setCallbackData("You join to event");
+        inlineKeyboardButton2.setText("Удалить меня");
+        inlineKeyboardButton2.setCallbackData("You left event");
+        inlineKeyboardButton3.setText("Мероприятия");
+        inlineKeyboardButton3.setCallbackData("list events");
+        inlineKeyboardButton4.setText("Список участников");
+        inlineKeyboardButton4.setCallbackData("list participants");
+        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
+        keyboardButtonsRow1.add(inlineKeyboardButton1);
+        keyboardButtonsRow1.add(inlineKeyboardButton2);
+        keyboardButtonsRow2.add(inlineKeyboardButton3);
+        keyboardButtonsRow2.add(inlineKeyboardButton4);
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow1);
+        rowList.add(keyboardButtonsRow2);
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Меню");
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        return sendMessage;
+    }
 }

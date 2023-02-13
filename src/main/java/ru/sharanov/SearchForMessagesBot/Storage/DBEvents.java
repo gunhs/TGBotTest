@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBEvents {
-    private List<String> events;
+    private final List<String> events;
     private static final String PATH = "data/events.txt";
 
     public DBEvents() throws IOException {
-        events = new ArrayList<>();
-        String[] s = readFile(Path.of(PATH)).split("\n");
-        events = List.of(s);
+        events = Files.readAllLines(Path.of(PATH));
     }
 
     private String readFile(Path path) throws IOException {
