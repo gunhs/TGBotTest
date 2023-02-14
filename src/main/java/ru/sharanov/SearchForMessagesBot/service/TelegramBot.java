@@ -29,7 +29,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public TelegramBot(BotConfig config) throws IOException {
         this.config = config;
-//        initKeyboard();
     }
 
     @Override
