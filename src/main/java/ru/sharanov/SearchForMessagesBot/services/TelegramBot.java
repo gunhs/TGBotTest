@@ -104,15 +104,17 @@ public class TelegramBot extends TelegramLongPollingBot {
 //            dBparticipant.removeParticipants(userName);
             String answer = name + "  больше не участвует в мероприятии";
             showMessage(chatId, answer);
+            participantService.delParticipant(userName);
         }
     }
 
     private void getParticipants(long chatId) throws IOException, TelegramApiException, InterruptedException {
 //        ArrayList<String> participants = dBparticipant.getParticipants();
         List<Participant> participants = participantService.getAllParticipants();
-        StringBuilder answer = new StringBuilder();
+        StringBuilder answer = new StringBuilder("Список участников ближайшего мероприятия:\n");
         for (int i = 0; i < participants.size(); i++) {
-            answer.append(i + 1).append(". ").append(participants.get(i)).append("\n");
+            answer.append(i + 1).append(". ").append(participants.get(i).getName()).
+            append(" (@").append(participants.get(i).getNickName()).append(")").append("\n");
         }
         if (participants.isEmpty()) {
             answer = new StringBuilder("Список участников ближайшего мероприятия пуст");

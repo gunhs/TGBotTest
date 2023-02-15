@@ -23,25 +23,20 @@ public class ParticipantService {
         return participantRepository.findAll();
     }
 
-    public void delParticipant(Participant participant) {
+    public void delParticipant(String nickName) {
+        Participant participant = participantRepository.findAll().stream().filter(p -> p.getNickName().equals(nickName))
+                .findFirst().orElse(null);
+        assert participant != null;
         participantRepository.delete(participant);
     }
 
     public boolean checkNickName(String nickName) {
-        for (Participant p : participantRepository.findAll()) {
-            if (p.getNickName().equals(nickName)) {
-                return true;
-            }
-        }
-        return false;
+        return participantRepository.findAll().stream().anyMatch(p->p.getNickName().equals(nickName));
+
     }
 
-    public Participant getParticipantByNickName(String nickName){
-        for (Participant p : participantRepository.findAll()) {
-            if (p.getNickName().equals(nickName)) {
-                return p;
-            }
-        }
-        return null;
+    public Participant getParticipantByNickName(String nickName) {
+        return participantRepository.findAll().stream()
+                .filter(p->p.getNickName().equals(nickName)).findFirst().orElse(null);
     }
 }
