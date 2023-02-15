@@ -18,7 +18,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class Participants {
+public class Participant {
     @Id
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
@@ -32,7 +32,7 @@ public class Participants {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Participants that = (Participants) o;
+        Participant that = (Participant) o;
         return id != null && Objects.equals(id, that.id);
     }
 

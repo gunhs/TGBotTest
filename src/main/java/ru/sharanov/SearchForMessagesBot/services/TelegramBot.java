@@ -1,6 +1,6 @@
-package ru.sharanov.SearchForMessagesBot.service;
+package ru.sharanov.SearchForMessagesBot.services;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Storage.DBEvents;
 import ru.sharanov.SearchForMessagesBot.Storage.DBparticipant;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
+import ru.sharanov.SearchForMessagesBot.entities.Participant;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,15 +21,21 @@ import java.util.Locale;
 
 import static java.lang.Thread.sleep;
 
-@Component
+@Service
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
 
     private final DBparticipant dBparticipant = new DBparticipant();
 
-    public TelegramBot(BotConfig config) throws IOException {
+    private final EventService eventService;
+    private final ParticipantService participantService;
+
+
+    public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService) throws IOException {
         this.config = config;
+        this.eventService = eventService;
+        this.participantService = participantService;
     }
 
     @Override
@@ -62,13 +69,13 @@ public class TelegramBot extends TelegramLongPollingBot {
             try {
                 String messageText = update.getCallbackQuery().getData().toLowerCase(Locale.ROOT);
                 long chatId = update.getCallbackQuery().getMessage().getChatId();
-                System.out.println(update.getCallbackQuery().getFrom().getUserName() + " " +  messageText);
+                System.out.println(update.getCallbackQuery().getFrom().getUserName() + " " + messageText);
                 switch (messageText) {
                     case "list events" -> getEvents(chatId);
                     case "you join to event" -> addParticipant(
                             update.getCallbackQuery().getFrom().getFirstName(),
                             update.getCallbackQuery().getFrom().getUserName(), chatId);
-                    case "list participants" -> getParticipant(chatId);
+                    case "list participants" -> getParticipants(chatId);
                     case "you left event" -> removeParticipant(chatId,
                             update.getCallbackQuery().getFrom().getUserName(),
                             update.getCallbackQuery().getFrom().getFirstName()
@@ -80,14 +87,29 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void removeParticipant(long chatId, String userName, String name) throws IOException, TelegramApiException, InterruptedException {
-        dBparticipant.removeParticipants(userName);
-        String answer = name + "  больше не участвует в мероприятии";
-        showMessage(chatId, answer);
+    private void addParticipant(String firstName, String nickName, long chatId) throws IOException, TelegramApiException, InterruptedException {
+        if (participantService.checkNickName(nickName)) {
+            showMessage(chatId, "Вы уже добавлены");
+        } else {
+            Participant participant = new Participant();
+            participant.setName(firstName);
+            participant.setNickName(nickName);
+            participantService.addParticipant(participant);
+            showMessage(chatId, firstName + "  теперь участвует в мероприятии");
+        }
     }
 
-    private void getParticipant(long chatId) throws IOException, TelegramApiException, InterruptedException {
-        ArrayList<String> participants = dBparticipant.getParticipants();
+    private void removeParticipant(long chatId, String userName, String name) throws IOException, TelegramApiException, InterruptedException {
+        if (participantService.getParticipantByNickName(userName) != null) {
+//            dBparticipant.removeParticipants(userName);
+            String answer = name + "  больше не участвует в мероприятии";
+            showMessage(chatId, answer);
+        }
+    }
+
+    private void getParticipants(long chatId) throws IOException, TelegramApiException, InterruptedException {
+//        ArrayList<String> participants = dBparticipant.getParticipants();
+        List<Participant> participants = participantService.getAllParticipants();
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < participants.size(); i++) {
             answer.append(i + 1).append(". ").append(participants.get(i)).append("\n");
@@ -96,16 +118,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             answer = new StringBuilder("Список участников ближайшего мероприятия пуст");
         }
         showMessage(chatId, answer.toString().trim());
-    }
-
-    private void addParticipant(String firstName, String nickName, long chatId) throws IOException, TelegramApiException, InterruptedException {
-        if (!dBparticipant.addParticipant(firstName, nickName).isEmpty()) {
-            String answer = "Вы уже добавлены";
-            showMessage(chatId, answer);
-        } else {
-            String answer = firstName + "  теперь участвует в мероприятии";
-            showMessage(chatId, answer);
-        }
     }
 
     private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
