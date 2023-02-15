@@ -5,7 +5,7 @@ telegram:
 spring:
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:~/database;
+    url: jdbc:h2:./database/events
     username: sa
     password:
     h2:
@@ -13,7 +13,7 @@ spring:
         enabled: true
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     generate-ddl: true
     show-sql: false
     properties:

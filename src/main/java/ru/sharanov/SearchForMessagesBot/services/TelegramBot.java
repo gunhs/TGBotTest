@@ -26,8 +26,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
 
-    private final DBparticipant dBparticipant = new DBparticipant();
-
     private final EventService eventService;
     private final ParticipantService participantService;
 
@@ -80,6 +78,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             update.getCallbackQuery().getFrom().getUserName(),
                             update.getCallbackQuery().getFrom().getFirstName()
                     );
+                    case "add event" -> addEvent(chatId);
                 }
             } catch (TelegramApiException | IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -114,13 +113,32 @@ public class TelegramBot extends TelegramLongPollingBot {
         StringBuilder answer = new StringBuilder("Список участников ближайшего мероприятия:\n");
         for (int i = 0; i < participants.size(); i++) {
             answer.append(i + 1).append(". ").append(participants.get(i).getName()).
-            append(" (@").append(participants.get(i).getNickName()).append(")").append("\n");
+                    append(" (@").append(participants.get(i).getNickName()).append(")").append("\n");
         }
         if (participants.isEmpty()) {
             answer = new StringBuilder("Список участников ближайшего мероприятия пуст");
         }
         showMessage(chatId, answer.toString().trim());
     }
+
+    private void addEvent(long chatId) throws IOException, TelegramApiException, InterruptedException {
+        showMessage(chatId, """
+                Введите мероприятие в формате:
+                Название, дата, адресс
+                например:
+                Мансарда, 21.01.2023, ул. Марата 36""");
+
+    }
+
+    private void removeEvent(long chatId, String userName, String name) throws IOException, TelegramApiException, InterruptedException {
+        if (participantService.getParticipantByNickName(userName) != null) {
+//            dBparticipant.removeParticipants(userName);
+            String answer = name + "  больше не участвует в мероприятии";
+            showMessage(chatId, answer);
+            participantService.delParticipant(userName);
+        }
+    }
+
 
     private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
         DBEvents dbEvents = new DBEvents();
@@ -155,6 +173,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
         inlineKeyboardButton1.setText("Добавить меня");
         inlineKeyboardButton1.setCallbackData("You join to event");
         inlineKeyboardButton2.setText("Удалить меня");
@@ -163,12 +182,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         inlineKeyboardButton3.setCallbackData("list events");
         inlineKeyboardButton4.setText("Список участников");
         inlineKeyboardButton4.setCallbackData("list participants");
+        inlineKeyboardButton5.setText(" Добавить мероприятие");
+        inlineKeyboardButton5.setCallbackData("add event");
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
         keyboardButtonsRow1.add(inlineKeyboardButton1);
         keyboardButtonsRow1.add(inlineKeyboardButton2);
         keyboardButtonsRow2.add(inlineKeyboardButton3);
-        keyboardButtonsRow2.add(inlineKeyboardButton4);
+        keyboardButtonsRow1.add(inlineKeyboardButton4);
+        keyboardButtonsRow2.add(inlineKeyboardButton5);
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow1);
         rowList.add(keyboardButtonsRow2);
