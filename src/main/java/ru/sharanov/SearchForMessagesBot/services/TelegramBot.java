@@ -10,11 +10,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Storage.DBEvents;
-import ru.sharanov.SearchForMessagesBot.Storage.DBparticipant;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
 import ru.sharanov.SearchForMessagesBot.entities.Participant;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,23 +48,15 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage()) {
-            if (update.getMessage().hasText()) {
+        try {
+            if (update.hasMessage() && update.getMessage().hasText()) {
                 if (update.getMessage().getText().equals("/бот")) {
-                    try {
-                        execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
-                        sleep(10000);
-                        DeleteMessage deleteMessage = new DeleteMessage();
-                        deleteMessage.setChatId(update.getMessage().getChatId());
-                        deleteMessage.setMessageId(update.getMessage().getMessageId());
-                        execute(deleteMessage);
-                    } catch (TelegramApiException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
+                    execute(deleteMessage(update.getMessage().getChatId(), update.getMessage().getMessageId(), 10000));
+                } else if (update.getMessage().getText().matches("\\w+, \\d{2}\\.\\d{2}\\.\\d{4}, [\\w\\.]+")) {
+
                 }
-            }
-        } else if (update.hasCallbackQuery()) {
-            try {
+            } else if (update.hasCallbackQuery()) {
                 String messageText = update.getCallbackQuery().getData().toLowerCase(Locale.ROOT);
                 long chatId = update.getCallbackQuery().getMessage().getChatId();
                 System.out.println(update.getCallbackQuery().getFrom().getUserName() + " " + messageText);
@@ -78,11 +70,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                             update.getCallbackQuery().getFrom().getUserName(),
                             update.getCallbackQuery().getFrom().getFirstName()
                     );
-                    case "add event" -> addEvent(chatId);
+                    case "add event" -> showAddEventMessage(chatId);
                 }
-            } catch (TelegramApiException | IOException | InterruptedException e) {
-                e.printStackTrace();
             }
+        } catch (TelegramApiException | InterruptedException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -100,7 +92,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void removeParticipant(long chatId, String userName, String name) throws IOException, TelegramApiException, InterruptedException {
         if (participantService.getParticipantByNickName(userName) != null) {
-//            dBparticipant.removeParticipants(userName);
             String answer = name + "  больше не участвует в мероприятии";
             showMessage(chatId, answer);
             participantService.delParticipant(userName);
@@ -108,7 +99,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void getParticipants(long chatId) throws IOException, TelegramApiException, InterruptedException {
-//        ArrayList<String> participants = dBparticipant.getParticipants();
         List<Participant> participants = participantService.getAllParticipants();
         StringBuilder answer = new StringBuilder("Список участников ближайшего мероприятия:\n");
         for (int i = 0; i < participants.size(); i++) {
@@ -121,18 +111,25 @@ public class TelegramBot extends TelegramLongPollingBot {
         showMessage(chatId, answer.toString().trim());
     }
 
-    private void addEvent(long chatId) throws IOException, TelegramApiException, InterruptedException {
+    private void showAddEventMessage(long chatId) throws TelegramApiException, InterruptedException {
         showMessage(chatId, """
-                Введите мероприятие в формате:
+                Чтобы добавить мероприятие введите его в формате:
                 Название, дата, адресс
                 например:
                 Мансарда, 21.01.2023, ул. Марата 36""");
-
     }
 
-    private void removeEvent(long chatId, String userName, String name) throws IOException, TelegramApiException, InterruptedException {
+    private void addEvent(long chatId, String event) throws TelegramApiException, InterruptedException {
+        String[] components = event.split(",");
+        String eventName = components[0].strip();
+        LocalDate date = LocalDate.parse(components[1].strip());
+        String address = components[2].strip();
+            String answer = eventName + "Добавлено мероприятие";
+            showMessage(chatId, answer);
+    }
+
+    private void removeEvent(long chatId, String userName, String name) throws TelegramApiException, InterruptedException {
         if (participantService.getParticipantByNickName(userName) != null) {
-//            dBparticipant.removeParticipants(userName);
             String answer = name + "  больше не участвует в мероприятии";
             showMessage(chatId, answer);
             participantService.delParticipant(userName);
@@ -159,12 +156,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         message.setText(textToSend);
         Message sentOutMessage = execute(message);
         if (textToSend.equals(message.getText())) {
-            DeleteMessage deleteMessage = new DeleteMessage();
-            deleteMessage.setChatId(sentOutMessage.getChatId());
-            deleteMessage.setMessageId(sentOutMessage.getMessageId());
-            sleep(30000);
-            execute(deleteMessage);
+            execute(deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 30000));
         }
+    }
+
+    private DeleteMessage deleteMessage(long chatId, int messageId, long time) throws InterruptedException {
+        sleep(time);
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setChatId(chatId);
+        deleteMessage.setMessageId(messageId);
+        return deleteMessage;
     }
 
     public static SendMessage sendInlineKeyBoardMessage(long chatId) {
