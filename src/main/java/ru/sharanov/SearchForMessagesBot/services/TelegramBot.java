@@ -6,15 +6,18 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Storage.DBEvents;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
+import ru.sharanov.SearchForMessagesBot.entities.Event;
 import ru.sharanov.SearchForMessagesBot.entities.Participant;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +33,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final ParticipantService participantService;
 
 
-    public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService) throws IOException {
+    public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService) {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
@@ -50,11 +53,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             if (update.hasMessage() && update.getMessage().hasText()) {
-                if (update.getMessage().getText().equals("/бот")) {
-                    execute(sendInlineKeyBoardMessage(update.getMessage().getChatId()));
-                    execute(deleteMessage(update.getMessage().getChatId(), update.getMessage().getMessageId(), 10000));
-                } else if (update.getMessage().getText().matches("\\w+, \\d{2}\\.\\d{2}\\.\\d{4}, [\\w\\.]+")) {
-
+                String textMessage = update.getMessage().getText();
+                long chatIdMessage = update.getMessage().getChatId();
+                if (textMessage.equals("/бот")) {
+                    execute(sendInlineKeyBoardMessage(chatIdMessage));
+                    execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
+                } else if (textMessage.matches("[a-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+")) {
+                    addEvent(chatIdMessage, textMessage);
+                } else if (eventService.checkWord(textMessage)) {
+                    removeEvent(chatIdMessage, textMessage);
+                }else if (textMessage.matches("Редактировать [А-яa-zA-Z\\s+\na-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+]")){
+                    editEvent(textMessage);
                 }
             } else if (update.hasCallbackQuery()) {
                 String messageText = update.getCallbackQuery().getData().toLowerCase(Locale.ROOT);
@@ -76,6 +85,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void editEvent(String textMessage) {
+
     }
 
     private void addParticipant(String firstName, String nickName, long chatId) throws IOException, TelegramApiException, InterruptedException {
@@ -120,31 +133,27 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void addEvent(long chatId, String event) throws TelegramApiException, InterruptedException {
-        String[] components = event.split(",");
-        String eventName = components[0].strip();
-        LocalDate date = LocalDate.parse(components[1].strip());
-        String address = components[2].strip();
-            String answer = eventName + "Добавлено мероприятие";
-            showMessage(chatId, answer);
+        String answer = eventService.addEvent(event);
+        showMessage(chatId, answer);
     }
 
-    private void removeEvent(long chatId, String userName, String name) throws TelegramApiException, InterruptedException {
-        if (participantService.getParticipantByNickName(userName) != null) {
-            String answer = name + "  больше не участвует в мероприятии";
-            showMessage(chatId, answer);
-            participantService.delParticipant(userName);
-        }
+    private void removeEvent(long chatId, String eventName) throws TelegramApiException, InterruptedException {
+        eventService.delEvent(eventName);
+        String answer = "Мероприятие удалено";
+        showMessage(chatId, answer);
     }
 
 
     private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
-        DBEvents dbEvents = new DBEvents();
-        ArrayList<String> events = dbEvents.getEvents();
+
         StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
-        for (int i = 0; i < events.size(); i++) {
-            answer.append(i + 1).append(". ").append(events.get(i)).append("\n");
+        int i = 1;
+        for (Event e : eventService.getAllEvents()) {
+            answer.append(i++).append(". ").append(e.getEventName()).append(", ")
+                    .append(e.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+                    .append(", ").append(e.getAddress()).append("\n");
         }
-        if (events.isEmpty()) {
+        if (eventService.getAllEvents().isEmpty()) {
             answer = new StringBuilder("Список ближайших мероприятий пуст");
         }
         showMessage(chatId, answer.toString().trim());
