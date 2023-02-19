@@ -16,6 +16,7 @@ import ru.sharanov.SearchForMessagesBot.entities.Event;
 import ru.sharanov.SearchForMessagesBot.entities.Participant;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -51,18 +52,21 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        System.out.println("Сообщение пришло");
         try {
             if (update.hasMessage() && update.getMessage().hasText()) {
                 String textMessage = update.getMessage().getText();
                 long chatIdMessage = update.getMessage().getChatId();
-                if (textMessage.equals("/бот")) {
+                if (textMessage.equals("эй, бот")) {
                     execute(sendInlineKeyBoardMessage(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
-                } else if (textMessage.matches("[a-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+")) {
+                } else if (textMessage.matches("[a-zA-ZА-яЁё\\s]+, \\d{2}\\.\\d{2}\\.\\d{4} \\d{1,2}:\\d{1,2}," +
+                        " [a-zA-ZА-яЁё\\.\\s\\d]+")) {
                     addEvent(chatIdMessage, textMessage);
                 } else if (eventService.checkWord(textMessage)) {
                     removeEvent(chatIdMessage, textMessage);
-                }else if (textMessage.matches("Редактировать [А-яa-zA-Z\\s+\na-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+]")){
+                } else if (textMessage.matches("Редактировать [А-яa-zA-Z\\s]+\n" +
+                        "[a-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+")) {
                     editEvent(textMessage);
                 }
             } else if (update.hasCallbackQuery()) {
@@ -82,13 +86,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                     case "add event" -> showAddEventMessage(chatId);
                 }
             }
-        } catch (TelegramApiException | InterruptedException | IOException e) {
+        } catch (TelegramApiException | InterruptedException | IOException | ParseException e) {
             e.printStackTrace();
         }
     }
 
     private void editEvent(String textMessage) {
-
+        String regex = "Редактировать ([А-яa-zA-Z\\s])+\n" +
+                "([a-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+)";
+        String eventName = textMessage.replace(textMessage, "$1");
+        String newEvent = textMessage.replace(textMessage, "$2");
+        eventService.update(newEvent);
     }
 
     private void addParticipant(String firstName, String nickName, long chatId) throws IOException, TelegramApiException, InterruptedException {
@@ -132,7 +140,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 Мансарда, 21.01.2023, ул. Марата 36""");
     }
 
-    private void addEvent(long chatId, String event) throws TelegramApiException, InterruptedException {
+    private void addEvent(long chatId, String event) throws TelegramApiException, InterruptedException, ParseException {
         String answer = eventService.addEvent(event);
         showMessage(chatId, answer);
     }
@@ -150,7 +158,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         int i = 1;
         for (Event e : eventService.getAllEvents()) {
             answer.append(i++).append(". ").append(e.getEventName()).append(", ")
-                    .append(e.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+//                    .append(e.      getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
+                    .append(e.getDate().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
                     .append(", ").append(e.getAddress()).append("\n");
         }
         if (eventService.getAllEvents().isEmpty()) {
@@ -183,7 +192,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+//        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
         inlineKeyboardButton1.setText("Добавить меня");
         inlineKeyboardButton1.setCallbackData("You join to event");
         inlineKeyboardButton2.setText("Удалить меня");
@@ -192,18 +201,22 @@ public class TelegramBot extends TelegramLongPollingBot {
         inlineKeyboardButton3.setCallbackData("list events");
         inlineKeyboardButton4.setText("Список участников");
         inlineKeyboardButton4.setCallbackData("list participants");
-        inlineKeyboardButton5.setText(" Добавить мероприятие");
-        inlineKeyboardButton5.setCallbackData("add event");
+//        inlineKeyboardButton5.setText(" Добавить мероприятие");
+//        inlineKeyboardButton5.setCallbackData("add event");
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow3 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow4 = new ArrayList<>();
         keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow1.add(inlineKeyboardButton2);
-        keyboardButtonsRow2.add(inlineKeyboardButton3);
-        keyboardButtonsRow1.add(inlineKeyboardButton4);
-        keyboardButtonsRow2.add(inlineKeyboardButton5);
+        keyboardButtonsRow2.add(inlineKeyboardButton2);
+        keyboardButtonsRow4.add(inlineKeyboardButton4);
+        keyboardButtonsRow3.add(inlineKeyboardButton3);
+//        keyboardButtonsRow2.add(inlineKeyboardButton5);
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow1);
         rowList.add(keyboardButtonsRow2);
+        rowList.add(keyboardButtonsRow4);
+        rowList.add(keyboardButtonsRow3);
         inlineKeyboardMarkup.setKeyboard(rowList);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
