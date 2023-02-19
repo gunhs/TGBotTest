@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -30,7 +31,7 @@ public class Event {
     @Column()
     private String address;
     @Column()
-    private LocalDate date;
+    private java.sql.Timestamp date;
 
     @Override
     public boolean equals(Object o) {
