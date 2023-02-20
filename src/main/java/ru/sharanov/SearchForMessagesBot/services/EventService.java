@@ -1,13 +1,12 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
 import org.springframework.stereotype.Service;
-import ru.sharanov.SearchForMessagesBot.entities.Event;
+import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,8 +24,6 @@ public class EventService {
         Event event = new Event();
         String[] components = eventInString.split(",");
         String eventName = components[0].strip();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-//        LocalDateTime date = LocalDateTime.parse(components[1].strip(), formatter);
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         java.sql.Timestamp date = new Timestamp(formatter.parse(components[1].strip()).getTime());
         String address = components[2].strip();

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit person</title>
+    <style>
+        .ui-button{
+            appearance: auto;
+            user-select: none;
+            white-space: pre;
+            align-items: flex-start;
+            text-align: center;
+            cursor: default;
+            box-sizing: border-box;
+            background-color: buttonface;
+            color: buttontext;
+            padding: 1px 6px;
+            border-width: 2px;
+            border-style: outset;
+            border-color: buttonface;
+            border-image: initial;
+            letter-spacing: normal;
+            word-spacing: normal;
+            line-height: normal;
+            text-transform: none;
+            text-indent: 0;
+            text-shadow: none;
+            display: inline-block;
+            text-rendering: auto;
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: normal;
+            font-family: Arial,serif;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<p th:text="${'id: ' + event.getId() + ' name: ' + event.getEventName()}">value</p>
+<p th:text="${'address: '+ event.getAddress() + ' date: '+ event.getDate()}"></p>
+<a class="ui-button"  th:href="@{/events/{id}/edit(id=${event.getId()})}" >edit</a>
+<a class="ui-button"  href="/events" >back</a>
+</body>
+</html>

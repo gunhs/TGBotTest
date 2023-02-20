@@ -6,18 +6,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.sharanov.SearchForMessagesBot.Storage.DBEvents;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
-import ru.sharanov.SearchForMessagesBot.entities.Event;
-import ru.sharanov.SearchForMessagesBot.entities.Participant;
+import ru.sharanov.SearchForMessagesBot.model.Event;
+import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +49,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println("Сообщение пришло");
         try {
             if (update.hasMessage() && update.getMessage().hasText()) {
                 String textMessage = update.getMessage().getText();
                 long chatIdMessage = update.getMessage().getChatId();
-                if (textMessage.equals("эй, бот")) {
+                if (textMessage.equals("/бот")) {
                     execute(sendInlineKeyBoardMessage(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
                 } else if (textMessage.matches("[a-zA-ZА-яЁё\\s]+, \\d{2}\\.\\d{2}\\.\\d{4} \\d{1,2}:\\d{1,2}," +
@@ -158,7 +154,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         int i = 1;
         for (Event e : eventService.getAllEvents()) {
             answer.append(i++).append(". ").append(e.getEventName()).append(", ")
-//                    .append(e.      getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
                     .append(e.getDate().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
                     .append(", ").append(e.getAddress()).append("\n");
         }
@@ -192,7 +187,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
-//        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
         inlineKeyboardButton1.setText("Добавить меня");
         inlineKeyboardButton1.setCallbackData("You join to event");
         inlineKeyboardButton2.setText("Удалить меня");
@@ -201,8 +195,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         inlineKeyboardButton3.setCallbackData("list events");
         inlineKeyboardButton4.setText("Список участников");
         inlineKeyboardButton4.setCallbackData("list participants");
-//        inlineKeyboardButton5.setText(" Добавить мероприятие");
-//        inlineKeyboardButton5.setCallbackData("add event");
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow3 = new ArrayList<>();
@@ -211,7 +203,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         keyboardButtonsRow2.add(inlineKeyboardButton2);
         keyboardButtonsRow4.add(inlineKeyboardButton4);
         keyboardButtonsRow3.add(inlineKeyboardButton3);
-//        keyboardButtonsRow2.add(inlineKeyboardButton5);
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow1);
         rowList.add(keyboardButtonsRow2);

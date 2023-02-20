@@ -1,4 +1,4 @@
-package ru.sharanov.SearchForMessagesBot.entities;
+package ru.sharanov.SearchForMessagesBot.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,25 +15,28 @@ import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
-@Getter
 @Setter
+@Getter
 @ToString
-public class Participant {
+public class Event {
     @Id
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
     private Integer id;
-    @Column
-    private String name;
-    @Column
-    private String nickName;
+
+    @Column()
+    private String eventName;
+    @Column()
+    private String address;
+    @Column()
+    private java.sql.Timestamp date;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Participant that = (Participant) o;
-        return id != null && Objects.equals(id, that.id);
+        Event event = (Event) o;
+        return id != null && Objects.equals(id, event.id);
     }
 
     @Override
