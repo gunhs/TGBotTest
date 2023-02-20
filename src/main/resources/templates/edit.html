@@ -42,25 +42,25 @@
 <form th:method="PATCH" th:action="@{/events/{id}(id=${event.getId()})}" th:object="${event}">
     <div>
         <label for="name">Name: </label>
-        <input type="text" th:field="*{name}" id="name"/>
-        <div style="color: darkred" th:if="${#fields.hasErrors}" th:erorrs="*{name}">wrong name</div>
+        <input type="text" th:field="*{eventName}" id="name"/>
+<!--        <div style="color: darkred" th:if="${#fields.hasErrors}" th:erorrs="*{eventName}">wrong name</div>-->
     </div>
     <div>
         <br>
-        <label for="email">Surname: </label>
-        <input type="text" th:field="*{email}" id="email"/>
+        <label for="address">Address: </label>
+        <input type="text" th:field="*{address}" id="address"/>
 <!--        /*@thymesVar id="#fields" type="ru.sharanov.spring.models.Person"*/-->
-        <div style="color: darkred" th:if="${#fields.hasErrors('age')}" th:erorrs="*{age}">wrong age</div>
+<!--        <div style="color: darkred" th:if="${#fields.hasErrors('age')}" th:erorrs="*{address}">wrong age</div>-->
     </div>
     <div>
         <br>
-        <label for="age">Age: </label>
-        <input type="text" th:field="*{age}" id="age"/>
-        <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{email}">wrong email</div>
+        <label for="date">Date: </label>
+        <input type="text" th:field="*{date}" id="date"/>
+<!--        <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{email}">wrong email</div>-->
     </div>
     <div>
         <br>
-        <input type="submit" value="Edit Person">
+        <input type="submit" value="Edit Event">
         <a class="ui-button"  href="/events" >back</a>
     </div>
 </form>

@@ -41,7 +41,7 @@ public class EventsController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
+//
 //    @GetMapping("/events/{id}/edit")
 //    @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
 //    public String edit(@PathVariable("id") int id, Model model) {
@@ -52,14 +52,16 @@ public class EventsController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
     public ModelAndView edit(@PathVariable("id") int id, Model model) {
+        Optional<Event> event = eventRepository.findById(id);
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("edit");
+            modelAndView.addObject("event", event.orElse(null));
             return modelAndView;
     }
 
 
 
-    @PatchMapping("/events/{id}/edit")
+    @PatchMapping("/events/{id}")
 //    public ResponseEntity updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
     public String updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
         Optional<Event> optionalEvent = eventRepository.findById(id);
