@@ -2,6 +2,7 @@ package ru.sharanov.SearchForMessagesBot.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
@@ -39,8 +40,18 @@ public class EventsController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/events/{id}")
-    public ResponseEntity updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
+
+    //    @GetMapping("/events/{id}/edit")
+    @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
+    public String edit(@PathVariable("id") int id, Model model) {
+        Optional<Event> event = eventRepository.findById(id);
+        model.addAttribute("event", event.orElse(null));
+        return "events/edit";
+    }
+
+    @PatchMapping("/events/{id}/edit")
+//    public ResponseEntity updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
+    public String updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
         Optional<Event> optionalEvent = eventRepository.findById(id);
         Event newEvent = optionalEvent.orElse(null);
         assert newEvent != null;
@@ -54,7 +65,7 @@ public class EventsController {
             newEvent.setAddress(event.getAddress());
         }
         eventRepository.save(newEvent);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "events/edit";
     }
 
     @DeleteMapping("/events/{id}")

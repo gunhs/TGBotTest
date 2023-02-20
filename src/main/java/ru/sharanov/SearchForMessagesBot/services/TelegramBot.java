@@ -56,7 +56,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 if (textMessage.equals("/бот")) {
                     execute(sendInlineKeyBoardMessage(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
-                } else if (textMessage.matches("[a-zA-ZА-яЁё\\s]+, \\d{2}\\.\\d{2}\\.\\d{4} \\d{1,2}:\\d{1,2}," +
+                } else if (textMessage.matches("[a-zA-ZА-яЁё\\s]+, \\d{2}\\.\\d{2}\\.\\d{4} [\\dX]{1,2}:[\\dX]{1,2}," +
                         " [a-zA-ZА-яЁё\\.\\s\\d]+")) {
                     addEvent(chatIdMessage, textMessage);
                 } else if (eventService.checkWord(textMessage)) {
@@ -181,7 +181,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return deleteMessage;
     }
 
-    public static SendMessage sendInlineKeyBoardMessage(long chatId) {
+    public SendMessage sendInlineKeyBoardMessage(long chatId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
@@ -211,7 +211,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         inlineKeyboardMarkup.setKeyboard(rowList);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText("Меню");
+        sendMessage.setText("Меню\nМеропиятий: " + eventService.getAllEvents().size());
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;
     }
