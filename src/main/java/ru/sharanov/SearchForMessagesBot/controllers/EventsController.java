@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 
@@ -41,13 +42,22 @@ public class EventsController {
     }
 
 
-    //    @GetMapping("/events/{id}/edit")
+//    @GetMapping("/events/{id}/edit")
+//    @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
+//    public String edit(@PathVariable("id") int id, Model model) {
+//        Optional<Event> event = eventRepository.findById(id);
+//        model.addAttribute("event", event.orElse(null));
+//        return "events/edit.html";
+//    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
-    public String edit(@PathVariable("id") int id, Model model) {
-        Optional<Event> event = eventRepository.findById(id);
-        model.addAttribute("event", event.orElse(null));
-        return "events/edit";
+    public ModelAndView edit(@PathVariable("id") int id, Model model) {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("edit");
+            return modelAndView;
     }
+
+
 
     @PatchMapping("/events/{id}/edit")
 //    public ResponseEntity updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
