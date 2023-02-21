@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit person</title>
     <style>
-        .ui-button{
+        .ui-button {
             appearance: auto;
             user-select: none;
             white-space: pre;
@@ -32,36 +32,36 @@
             border-radius: 3px;
             text-decoration: none;
             font-weight: normal;
-            font-family: Arial,serif;
+            font-family: Arial, serif;
             font-size: 13px;
         }
     </style>
 </head>
 <body>
-<!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot*/-->
+<!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
 <form th:method="PATCH" th:action="@{/events/{id}(id=${event.getId()})}" th:object="${event}">
     <div>
         <label for="name">Name: </label>
         <input type="text" th:field="*{eventName}" id="name"/>
-<!--        <div style="color: darkred" th:if="${#fields.hasErrors}" th:erorrs="*{eventName}">wrong name</div>-->
+        <!--        <div style="color: darkred" th:if="${#fields.hasErrors}" th:erorrs="*{eventName}">wrong name</div>-->
     </div>
     <div>
         <br>
         <label for="address">Address: </label>
         <input type="text" th:field="*{address}" id="address"/>
-<!--        /*@thymesVar id="#fields" type="ru.sharanov.spring.models.Person"*/-->
-<!--        <div style="color: darkred" th:if="${#fields.hasErrors('age')}" th:erorrs="*{address}">wrong age</div>-->
+        <!--        /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
+        <!--        <div style="color: darkred" th:if="${#fields.hasErrors('age')}" th:erorrs="*{address}">wrong age</div>-->
     </div>
     <div>
         <br>
         <label for="date">Date: </label>
         <input type="text" th:field="*{date}" id="date"/>
-<!--        <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{email}">wrong email</div>-->
+        <!--        <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{email}">wrong email</div>-->
     </div>
     <div>
         <br>
         <input type="submit" value="Edit Event">
-        <a class="ui-button"  href="/events" >back</a>
+        <a class="ui-button" href="/events">back</a>
     </div>
 </form>
 </body>

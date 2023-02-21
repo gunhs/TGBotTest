@@ -1,14 +1,12 @@
 package ru.sharanov.SearchForMessagesBot.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @RestController
@@ -20,38 +18,35 @@ public class EventsController {
     }
 
     @GetMapping("/events")
-    public List<Event> getEvents() {
-        return eventRepository.findAll();
+    public ModelAndView getEvents() {
+        return getView();
     }
 
     @GetMapping("/events/{id}")
-    public ResponseEntity getEvent(@PathVariable("id") int id) {
+    public ModelAndView getEvent(@PathVariable("id") int id) {
         Optional<Event> event = eventRepository.findById(id);
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("show");
+        modelAndView.addObject("event", event.orElse(null));
+        return modelAndView;
     }
 
     @GetMapping("events/new")
-    public String newPerson(@ModelAttribute("event") Event event) {
-        return "events/new";
+    public ModelAndView newPerson(@ModelAttribute("event") Event event) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("new");
+        modelAndView.addObject("event", event);
+        return modelAndView;
     }
 
-    @PostMapping("/events")
-    public ResponseEntity addEvent(@RequestBody Event event) {
+    @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public @ResponseBody ModelAndView addEvent(Event event) {
         eventRepository.save(event);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return getView();
     }
-
-//
-//    @GetMapping("/events/{id}/edit")
-//    @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
-//    public String edit(@PathVariable("id") int id, Model model) {
-//        Optional<Event> event = eventRepository.findById(id);
-//        model.addAttribute("event", event.orElse(null));
-//        return "events/edit.html";
-//    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
-    public ModelAndView edit(@PathVariable("id") int id, Model model) {
+    public ModelAndView edit(@PathVariable("id") int id) {
         Optional<Event> event = eventRepository.findById(id);
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("edit");
@@ -59,11 +54,8 @@ public class EventsController {
             return modelAndView;
     }
 
-
-
-    @PatchMapping("/events/{id}")
-//    public ResponseEntity updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
-    public String updateEvent(@PathVariable("id") int id, @RequestBody Event event) {
+    @RequestMapping(value = "/events/{id}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public @ResponseBody ModelAndView updateEvent(@PathVariable("id") int id, Event event) {
         Optional<Event> optionalEvent = eventRepository.findById(id);
         Event newEvent = optionalEvent.orElse(null);
         assert newEvent != null;
@@ -77,14 +69,30 @@ public class EventsController {
             newEvent.setAddress(event.getAddress());
         }
         eventRepository.save(newEvent);
-        return "events/edit";
+        return getView();
     }
 
     @DeleteMapping("/events/{id}")
-    public ResponseEntity deleteEvent(@PathVariable("id") int id) {
-
+    public ModelAndView deleteEvent(@PathVariable("id") int id) {
         eventRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return getView();
+    }
+
+    private ModelAndView getView(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("index");
+        Iterable<Event> eventIterable =  eventRepository.findAll();
+        ArrayList<Event> events = new ArrayList<>();
+        eventIterable.forEach(events::add);
+        modelAndView.addObject("events", events);
+        return modelAndView;
+    }
+
+    private ModelAndView getModelAndView(String view, Event event ){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(view);
+        modelAndView.addObject("event", event);
+        return modelAndView;
     }
 
 }

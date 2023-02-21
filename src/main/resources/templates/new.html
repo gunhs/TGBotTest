@@ -38,26 +38,31 @@
     </style>
 </head>
 <body>
-<!--/*@thymesVar id="person" type="ru.sharanov.spring.models.Person"*/-->
+<!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
 <form th:method="POST" th:action="@{/events}" th:object="${event}">
-    <label for="name">Name: </label>
-    <input type="text" th:field="*{eventName}" id="name"/>
-    <!--/*@thymesVar id="#fields" type="ru.sharanov.spring.models.Person"*/-->
-    <!--/*@thymesVar id="hasErrors" type="ru.sharanov.spring.models.Person"*/-->
-<!--    <div style="color: darkred" th:if="${#fields.hasErrors}" th:erorrs="*{name}">wrong name</div>-->
-    <br>
-    <label for="address">Age: </label>
-    <input type="text" th:field="*{address}" id="address"/>
-<!--    <div style="color: darkred" th:if="${#fields.hasErrors('age')}" th:erorrs="*{address}">wrong age</div>-->
-    <br>
-    <label for="date">Email: </label>
-    <input type="text" th:field="*{date}" id="date"/>
-    <!--/*@thymesVar id="hasErrors" type="ru.sharanov.spring.models.Person"*/-->
-<!--    <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{date}">wrong email</div>-->
-    <br>
-    <br>
-    <input type="submit" value="Add Person">
-    <a class="ui-button" href="/events">back</a>
+    <div>
+        <label for="name">Name: </label>
+        <input type="text" th:field="*{eventName}" id="name"/>
+        <!--        <div style="color: darkred" th:if="${#fields.hasErrors}" th:erorrs="*{eventName}">wrong name</div>-->
+    </div>
+    <div>
+        <br>
+        <label for="address">Address: </label>
+        <input type="text" th:field="*{address}" id="address"/>
+        <!--        /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
+        <!--        <div style="color: darkred" th:if="${#fields.hasErrors('age')}" th:erorrs="*{address}">wrong age</div>-->
+    </div>
+    <div>
+        <br>
+        <label for="date">Date: </label>
+        <input type="text" th:field="*{date}" id="date"/>
+        <!--        <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{email}">wrong email</div>-->
+    </div>
+    <div>
+        <br>
+        <input type="submit" value="Add Event">
+        <a class="ui-button" href="/events">back</a>
+    </div>
 </form>
 </body>
 </html>
