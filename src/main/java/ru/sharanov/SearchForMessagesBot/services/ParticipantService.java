@@ -31,12 +31,12 @@ public class ParticipantService {
     }
 
     public boolean checkNickName(String nickName) {
-        return participantRepository.findAll().stream().anyMatch(p->p.getNickName().equals(nickName));
+        return participantRepository.findAll().stream().anyMatch(p -> p.getNickName().equals(nickName));
 
     }
 
     public Participant getParticipantByNickName(String nickName) {
         return participantRepository.findAll().stream()
-                .filter(p->p.getNickName().equals(nickName)).findFirst().orElse(null);
+                .filter(p -> p.getNickName().equals(nickName)).findFirst().orElse(null);
     }
 }

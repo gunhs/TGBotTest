@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -56,14 +57,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                 if (textMessage.equals("/бот")) {
                     execute(sendInlineKeyBoardMessage(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
-                } else if (textMessage.matches("[a-zA-ZА-яЁё\\s]+, \\d{2}\\.\\d{2}\\.\\d{4} [\\dX]{1,2}:[\\dX]{1,2}," +
-                        " [a-zA-ZА-яЁё\\.\\s\\d]+")) {
-                    addEvent(chatIdMessage, textMessage);
-                } else if (eventService.checkWord(textMessage)) {
-                    removeEvent(chatIdMessage, textMessage);
-                } else if (textMessage.matches("Редактировать [А-яa-zA-Z\\s]+\n" +
-                        "[a-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+")) {
-                    editEvent(textMessage);
                 }
             } else if (update.hasCallbackQuery()) {
                 String messageText = update.getCallbackQuery().getData().toLowerCase(Locale.ROOT);
@@ -82,17 +75,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                     case "add event" -> showAddEventMessage(chatId);
                 }
             }
-        } catch (TelegramApiException | InterruptedException | IOException | ParseException e) {
+        } catch (TelegramApiException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void editEvent(String textMessage) {
-        String regex = "Редактировать ([А-яa-zA-Z\\s])+\n" +
-                "([a-zA-ZА-я\\s]+, \\d{2}\\.\\d{2}\\.\\d{4}, [a-zA-ZА-я\\.\\s\\d]+)";
-        String eventName = textMessage.replace(textMessage, "$1");
-        String newEvent = textMessage.replace(textMessage, "$2");
-        eventService.update(newEvent);
     }
 
     private void addParticipant(String firstName, String nickName, long chatId) throws IOException, TelegramApiException, InterruptedException {
@@ -136,27 +121,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                 Мансарда, 21.01.2023, ул. Марата 36""");
     }
 
-    private void addEvent(long chatId, String event) throws TelegramApiException, InterruptedException, ParseException {
-        String answer = eventService.addEvent(event);
-        showMessage(chatId, answer);
-    }
-
-    private void removeEvent(long chatId, String eventName) throws TelegramApiException, InterruptedException {
-        eventService.delEvent(eventName);
-        String answer = "Мероприятие удалено";
-        showMessage(chatId, answer);
-    }
-
 
     private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
-
         StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
-        int i = 1;
-        for (Event e : eventService.getAllEvents()) {
-            answer.append(i++).append(". ").append(e.getEventName()).append(", ")
-                    .append(e.getDate().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
-                    .append(", ").append(e.getAddress()).append("\n");
-        }
+        AtomicInteger i = new AtomicInteger(1);
+        StringBuilder finalAnswer = answer;
+        eventService.getAllEvents().forEach(e-> finalAnswer.append(i.getAndIncrement()).append(". ").append(e.getEventName()).append(", ")
+                .append(e.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
+                .append(", ").append(e.getAddress()).append("\n"));
         if (eventService.getAllEvents().isEmpty()) {
             answer = new StringBuilder("Список ближайших мероприятий пуст");
         }

@@ -38,8 +38,10 @@
     </style>
 </head>
 <body>
-<p th:text="${'id: ' + event.getId() + ' name: ' + event.getEventName()}">value</p>
-<p th:text="${'address: '+ event.getAddress() + ' date: '+ event.getDate()}"></p>
+<p th:text="${'name: ' + event.getEventName()}">value</p>
+<p th:text="${'address: '+ event.getAddress()}"></p>
+<p th:text="${'date: '+ event.getDate()}"></p>
+
 <a class="ui-button"  th:href="@{/events/{id}/edit(id=${event.getId()})}" >edit</a>
 <a class="ui-button"  href="/events" >back</a>
 </body>

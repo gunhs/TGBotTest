@@ -3,27 +3,19 @@ package ru.sharanov.SearchForMessagesBot.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.sharanov.SearchForMessagesBot.model.Event;
-import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
-
-import java.util.ArrayList;
 
 @Controller
 public class DefaultController {
-    private final EventRepository eventRepository;
+    private final EventsController eventsController;
 
-    public DefaultController(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+    public DefaultController(EventsController eventsController) {
+        this.eventsController = eventsController;
     }
 
     @RequestMapping("/")
-    public String index(Model model){
-        Iterable<Event> eventIterable =  eventRepository.findAll();
-        ArrayList<Event> events = new ArrayList<>();
-        for (Event e : eventIterable){
-            events.add(e);
-        }
-        model.addAttribute("events", events);
+    public String index(Model model) {
+        model.addAttribute("events", eventsController.showEvents());
+        model.addAttribute("participants", eventsController.showParticipants());
         return "index";
     }
 }

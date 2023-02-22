@@ -56,7 +56,7 @@
         <br>
         <label for="date">Date: </label>
         <input type="text" th:field="*{date}" id="date"/>
-        <!--        <div style="color: darkred" th:if="${#fields.hasErrors('email')}" th:erorrs="*{email}">wrong email</div>-->
+                <div style="color: darkred" th:if="${#fields.hasErrors('date')}" th:erorrs="*{date}">wrong format date</div>
     </div>
     <div>
         <br>
