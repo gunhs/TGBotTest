@@ -1,6 +1,10 @@
+#telegram:
+#  botName: EventBot
+#  token: 6082218143:AAF2cX5McrF-w6lIaAuoU0HCOwB8fjflLa0
+
 telegram:
-  botName: EventBot
-  token: 6082218143:AAF2cX5McrF-w6lIaAuoU0HCOwB8fjflLa0
+  botName: SearchForMessagesBot
+  token: 5884719976:AAGv5wxiRSS5q4u6sXCpXGbhLN8VkRtCG0E
 
 spring:
   datasource:

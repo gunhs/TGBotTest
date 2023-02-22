@@ -11,6 +11,7 @@ import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -43,8 +44,10 @@ public class EventsController {
 
     //    @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 //    public @ResponseBody
-    @PostMapping("/events")
-    public ModelAndView addEvent(@RequestParam("date") String dateString, String eventName, String address) {
+    @PostMapping(value = "/events")
+    public ModelAndView addEvent(@RequestParam("date")
+                                     @Pattern(regexp = "^\\d{4}-([0][1-9]|[1][0-2])-([0-2][0-9]|[3][0-1])\\s([0-1][0-9]|[2][0-4]):[0-5][0-9]:[0-5][0-9]$") String dateString,
+                                 String eventName, String address) {
         Event event = new Event();
         DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
         LocalDateTime date = dateTimeFormat.parse(dateString + ":00", LocalDateTime::from);
