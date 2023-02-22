@@ -1,8 +1,10 @@
 package ru.sharanov.SearchForMessagesBot.controllers;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.model.Event;
@@ -10,12 +12,12 @@ import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+@Validated
 @RestController
 public class EventsController {
     private final EventRepository eventRepository;
@@ -44,9 +46,13 @@ public class EventsController {
 
     //    @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 //    public @ResponseBody
+
     @PostMapping(value = "/events")
     public ModelAndView addEvent(@RequestParam("date")
-                                     @Pattern(regexp = "^\\d{4}-([0][1-9]|[1][0-2])-([0-2][0-9]|[3][0-1])\\s([0-1][0-9]|[2][0-4]):[0-5][0-9]:[0-5][0-9]$") String dateString,
+                                     @Pattern(regexp = "^\\d{4}-([0][1-9]|[1][0-2])-([0-2][0-9]|[3][0-1])" +
+                                             "\\s([0-1][0-9]|[2][0-4]):[0-5][0-9]:[0-5][0-9]$",
+                                     message = "Wrong format. hhhh-mm-dd hh:mm:ss")
+                                             String dateString,
                                  String eventName, String address) {
         Event event = new Event();
         DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
@@ -66,7 +72,7 @@ public class EventsController {
 
     @RequestMapping(value = "/events/{id}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public @ResponseBody
-    ModelAndView updateEvent(@PathVariable("id") int id, @Valid Event event) {
+    ModelAndView updateEvent(@PathVariable("id") int id, Event event) {
         Event newEvent = eventRepository.findById(id).orElse(null);
         assert newEvent != null;
         if (!(event.getEventName().isEmpty())) {
