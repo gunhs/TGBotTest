@@ -124,11 +124,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
         StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
+
+
         AtomicInteger i = new AtomicInteger(1);
         StringBuilder finalAnswer = answer;
         eventService.getAllEvents().forEach(e-> finalAnswer.append(i.getAndIncrement()).append(". ").append(e.getEventName()).append(", ")
-                .append(e.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
-                .append(", ").append(e.getAddress()).append("\n"));
+                .append(e.getDate()).append(", ").append(e.getAddress()).append("\n"));
         if (eventService.getAllEvents().isEmpty()) {
             answer = new StringBuilder("Список ближайших мероприятий пуст");
         }

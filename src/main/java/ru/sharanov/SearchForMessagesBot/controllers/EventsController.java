@@ -19,12 +19,10 @@ import java.util.ArrayList;
 //@Validated
 @RestController
 public class EventsController {
-    private final EventRepository eventRepository;
     private final EventService eventService;
     private final ParticipantRepository participantRepository;
 
-    public EventsController(EventRepository eventRepository, EventService eventService, ParticipantRepository participantRepository) {
-        this.eventRepository = eventRepository;
+    public EventsController(EventService eventService, ParticipantRepository participantRepository) {
         this.eventService = eventService;
         this.participantRepository = participantRepository;
     }
@@ -36,27 +34,26 @@ public class EventsController {
 
     @GetMapping("/events/{id}")
     public ModelAndView getEvent(@PathVariable("id") int id) {
-
         EventDTO eventDTO = eventService.getEvent(id);
         return getModelAndView("show", eventDTO);
     }
 
     @GetMapping("events/new")
-    public ModelAndView newPerson(@ModelAttribute("event") EventDTO eventDTO) {
-        return getModelAndView("new", eventDTO);
+    public ModelAndView newPerson(@ModelAttribute("event") EventDTO event) {
+        return getModelAndView("new", event);
     }
 
     //    @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 //    public @ResponseBody
 
     @PostMapping(value = "/events")
-    public ModelAndView addEvent(
-            @Valid EventDTO eventDTO,
-            BindingResult bindingResult) {
+    public ModelAndView addEvent(@Valid EventDTO event, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ModelAndView("new");
+            ModelAndView modelAndView = new ModelAndView("new");
+            modelAndView.addObject("event", event);
+            return modelAndView;
         }
-        eventService.addEvent(eventDTO);
+        eventService.addEvent(event);
         return getView();
     }
 
@@ -68,25 +65,14 @@ public class EventsController {
 
     @RequestMapping(value = "/events/{id}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public @ResponseBody
-    ModelAndView updateEvent(@PathVariable("id") int id, EventDTO eventDTO) {
-        EventDTO newEvent = eventService.getEvent(id);
-        assert newEvent != null;
-        if (!(eventDTO.getEventName().isEmpty())) {
-            newEvent.setEventName(eventDTO.getEventName());
-        }
-        if (!(eventDTO.getDate().isEmpty())) {
-            newEvent.setDate(eventDTO.getDate());
-        }
-        if (!(eventDTO.getAddress().isEmpty())) {
-            newEvent.setAddress(eventDTO.getAddress());
-        }
-        eventService.addEvent(newEvent);
+    ModelAndView updateEvent(@PathVariable("id") int id, EventDTO event) {
+        eventService.updateEvent(event, id);
         return getView();
     }
 
     @DeleteMapping("/events/{id}")
     public ModelAndView deleteEvent(@PathVariable("id") int id) {
-        eventRepository.deleteById(id);
+        eventService.deleteEvent(id);
         return getView();
     }
 
@@ -97,9 +83,9 @@ public class EventsController {
         return modelAndView;
     }
 
-    public ArrayList<Event> showEvents() {
-        Iterable<Event> eventIterable = eventRepository.findAll();
-        ArrayList<Event> events = new ArrayList<>();
+    public ArrayList<EventDTO> showEvents() {
+        Iterable<EventDTO> eventIterable = eventService.getAllEvents();
+        ArrayList<EventDTO> events = new ArrayList<>();
         eventIterable.forEach(events::add);
         return events;
     }
@@ -111,10 +97,10 @@ public class EventsController {
         return participants;
     }
 
-    private ModelAndView getModelAndView(String view, EventDTO eventDTO) {
+    private ModelAndView getModelAndView(String view, EventDTO event) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName(view);
-        modelAndView.addObject("event", eventDTO);
+        modelAndView.addObject("event", event);
         return modelAndView;
     }
 }
