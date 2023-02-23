@@ -3,28 +3,29 @@ package ru.sharanov.SearchForMessagesBot.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
+import ru.sharanov.SearchForMessagesBot.services.EventService;
 
-import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
+import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@Validated
+//@Validated
 @RestController
 public class EventsController {
     private final EventRepository eventRepository;
+    private final EventService eventService;
     private final ParticipantRepository participantRepository;
 
-    public EventsController(EventRepository eventRepository, ParticipantRepository participantRepository) {
+    public EventsController(EventRepository eventRepository, EventService eventService, ParticipantRepository participantRepository) {
         this.eventRepository = eventRepository;
+        this.eventService = eventService;
         this.participantRepository = participantRepository;
     }
 
@@ -35,56 +36,51 @@ public class EventsController {
 
     @GetMapping("/events/{id}")
     public ModelAndView getEvent(@PathVariable("id") int id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        return getModelAndView("show", event);
+
+        EventDTO eventDTO = eventService.getEvent(id);
+        return getModelAndView("show", eventDTO);
     }
 
     @GetMapping("events/new")
-    public ModelAndView newPerson(@ModelAttribute("event") Event event) {
-        return getModelAndView("new", event);
+    public ModelAndView newPerson(@ModelAttribute("event") EventDTO eventDTO) {
+        return getModelAndView("new", eventDTO);
     }
 
     //    @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 //    public @ResponseBody
 
     @PostMapping(value = "/events")
-    public ModelAndView addEvent(@RequestParam("date")
-                                     @Pattern(regexp = "^\\d{4}-([0][1-9]|[1][0-2])-([0-2][0-9]|[3][0-1])" +
-                                             "\\s([0-1][0-9]|[2][0-4]):[0-5][0-9]:[0-5][0-9]$",
-                                     message = "Wrong format. hhhh-mm-dd hh:mm:ss")
-                                             String dateString,
-                                 String eventName, String address) {
-        Event event = new Event();
-        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-        LocalDateTime date = dateTimeFormat.parse(dateString + ":00", LocalDateTime::from);
-        event.setEventName(eventName);
-        event.setDate(date);
-        event.setAddress(address);
-        eventRepository.save(event);
+    public ModelAndView addEvent(
+            @Valid EventDTO eventDTO,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ModelAndView("new");
+        }
+        eventService.addEvent(eventDTO);
         return getView();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
     public ModelAndView edit(@PathVariable("id") int id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        return getModelAndView("edit", event);
+        EventDTO eventDTO = eventService.getEvent(id);
+        return getModelAndView("edit", eventDTO);
     }
 
     @RequestMapping(value = "/events/{id}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public @ResponseBody
-    ModelAndView updateEvent(@PathVariable("id") int id, Event event) {
-        Event newEvent = eventRepository.findById(id).orElse(null);
+    ModelAndView updateEvent(@PathVariable("id") int id, EventDTO eventDTO) {
+        EventDTO newEvent = eventService.getEvent(id);
         assert newEvent != null;
-        if (!(event.getEventName().isEmpty())) {
-            newEvent.setEventName(event.getEventName());
+        if (!(eventDTO.getEventName().isEmpty())) {
+            newEvent.setEventName(eventDTO.getEventName());
         }
-        if (!(event.getDate() == null)) {
-            newEvent.setDate(event.getDate());
+        if (!(eventDTO.getDate().isEmpty())) {
+            newEvent.setDate(eventDTO.getDate());
         }
-        if (!(event.getAddress().isEmpty())) {
-            newEvent.setAddress(event.getAddress());
+        if (!(eventDTO.getAddress().isEmpty())) {
+            newEvent.setAddress(eventDTO.getAddress());
         }
-        eventRepository.save(newEvent);
+        eventService.addEvent(newEvent);
         return getView();
     }
 
@@ -115,10 +111,10 @@ public class EventsController {
         return participants;
     }
 
-    private ModelAndView getModelAndView(String view, Event event) {
+    private ModelAndView getModelAndView(String view, EventDTO eventDTO) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName(view);
-        modelAndView.addObject("event", event);
+        modelAndView.addObject("event", eventDTO);
         return modelAndView;
     }
 }
