@@ -43,20 +43,20 @@
     <div>
         <label for="name">Name: </label>
         <input type="text" th:field="*{eventName}" id="name"/>
-                <div style="color: darkred" th:if="${#fields.hasErrors('eventName')}" th:erorrs="*{eventName}">wrong name</div>
+                <div style="color: darkred" th:if="${#fields.hasErrors('eventName')}" th:errors="*{eventName}">wrong name</div>
     </div>
     <div>
         <br>
         <label for="address">Address: </label>
         <input type="text" th:field="*{address}" id="address"/>
 <!--                /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
-                <div style="color: darkred" th:if="${#fields.hasErrors('address')}" th:erorrs="*{address}">wrong age</div>
+                <div style="color: darkred" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">wrong age</div>
     </div>
     <div>
         <br>
         <label for="date">Date: </label>
         <input type="text" th:field="*{date}" id="date"/>
-                <div style="color: darkred" th:if="${#fields.hasErrors('date')}" th:erorrs="*{date}" th:text="Error">wrong format date</div>
+                <div style="color: darkred" th:if="${#fields.hasErrors('date')}" th:errors="*{date}" th:text="Error">wrong format date</div>
     </div>
     <div>
         <br>

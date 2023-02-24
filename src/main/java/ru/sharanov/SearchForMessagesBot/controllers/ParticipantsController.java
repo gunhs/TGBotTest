@@ -20,6 +20,6 @@ public class ParticipantsController {
     @DeleteMapping("/participants/{id}")
     public ModelAndView deleteEvent(@PathVariable("id") int id) {
         participantRepository.deleteById(id);
-        return eventsController.getView();
+        return eventsController.getView("redirect:/events");
     }
 }

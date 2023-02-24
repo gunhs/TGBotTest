@@ -10,12 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
-import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,19 +22,14 @@ import static java.lang.Thread.sleep;
 
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
-
     private final BotConfig config;
-
     private final EventService eventService;
     private final ParticipantService participantService;
-
-
     public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService) {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
     }
-
     @Override
     public String getBotUsername() {
         return config.getBotName();
@@ -121,14 +113,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                 Мансарда, 21.01.2023, ул. Марата 36""");
     }
 
-
     private void getEvents(long chatId) throws IOException, TelegramApiException, InterruptedException {
         StringBuilder answer = new StringBuilder("Список ближайших мероприятий:\n");
-
-
         AtomicInteger i = new AtomicInteger(1);
         StringBuilder finalAnswer = answer;
-        eventService.getAllEvents().forEach(e-> finalAnswer.append(i.getAndIncrement()).append(". ").append(e.getEventName()).append(", ")
+        eventService.getAllEvents().forEach(e -> finalAnswer.append(i.getAndIncrement()).append(". ").append(e.getEventName()).append(", ")
                 .append(e.getDate()).append(", ").append(e.getAddress()).append("\n"));
         if (eventService.getAllEvents().isEmpty()) {
             answer = new StringBuilder("Список ближайших мероприятий пуст");

@@ -1,22 +1,16 @@
 package ru.sharanov.SearchForMessagesBot.controllers;
 
-
-import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
-import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
-import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
 
 import javax.validation.Valid;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-//@Validated
 @RestController
 public class EventsController {
     private final EventService eventService;
@@ -29,7 +23,7 @@ public class EventsController {
 
     @GetMapping("/events")
     public ModelAndView getEvents() {
-        return getView();
+        return getView("index");
     }
 
     @GetMapping("/events/{id}")
@@ -43,58 +37,50 @@ public class EventsController {
         return getModelAndView("new", event);
     }
 
-    //    @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-//    public @ResponseBody
-
     @PostMapping(value = "/events")
-    public ModelAndView addEvent(@Valid EventDTO event, BindingResult bindingResult) {
+    public ModelAndView addEvent(@ModelAttribute("event") @Valid EventDTO event, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView("new");
-            modelAndView.addObject("event", event);
-            return modelAndView;
+            return getModelAndView("new", event);
         }
         eventService.addEvent(event);
-        return getView();
+        return getView("redirect:/events");
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/events/{id}/edit")
+    @GetMapping("/events/{id}/edit")
     public ModelAndView edit(@PathVariable("id") int id) {
         EventDTO eventDTO = eventService.getEvent(id);
         return getModelAndView("edit", eventDTO);
     }
 
-    @RequestMapping(value = "/events/{id}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public @ResponseBody
-    ModelAndView updateEvent(@PathVariable("id") int id, EventDTO event) {
+    @PatchMapping("/events/{id}")
+    public ModelAndView updateEvent(@PathVariable("id") int id,
+                                    @ModelAttribute("event") @Valid EventDTO event, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return getModelAndView("edit", event);
+        }
         eventService.updateEvent(event, id);
-        return getView();
+        return getView("redirect:/events");
     }
 
     @DeleteMapping("/events/{id}")
     public ModelAndView deleteEvent(@PathVariable("id") int id) {
         eventService.deleteEvent(id);
-        return getView();
+        return getView("redirect:/events");
     }
 
-    public ModelAndView getView() {
-        ModelAndView modelAndView = new ModelAndView("index");
+    public ModelAndView getView(String view) {
+        ModelAndView modelAndView = new ModelAndView(view);
         modelAndView.addObject("events", showEvents());
         modelAndView.addObject("participants", showParticipants());
         return modelAndView;
     }
 
     public ArrayList<EventDTO> showEvents() {
-        Iterable<EventDTO> eventIterable = eventService.getAllEvents();
-        ArrayList<EventDTO> events = new ArrayList<>();
-        eventIterable.forEach(events::add);
-        return events;
+        return new ArrayList<>(eventService.getAllEvents());
     }
 
     public ArrayList<Participant> showParticipants() {
-        Iterable<Participant> participantIterable = participantRepository.findAll();
-        ArrayList<Participant> participants = new ArrayList<>();
-        participantIterable.forEach(participants::add);
-        return participants;
+        return new ArrayList<>(participantRepository.findAll());
     }
 
     private ModelAndView getModelAndView(String view, EventDTO event) {
