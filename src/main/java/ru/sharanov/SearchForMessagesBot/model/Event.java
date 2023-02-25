@@ -1,21 +1,16 @@
 package ru.sharanov.SearchForMessagesBot.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -37,7 +32,27 @@ public class Event {
     private String address;
     @Column()
     private LocalDateTime date;
-//    private java.sql.Timestamp date;
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    },
+            fetch = FetchType.EAGER
+    )
+    @JoinTable(name = "event_name",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
+    private List<Participant> participants;
+
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
+        participant.getEvents().add(this);
+    }
+
+    public void removeParticipant(Participant participant) {
+        this.participants.remove(participant);
+        participant.getEvents().remove(this);
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,14 +1,13 @@
 package ru.sharanov.SearchForMessagesBot.dto;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class EventDTO {
     @NotEmpty(message = "Field can't be empty")
@@ -20,4 +19,7 @@ public class EventDTO {
             message = "Wrong format.dd.mm.yyyy hh:mm")
     private String date;
     private int id;
+    private List<ParticipantDTO> participantDTOList;
+
+
 }

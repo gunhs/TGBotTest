@@ -7,10 +7,9 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -27,6 +26,11 @@ public class Participant {
     private String name;
     @Column
     private String nickName;
+    @Column
+    private Long userId;
+
+    @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
+    private List<Event> events = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

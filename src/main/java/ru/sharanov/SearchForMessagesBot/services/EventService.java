@@ -1,8 +1,11 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
+import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 
 import java.time.LocalDateTime;
@@ -76,4 +79,13 @@ public class EventService {
         return dateTimeFormat.parse(dateTime + ":00", LocalDateTime::from);
     }
 
+    public void addParticipantInEvent(Participant participant, String eventName) {
+        Event event = getEventByEventName(eventName);
+        event.addParticipant(participant);
+        System.out.println( "добавилось :" + event.getParticipants().size()+"\n"+"id event: " + event.getId());
+        eventRepository.save(event);
+    }
+    public Event getEventByEventName(String eventName){
+        return eventRepository.findEventByEventName(eventName);
+    }
 }
