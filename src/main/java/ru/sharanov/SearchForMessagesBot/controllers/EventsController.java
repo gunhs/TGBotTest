@@ -4,7 +4,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
-import ru.sharanov.SearchForMessagesBot.model.Participant;
+import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
 
@@ -29,7 +29,9 @@ public class EventsController {
     @GetMapping("/events/{id}")
     public ModelAndView getEvent(@PathVariable("id") int id) {
         EventDTO eventDTO = eventService.getEvent(id);
-        return getModelAndView("show", eventDTO);
+        ModelAndView modelAndView = getModelAndView("show", eventDTO);
+        modelAndView.addObject("participants", showParticipants(eventDTO.getId()));
+        return modelAndView;
     }
 
     @GetMapping("events/new")
@@ -71,7 +73,7 @@ public class EventsController {
     public ModelAndView getView(String view) {
         ModelAndView modelAndView = new ModelAndView(view);
         modelAndView.addObject("events", showEvents());
-        modelAndView.addObject("participants", showParticipants());
+//        modelAndView.addObject("participants", showParticipants());
         return modelAndView;
     }
 
@@ -79,8 +81,8 @@ public class EventsController {
         return new ArrayList<>(eventService.getAllEvents());
     }
 
-    public ArrayList<Participant> showParticipants() {
-        return new ArrayList<>(participantRepository.findAll());
+    public ArrayList<ParticipantDTO> showParticipants(int id) {
+        return new ArrayList<>(eventService.getEventDTOById(id).getParticipantDTOList());
     }
 
     private ModelAndView getModelAndView(String view, EventDTO event) {

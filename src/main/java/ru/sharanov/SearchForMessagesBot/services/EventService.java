@@ -85,9 +85,10 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public EventDTO getEventDTOByEventName(String eventName) {
-        Event event = eventRepository.findEventByEventName(eventName);
+    public EventDTO getEventDTOById(int id) {
+        Event event = eventRepository.findById(id).orElse(null);
         EventDTO eventDTO = new EventDTO();
+        assert event != null;
         eventDTO.setId(event.getId());
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
@@ -106,7 +107,9 @@ public class EventService {
     public Event getEventByEventName(String eventName){
         return eventRepository.findEventByEventName(eventName);
     }
-
+    public Event getEventById(int id){
+        return eventRepository.findById(id).orElse(null);
+    }
 
     private Event getEventByEventDTO(EventDTO eventDTO) {
         return eventRepository.findById(eventDTO.getId()).orElse(null);

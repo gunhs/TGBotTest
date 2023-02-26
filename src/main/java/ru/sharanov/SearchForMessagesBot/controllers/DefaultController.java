@@ -15,7 +15,7 @@ public class DefaultController {
     @RequestMapping("/")
     public String index(Model model) {
         model.addAttribute("events", eventsController.showEvents());
-        model.addAttribute("participants", eventsController.showParticipants());
+//        model.addAttribute("participants", eventsController.showParticipants());
         return "index";
     }
 }

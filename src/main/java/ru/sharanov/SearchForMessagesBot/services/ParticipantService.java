@@ -36,18 +36,16 @@ public class ParticipantService {
         return participantRepository.findAll();
     }
 
-    public void delParticipant(long idUser) {
-        Participant participant = getParticipantByUserId(idUser);
-        participantRepository.delete(participant);
+    public void delParticipant(long idUser, String eventName) {
+        Participant participant = eventService.getEventByEventName(eventName).getParticipants()
+                .stream().filter(p -> p.getUserId() == idUser).findAny().orElse(null);
+        eventService.getEventByEventName(eventName).removeParticipant(participant);
     }
 
     public boolean checkUserId(long userId) {
-        if (participantRepository.findAll().isEmpty()) {
-            return false;
-        }
-        if (participantRepository.findAll().stream().anyMatch(p -> p.getUserId() == (null))) {
-            return false;
-        }
+//        if (participantRepository.findAll().isEmpty()) {
+//            return false;
+//        }
         return participantRepository.findAll().stream().anyMatch(p -> p.getUserId() == userId);
     }
 
@@ -56,17 +54,17 @@ public class ParticipantService {
                 stream().filter(p -> p.getUserId() == userId).findFirst().orElse(null);
     }
 
-    public List<ParticipantDTO> getAllParticipantByEvent(String eventName) {
-        List<ParticipantDTO> participants = new ArrayList<>();
-        System.out.println(eventService.getEventDTOByEventName(eventName).getId());
-        eventService.getEventDTOByEventName(eventName).getParticipantDTOList().forEach(p -> {
-            ParticipantDTO participantDTO = new ParticipantDTO();
-            participantDTO.setId(p.getId());
-            participantDTO.setName(p.getName());
-            participantDTO.setNickName(p.getNickName());
-            participantDTO.setUserId(p.getUserId());
-            participants.add(participantDTO);
-        });
-        return participants;
-    }
+//    public List<ParticipantDTO> getAllParticipantByEvent(String eventName) {
+//        List<ParticipantDTO> participants = new ArrayList<>();
+//        System.out.println(eventService.getEventDTOByEventName(eventName).getId());
+//        eventService.getEventDTOByEventName(eventName).getParticipantDTOList().forEach(p -> {
+//            ParticipantDTO participantDTO = new ParticipantDTO();
+//            participantDTO.setId(p.getId());
+//            participantDTO.setName(p.getName());
+//            participantDTO.setNickName(p.getNickName());
+//            participantDTO.setUserId(p.getUserId());
+//            participants.add(participantDTO);
+//        });
+//        return participants;
+//    }
 }

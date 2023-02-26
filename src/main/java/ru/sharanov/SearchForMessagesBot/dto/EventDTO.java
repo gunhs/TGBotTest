@@ -5,11 +5,13 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class EventDTO {
+
     @NotEmpty(message = "Field can't be empty")
     private String eventName;
     @NotEmpty(message = "Field can't be empty")
@@ -19,7 +21,5 @@ public class EventDTO {
             message = "Wrong format.dd.mm.yyyy hh:mm")
     private String date;
     private int id;
-    private List<ParticipantDTO> participantDTOList;
-
-
+    private List<ParticipantDTO> participantDTOList = new ArrayList<>();
 }

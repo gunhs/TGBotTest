@@ -111,25 +111,6 @@
     <div class="outline">
         <a class="ui-button" id="new-event" href="/events/new">Add Event</a>
     </div>
-    <div class="outline">
-        <div class="content" th:each="participant : ${participants}">
-            <ul class="list list-reset flex">
-                <li class="list-item name">
-<!--                    <a class="list-link" th:href="@{/events/{id}(id=${participant.getId()})}"-->
-                    <a class="list-link" th:text="${participant.getName()}"> user </a>
-                </li>
-<!--                <li class="list-item">-->
-<!--                    <a class="ui-button list-link" th:href="@{/events/{id}/edit(id=${event.getId()})}"> edit </a>-->
-<!--                </li>-->
-                <li class="list-item ">
-                    <form style="display: inline-block;" th:method="DELETE"
-                          th:action="@{/participants/{id}(id=${participant.getId()})}">
-                        <button style="margin-left: 30px" class="ui-button" href="#"> delete</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
 </div>
 </body>
 </html>

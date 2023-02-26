@@ -53,7 +53,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                 String textMessage = update.getMessage().getText();
                 long chatIdMessage = update.getMessage().getChatId();
                 if (textMessage.equals("/бот")) {
-//                    execute(sendInlineKeyBoardMessage(chatIdMessage));
                     execute(showEventsButton(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
                 }
@@ -62,23 +61,25 @@ public class TelegramBot extends TelegramLongPollingBot {
                 String firstName = update.getCallbackQuery().getFrom().getFirstName();
                 String userName = update.getCallbackQuery().getFrom().getUserName();
                 String messageText = update.getCallbackQuery().getData();
-                String[] components = messageText.split("\\s");
+                String[] components = messageText.split("\\s", 3);
                 String eventName = "";
                 if (components.length == 3) {
                     eventName = components[2];
                 }
                 long chatId = update.getCallbackQuery().getMessage().getChatId();
+                execute(deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10));
                 System.out.println(LocalDateTime.now() + " " + userName + " " + messageText);
-
                 if (messageText.equals("join event " + eventName)) {
                     addParticipant(firstName, userName, chatId, idUser, eventName);
-                } else if (messageText.equals("nothing event")) {
-                    showMessage(chatId, "Определяйтесь!");
                 } else if (messageText.equals("left event " + eventName)) {
                     removeParticipant(chatId, firstName, idUser, eventName);
+                } else if (messageText.equals("nothing event")) {
+                    showMessage(chatId, "Определяйтесь!");
                 } else if (messageText.equals("vasya event " + eventName)) {
-                    if (!participantService.getParticipantByUserId(idUser).getNickName().equals("Gunhsik")){
+                    if (!participantService.getParticipantByUserId(idUser).getNickName().equals("Gunhsik")) {
                         showMessage(chatId, "Вы не Вася!");
+                    } else {
+                        showMessage(chatId, "Привет, Вася!");
                     }
                 } else {
                     if (eventService.getAllEvents().stream().map(EventDTO::getEventName)
@@ -163,6 +164,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void addParticipant(String firstName, String nickName, long chatId, long userId, String eventName)
             throws IOException, TelegramApiException, InterruptedException {
+
         if (eventService.getEventByEventName(eventName).getParticipants()
                 .stream().map(Participant::getUserId).toList().contains(userId)) {
             showMessage(chatId, "Вы уже добавлены");
@@ -181,7 +183,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (participantService.getParticipantByUserId(idUser) != null) {
             String answer = name + "  больше не участвует в мероприятии";
             showMessage(chatId, answer);
-            participantService.delParticipant(idUser);
+            participantService.delParticipant(idUser, eventName);
         }
     }
 
