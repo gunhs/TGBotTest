@@ -41,6 +41,7 @@ public class EventService {
     }
 
     public void deleteEvent(int id) {
+
         eventRepository.deleteById(id);
     }
 
@@ -79,8 +80,7 @@ public class EventService {
     }
 
     public void addParticipantInEvent(Participant participant, String eventName) {
-        EventDTO eventDTO = getEventDTOByEventName(eventName);
-        Event event = getEventByEventDTO(eventDTO);
+        Event event = getEventByEventName(eventName);
         event.addParticipant(participant);
         eventRepository.save(event);
     }
@@ -103,9 +103,10 @@ public class EventService {
         return eventDTO;
     }
 
-    public List<ParticipantDTO> getParticipantDTOByEventDTO(EventDTO eventDTO){
-        return eventDTO.getParticipantDTOList();
+    public Event getEventByEventName(String eventName){
+        return eventRepository.findEventByEventName(eventName);
     }
+
 
     private Event getEventByEventDTO(EventDTO eventDTO) {
         return eventRepository.findById(eventDTO.getId()).orElse(null);
