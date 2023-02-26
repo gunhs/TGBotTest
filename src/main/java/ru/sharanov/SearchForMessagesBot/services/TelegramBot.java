@@ -80,6 +80,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         addParticipant(firstName, userName, chatId, messageText, idUser);
                     }
                 }
+                execute(deleteMessage(chatId, update.getMessage().getMessageId(), 5000));
             }
         } catch (TelegramApiException | InterruptedException | IOException e) {
             e.printStackTrace();
@@ -127,6 +128,17 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
+        InlineKeyboardButton addMe = new InlineKeyboardButton();
+        InlineKeyboardButton deleteMe = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        addMe.setText("Добавить меня");
+        addMe.setCallbackData("show events");
+        deleteMe.setText("Удалить меня");
+        deleteMe.setCallbackData("You left event");
+
+
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         inlineKeyboardMarkup.setKeyboard(rows);
