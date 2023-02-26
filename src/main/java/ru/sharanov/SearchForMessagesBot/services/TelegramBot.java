@@ -10,10 +10,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
+import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,7 +51,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 String textMessage = update.getMessage().getText();
                 long chatIdMessage = update.getMessage().getChatId();
                 if (textMessage.equals("/бот")) {
-                    execute(sendInlineKeyBoardMessage(chatIdMessage));
+//                    execute(sendInlineKeyBoardMessage(chatIdMessage));
+                    execute(showEventsButton(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
                 }
             } else if (update.hasCallbackQuery()) {
@@ -57,16 +60,25 @@ public class TelegramBot extends TelegramLongPollingBot {
                 String firstName = update.getCallbackQuery().getFrom().getFirstName();
                 String userName = update.getCallbackQuery().getFrom().getUserName();
                 String messageText = update.getCallbackQuery().getData();
+                String[] components = messageText.split("\\s");
+                String event = "";
+                if (components.length == 3) {
+                    event = components[2];
+                }
                 long chatId = update.getCallbackQuery().getMessage().getChatId();
-                System.out.println(userName + " " + messageText);
-
+                System.out.println(LocalDateTime.now() + " " + userName + " " + messageText);
                 switch (messageText) {
                     case "list events" -> getEvents(chatId);
 //                    case "you join to event" -> addParticipant(firstName, userName, chatId);
                     case "list participants" -> getParticipants(chatId);
-                    case "you left event" -> removeParticipant(chatId, userName, firstName, idUser);
+                    case ("left event") -> removeParticipant(chatId, firstName, idUser);
                     case "show events" -> execute(showEventsButton(chatId));
-                    default -> addParticipant(firstName, userName, chatId, messageText, idUser);
+                    default -> {
+                        if (eventService.getAllEvents().stream().map(EventDTO::getEventName).toList().contains(messageText)) {
+
+                        }
+                        addParticipant(firstName, userName, chatId, messageText, idUser);
+                    }
                 }
             }
         } catch (TelegramApiException | InterruptedException | IOException e) {
@@ -79,7 +91,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         eventService.getAllEvents().forEach(e -> {
             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText(e.getEventName());
+            inlineKeyboardButton1.setText(e.getDate() + "\n" + e.getEventName());
             inlineKeyboardButton1.setCallbackData(e.getEventName());
             List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
             keyboardButtonsRow1.add(inlineKeyboardButton1);
@@ -92,8 +104,37 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setText("Выберите меропиятие:");
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;
-
     }
+
+    private SendMessage showEvent(long chatId, String eventName) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        EventDTO eventDTO = eventService.getEventDTOByEventName(eventName);
+        StringBuilder participants = new StringBuilder();
+        AtomicInteger number = new AtomicInteger(1);
+        eventService.getParticipantDTOByEventDTO(eventDTO).forEach(p ->
+                participants.append(number.getAndIncrement())
+                        .append(". ").append(p.getName()).append(" (@")
+                        .append(p.getNickName()).append(")").append("\n")
+        );
+
+        String info = "Что: " + eventDTO.getEventName() + "\n"
+                + "Где: " + eventDTO.getAddress() + "\n" +
+                "Когда: " + eventDTO.getDate() + "\n" +
+                "Список участников:\n" + participants;
+
+        sendMessage.setText(info);
+
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        inlineKeyboardMarkup.setKeyboard(rows);
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        return sendMessage;
+    }
+
 
     private void addParticipant(String firstName, String nickName, long chatId, String event, long userId)
             throws IOException, TelegramApiException, InterruptedException {
@@ -106,7 +147,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         showMessage(chatId, firstName + "  теперь участвует в мероприятии " + event);
     }
 
-    private void removeParticipant(long chatId, String userName, String name, long idUser) throws IOException, TelegramApiException, InterruptedException {
+    private void removeParticipant(long chatId, String name, long idUser) throws IOException, TelegramApiException, InterruptedException {
         if (participantService.getParticipantByUserId(idUser) != null) {
             String answer = name + "  больше не участвует в мероприятии";
             showMessage(chatId, answer);

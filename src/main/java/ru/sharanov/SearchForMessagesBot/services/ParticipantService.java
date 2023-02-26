@@ -58,8 +58,8 @@ public class ParticipantService {
 
     public List<ParticipantDTO> getAllParticipantByEvent(String eventName) {
         List<ParticipantDTO> participants = new ArrayList<>();
-        System.out.println(eventService.getEventByEventName(eventName).getId());
-        eventService.getEventByEventName(eventName).getParticipants().forEach(p -> {
+        System.out.println(eventService.getEventDTOByEventName(eventName).getId());
+        eventService.getEventDTOByEventName(eventName).getParticipantDTOList().forEach(p -> {
             ParticipantDTO participantDTO = new ParticipantDTO();
             participantDTO.setId(p.getId());
             participantDTO.setName(p.getName());

@@ -1,9 +1,8 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
+import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
@@ -80,12 +79,35 @@ public class EventService {
     }
 
     public void addParticipantInEvent(Participant participant, String eventName) {
-        Event event = getEventByEventName(eventName);
+        EventDTO eventDTO = getEventDTOByEventName(eventName);
+        Event event = getEventByEventDTO(eventDTO);
         event.addParticipant(participant);
-        System.out.println( "добавилось :" + event.getParticipants().size()+"\n"+"id event: " + event.getId());
         eventRepository.save(event);
     }
-    public Event getEventByEventName(String eventName){
-        return eventRepository.findEventByEventName(eventName);
+
+    public EventDTO getEventDTOByEventName(String eventName) {
+        Event event = eventRepository.findEventByEventName(eventName);
+        EventDTO eventDTO = new EventDTO();
+        eventDTO.setId(event.getId());
+        eventDTO.setEventName(event.getEventName());
+        eventDTO.setAddress(event.getAddress());
+        eventDTO.setDate(localDateTimeToStringConverter(event.getDate()));
+        event.getParticipants().forEach(p->{
+            ParticipantDTO participantDTO = new ParticipantDTO();
+            participantDTO.setUserId(p.getUserId());
+            participantDTO.setName(p.getName());
+            participantDTO.setNickName(p.getNickName());
+            participantDTO.setId(p.getId());
+            eventDTO.getParticipantDTOList().add(participantDTO);
+        });
+        return eventDTO;
+    }
+
+    public List<ParticipantDTO> getParticipantDTOByEventDTO(EventDTO eventDTO){
+        return eventDTO.getParticipantDTOList();
+    }
+
+    private Event getEventByEventDTO(EventDTO eventDTO) {
+        return eventRepository.findById(eventDTO.getId()).orElse(null);
     }
 }
