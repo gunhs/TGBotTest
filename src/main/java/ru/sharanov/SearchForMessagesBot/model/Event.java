@@ -50,6 +50,7 @@ public class Event {
     }
 
     public void removeParticipant(Participant participant) {
+        System.out.println("Удалился " +participant.getName() );
         this.participants.remove(participant);
         participant.getEvents().remove(this);
     }

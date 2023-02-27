@@ -52,7 +52,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (update.hasMessage() && update.getMessage().hasText()) {
                 String textMessage = update.getMessage().getText();
                 long chatIdMessage = update.getMessage().getChatId();
-                if (textMessage.equals("/бот")) {
+                if (textMessage.equals("/events@EventJavaBot")) {
                     execute(showEventsButton(chatIdMessage));
                     execute(deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000));
                 }

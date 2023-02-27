@@ -73,7 +73,6 @@ public class EventsController {
     public ModelAndView getView(String view) {
         ModelAndView modelAndView = new ModelAndView(view);
         modelAndView.addObject("events", showEvents());
-//        modelAndView.addObject("participants", showParticipants());
         return modelAndView;
     }
 

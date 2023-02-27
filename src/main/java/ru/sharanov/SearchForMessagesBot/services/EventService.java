@@ -6,18 +6,22 @@ import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
+import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final ParticipantRepository participantRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository) {
         this.eventRepository = eventRepository;
+        this.participantRepository = participantRepository;
     }
 
     public void addEvent(EventDTO eventDTO) {
@@ -41,7 +45,6 @@ public class EventService {
     }
 
     public void deleteEvent(int id) {
-
         eventRepository.deleteById(id);
     }
 
@@ -93,7 +96,7 @@ public class EventService {
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
         eventDTO.setDate(localDateTimeToStringConverter(event.getDate()));
-        event.getParticipants().forEach(p->{
+        event.getParticipants().forEach(p -> {
             ParticipantDTO participantDTO = new ParticipantDTO();
             participantDTO.setUserId(p.getUserId());
             participantDTO.setName(p.getName());
@@ -104,14 +107,26 @@ public class EventService {
         return eventDTO;
     }
 
-    public Event getEventByEventName(String eventName){
+    public Event getEventByEventName(String eventName) {
         return eventRepository.findEventByEventName(eventName);
     }
-    public Event getEventById(int id){
-        return eventRepository.findById(id).orElse(null);
+
+    public EventDTO getEventById(int id) {
+
+        return newEventDTO(eventRepository.findById(id).orElse(null));
     }
 
     private Event getEventByEventDTO(EventDTO eventDTO) {
         return eventRepository.findById(eventDTO.getId()).orElse(null);
+    }
+
+    public void deleteParticipantFromEvent(int eventId, int userId) {
+        participantRepository.findAll().forEach(p-> System.out.println("Есть пользователи с id"+ p.getUserId()));
+        Participant participant = participantRepository.findAll().stream().filter(p -> p.getId() == userId).
+                findFirst().orElse(null);
+        assert participant != null;
+        System.out.println(participant.getName());
+        Objects.requireNonNull(eventRepository.findById(eventId).orElse(null)).removeParticipant(participant);
+        participantRepository.save(participant);
     }
 }

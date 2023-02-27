@@ -2,10 +2,11 @@ package ru.sharanov.SearchForMessagesBot.services;
 
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
+import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
+import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,10 +14,12 @@ public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
     private final EventService eventService;
+    private final EventRepository eventRepository;
 
-    public ParticipantService(ParticipantRepository participantRepository, EventService eventService) {
+    public ParticipantService(ParticipantRepository participantRepository, EventService eventService, EventRepository eventRepository) {
         this.participantRepository = participantRepository;
         this.eventService = eventService;
+        this.eventRepository = eventRepository;
     }
 
     public void addParticipant(ParticipantDTO participantDTO, String eventName) {
@@ -37,9 +40,13 @@ public class ParticipantService {
     }
 
     public void delParticipant(long idUser, String eventName) {
+
         Participant participant = eventService.getEventByEventName(eventName).getParticipants()
                 .stream().filter(p -> p.getUserId() == idUser).findAny().orElse(null);
-        eventService.getEventByEventName(eventName).removeParticipant(participant);
+        System.out.println("Я получил участника " + participant.getName());
+        Event event= eventService.getEventByEventName(eventName);
+        event.removeParticipant(participant);
+        eventRepository.save(event);
     }
 
     public boolean checkUserId(long userId) {

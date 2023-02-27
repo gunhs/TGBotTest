@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
 
@@ -23,9 +22,9 @@ public class ParticipantsController {
 
     @DeleteMapping("/events/{id}/{userId}")
     public ModelAndView deleteParticipant(@PathVariable("id") int id, @PathVariable("userId") int userId) {
-        Participant participant = participantRepository.findById(userId).orElse(null);
-        participantRepository.findAll().forEach(p -> System.out.println("id: " + p.getId()));
-        eventService.getEventById(id).removeParticipant(participant);
+//        eventService.getEventDTOById(id).removeParticipant(participantDTO);
+//        eventService.getEventById(id).removeParticipant(participantDTO);
+        eventService.deleteParticipantFromEvent(id, userId);
         return eventsController.getView("redirect:/events/" + id);
     }
 }
