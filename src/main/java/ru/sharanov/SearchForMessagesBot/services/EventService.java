@@ -7,6 +7,7 @@ import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
+import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +29,7 @@ public class EventService {
         Event event = new Event();
         event.setEventName(eventDTO.getEventName());
         event.setAddress(eventDTO.getAddress());
-        event.setDate(stringToLocalDateTimeConverter(eventDTO.getDate()));
+        event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
         eventRepository.save(event);
     }
 
@@ -58,7 +59,7 @@ public class EventService {
             event.setAddress(eventDTO.getAddress());
         }
         if (!eventDTO.getDate().isEmpty()) {
-            event.setDate(stringToLocalDateTimeConverter(eventDTO.getDate()));
+            event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
         }
         eventRepository.save(event);
     }
@@ -68,19 +69,11 @@ public class EventService {
         eventDTO.setId(event.getId());
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
-        eventDTO.setDate(localDateTimeToStringConverter(event.getDate()));
+        eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
         return eventDTO;
     }
 
-    private String localDateTimeToStringConverter(LocalDateTime dateTime) {
-        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        return dateTime.format(dateTimeFormat);
-    }
 
-    private LocalDateTime stringToLocalDateTimeConverter(String dateTime) {
-        DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-        return dateTimeFormat.parse(dateTime + ":00", LocalDateTime::from);
-    }
 
     public void addParticipantInEvent(Participant participant, String eventName) {
         Event event = getEventByEventName(eventName);
@@ -95,7 +88,7 @@ public class EventService {
         eventDTO.setId(event.getId());
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
-        eventDTO.setDate(localDateTimeToStringConverter(event.getDate()));
+        eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
         event.getParticipants().forEach(p -> {
             ParticipantDTO participantDTO = new ParticipantDTO();
             participantDTO.setUserId(p.getUserId());
@@ -109,15 +102,6 @@ public class EventService {
 
     public Event getEventByEventName(String eventName) {
         return eventRepository.findEventByEventName(eventName);
-    }
-
-    public EventDTO getEventById(int id) {
-
-        return newEventDTO(eventRepository.findById(id).orElse(null));
-    }
-
-    private Event getEventByEventDTO(EventDTO eventDTO) {
-        return eventRepository.findById(eventDTO.getId()).orElse(null);
     }
 
     public void deleteParticipantFromEvent(int eventId, int userId) {

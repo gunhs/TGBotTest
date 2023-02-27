@@ -103,8 +103,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         eventService.getAllEvents().forEach(e -> {
+            String[] date= e.getDate().split("\\s+");
             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText(e.getDate() + "\n" + e.getEventName());
+            inlineKeyboardButton1.setText(date[0] + "\n" + e.getEventName());
             inlineKeyboardButton1.setCallbackData(e.getEventName());
             List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
             keyboardButtonsRow1.add(inlineKeyboardButton1);

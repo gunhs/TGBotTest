@@ -10,20 +10,16 @@ import ru.sharanov.SearchForMessagesBot.services.EventService;
 @RestController
 public class ParticipantsController {
 
-    private final ParticipantRepository participantRepository;
     private final EventsController eventsController;
     private final EventService eventService;
 
-    public ParticipantsController(ParticipantRepository participantRepository, EventsController eventsController, EventService eventService) {
-        this.participantRepository = participantRepository;
+    public ParticipantsController(EventsController eventsController, EventService eventService) {
         this.eventsController = eventsController;
         this.eventService = eventService;
     }
 
     @DeleteMapping("/events/{id}/{userId}")
     public ModelAndView deleteParticipant(@PathVariable("id") int id, @PathVariable("userId") int userId) {
-//        eventService.getEventDTOById(id).removeParticipant(participantDTO);
-//        eventService.getEventById(id).removeParticipant(participantDTO);
         eventService.deleteParticipantFromEvent(id, userId);
         return eventsController.getView("redirect:/events/" + id);
     }
