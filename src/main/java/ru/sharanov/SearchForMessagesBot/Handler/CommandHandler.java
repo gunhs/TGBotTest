@@ -13,13 +13,11 @@ import java.io.IOException;
 
 public class CommandHandler {
     private final TelegramBot telegramBot;
-    private final ParticipantService participantService;
     private final EventService eventService;
     private static final Logger usersActions = LogManager.getLogger("AllActions");
 
     public CommandHandler(TelegramBot telegramBot, ParticipantService participantService, EventService eventService) {
         this.telegramBot = telegramBot;
-        this.participantService = participantService;
         this.eventService = eventService;
     }
 
@@ -28,7 +26,7 @@ public class CommandHandler {
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showEventsButton(chatIdMessage);
-            telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10000);
+            telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
         }
     }
 
@@ -52,8 +50,9 @@ public class CommandHandler {
         } else if (messageText.equals("back")) {
             telegramBot.showEventsButton(chatId);
         } else if (messageText.equals("next event " + eventId)) {
-            String nextEventName= telegramBot.getNextEventName(eventId);
-            telegramBot.showEvent(chatId, nextEventName);
+            String nextEventId = telegramBot.getNextEventId(eventId);
+            telegramBot.showEvent(chatId, nextEventId);
+
         } else if (messageText.equals("join all")) {
             telegramBot.participantJoinAll(firstName, userName, chatId, idUser);
         } else {
