@@ -38,10 +38,14 @@ public class EventService {
         return newEventDTO(event);
     }
 
-    public List<EventDTO> getAllEvents() {
+    public List<EventDTO> getAllEventsDTO() {
         List<EventDTO> events = new ArrayList<>();
         eventRepository.findAll().forEach(event -> events.add(newEventDTO(event)));
         return events;
+    }
+
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
     }
 
     public void deleteEvent(int id) {
@@ -72,8 +76,8 @@ public class EventService {
         return eventDTO;
     }
 
-    public void addParticipantInEvent(Participant participant, String eventName) {
-        Event event = getEventByEventName(eventName);
+    public void addParticipantInEvent(Participant participant, String eventId) {
+        Event event = getEventById(eventId);
         event.addParticipant(participant);
         eventRepository.save(event);
     }
@@ -107,5 +111,9 @@ public class EventService {
         assert participant != null;
         Objects.requireNonNull(eventRepository.findById(eventId).orElse(null)).removeParticipant(participant);
         participantRepository.save(participant);
+    }
+
+    public Event getEventById(String eventId) {
+        return eventRepository.findById(Integer.valueOf(eventId)).orElse(null);
     }
 }

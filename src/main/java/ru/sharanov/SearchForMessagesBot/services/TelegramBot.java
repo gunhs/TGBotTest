@@ -1,7 +1,5 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,6 +19,7 @@ import ru.sharanov.SearchForMessagesBot.utils.DateComparator;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,7 +65,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void showEventsButton(long chatId) throws TelegramApiException {
-        List<EventDTO> events = eventService.getAllEvents();
+        List<EventDTO> events = eventService.getAllEventsDTO();
         DateComparator comparator = new DateComparator();
         events.sort(comparator);
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showEventButton(events);
@@ -77,8 +76,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public void showEvent(long chatId, String eventName) throws TelegramApiException {
-        Event event = eventService.getEventByEventName(eventName);
+    public void showEvent(long chatId, String eventId) throws TelegramApiException {
+        Event event = eventService.getEventById(eventId);
         StringBuilder participants = new StringBuilder();
         AtomicInteger number = new AtomicInteger(1);
         event.getParticipants().forEach(p -> participants.append(number.getAndIncrement())
@@ -88,7 +87,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate()) + "\n" +
                 "Список участников:\n" + participants;
-        InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.controlEventButton(eventName);
+        InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.controlEventButton(eventId);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(info);
@@ -96,9 +95,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public void addParticipant(String firstName, String nickName, long chatId, long userId, String eventName)
+    public void addParticipant(String firstName, String nickName, long chatId, long userId, String eventId)
             throws TelegramApiException, InterruptedException {
-        if (eventService.getEventByEventName(eventName).getParticipants()
+        if (eventService.getEventById(eventId).getParticipants()
                 .stream().map(Participant::getUserId).toList().contains(userId)) {
             showMessage(chatId, "Вы уже добавлены");
             return;
@@ -107,16 +106,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         participantDTO.setName(firstName);
         participantDTO.setNickName(nickName);
         participantDTO.setUserId(userId);
-        participantService.addParticipant(participantDTO, eventName);
-        showMessage(chatId, firstName + "  теперь участвует в мероприятии " + eventName);
+        participantService.addParticipant(participantDTO, eventId);
+        showMessage(chatId, firstName + "  теперь участвует в мероприятии " + eventId);
     }
 
-    public void removeParticipant(long chatId, String name, long idUser, String eventName)
+    public void removeParticipant(long chatId, String name, long idUser, String eventId)
             throws TelegramApiException, InterruptedException {
         if (participantService.getParticipantByUserId(idUser) != null) {
             String answer = name + "  больше не участвует в мероприятии";
             showMessage(chatId, answer);
-            participantService.delParticipant(idUser, eventName);
+            participantService.delParticipant(idUser, eventId);
         }
     }
 
@@ -137,5 +136,39 @@ public class TelegramBot extends TelegramLongPollingBot {
         deleteMessage.setChatId(chatId);
         deleteMessage.setMessageId(messageId);
         execute(deleteMessage);
+    }
+
+    public void participantJoinAll(String firstName, String userName, long chatId, long idUser)
+            throws TelegramApiException, InterruptedException {
+        ParticipantDTO participantDTO = new ParticipantDTO();
+        participantDTO.setName(firstName);
+        participantDTO.setNickName(userName);
+        participantDTO.setUserId(idUser);
+        for (EventDTO e : eventService.getAllEventsDTO()) {
+            if (eventService.getEventById(String.valueOf(e.getId())).getParticipants()
+                    .stream().map(Participant::getUserId).toList().contains(idUser)) {
+                showMessage(chatId,  firstName + ", Вы уже добавлены на мероприятие " + e.getEventName());
+                continue;
+            }
+            participantService.addParticipant(participantDTO, String.valueOf(e.getId()));
+        }
+        showMessage(chatId, firstName + "  теперь участвует во всех мероприятиях");
+    }
+
+    public String getNextEventName(String eventId) {
+        ArrayList<EventDTO> events = (ArrayList<EventDTO>) eventService.getAllEventsDTO();
+        DateComparator comparator = new DateComparator();
+        events.sort(comparator);
+        int id=0;
+        for (int i = 0; i < events.size(); i++) {
+            if (events.get(i).getId() == Integer.parseInt(eventId) ){
+                id=i+1;
+                break;
+            }
+        }
+        if (id==events.size()){
+            id=0;
+        }
+        return events.get(id).getEventName();
     }
 }

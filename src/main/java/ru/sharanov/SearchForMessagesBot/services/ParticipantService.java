@@ -20,7 +20,7 @@ public class ParticipantService {
         this.eventRepository = eventRepository;
     }
 
-    public void addParticipant(ParticipantDTO participantDTO, String eventName) {
+    public void addParticipant(ParticipantDTO participantDTO, String eventId) {
         Participant participant = new Participant();
         participant.setName(participantDTO.getName());
         participant.setNickName(participantDTO.getNickName());
@@ -30,13 +30,13 @@ public class ParticipantService {
         } else {
             participant = getParticipantByUserId(participantDTO.getUserId());
         }
-        eventService.addParticipantInEvent(participant, eventName);
+        eventService.addParticipantInEvent(participant, eventId);
     }
 
-    public void delParticipant(long idUser, String eventName) {
-        Participant participant = eventService.getEventByEventName(eventName).getParticipants()
+    public void delParticipant(long idUser, String eventId) {
+        Participant participant = eventService.getEventById(eventId).getParticipants()
                 .stream().filter(p -> p.getUserId() == idUser).findAny().orElse(null);
-        Event event = eventService.getEventByEventName(eventName);
+        Event event = eventService.getEventById(eventId);
         event.removeParticipant(participant);
         eventRepository.save(event);
     }

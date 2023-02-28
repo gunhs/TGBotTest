@@ -76,7 +76,7 @@ public class EventsController {
     }
 
     public ArrayList<EventDTO> showEvents() {
-        List<EventDTO> eventDTOS = eventService.getAllEvents();
+        List<EventDTO> eventDTOS = eventService.getAllEventsDTO();
         eventDTOS.sort(new DateComparator());
         return new ArrayList<>(eventDTOS);
     }

@@ -10,7 +10,6 @@ import ru.sharanov.SearchForMessagesBot.services.ParticipantService;
 import ru.sharanov.SearchForMessagesBot.services.TelegramBot;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class CommandHandler {
     private final TelegramBot telegramBot;
@@ -39,27 +38,26 @@ public class CommandHandler {
         String userName = update.getCallbackQuery().getFrom().getUserName();
         String messageText = update.getCallbackQuery().getData();
         String[] components = messageText.split("\\s", 3);
-        String eventName = "";
+        String eventId = "";
         if (components.length == 3) {
-            eventName = components[2];
+            eventId = components[2];
         }
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
         usersActions.info(userName + " " + messageText);
-        if (messageText.equals("join event " + eventName)) {
-            telegramBot.addParticipant(firstName, userName, chatId, idUser, eventName);
-        } else if (messageText.equals("left event " + eventName)) {
-            telegramBot.removeParticipant(chatId, firstName, idUser, eventName);
-        } else if (messageText.equals("nothing event")) {
-            telegramBot.showMessage(chatId, "Определяйтесь!");
-        } else if (messageText.equals("vasya event " + eventName)) {
-            if (!participantService.getParticipantByUserId(idUser).getNickName().equals("Gunhsik")) {
-                telegramBot.showMessage(chatId, "Ты не Вася!");
-            } else {
-                telegramBot.showMessage(chatId, "Привет, Вася!");
-            }
+        if (messageText.equals("join event " + eventId)) {
+            telegramBot.addParticipant(firstName, userName, chatId, idUser, eventId);
+        } else if (messageText.equals("left event " + eventId)) {
+            telegramBot.removeParticipant(chatId, firstName, idUser, eventId);
+        } else if (messageText.equals("back")) {
+            telegramBot.showEventsButton(chatId);
+        } else if (messageText.equals("next event " + eventId)) {
+            String nextEventName= telegramBot.getNextEventName(eventId);
+            telegramBot.showEvent(chatId, nextEventName);
+        } else if (messageText.equals("join all")) {
+            telegramBot.participantJoinAll(firstName, userName, chatId, idUser);
         } else {
-            if (eventService.getAllEvents().stream().map(EventDTO::getEventName)
+            if (eventService.getAllEventsDTO().stream().map(e-> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {
                 telegramBot.showEvent(chatId, messageText);
             }
