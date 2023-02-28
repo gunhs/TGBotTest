@@ -2,7 +2,6 @@ package ru.sharanov.SearchForMessagesBot.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -12,7 +11,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class EventDTO {
-
     @NotEmpty(message = "Field can't be empty")
     private String eventName;
     @NotEmpty(message = "Field can't be empty")
@@ -23,15 +21,4 @@ public class EventDTO {
     private String date;
     private int id;
     private List<ParticipantDTO> participantDTOList = new ArrayList<>();
-
-    public void addParticipant(ParticipantDTO participantDTO) {
-        this.participantDTOList.add(participantDTO);
-//        participantDTO.getEventDTOList().add(this);
-    }
-
-    public void removeParticipant(ParticipantDTO participantDTO) {
-        this.participantDTOList.remove(participantDTO);
-//        participantDTO.getEventDTOList().remove(this);
-    }
-
 }

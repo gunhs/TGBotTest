@@ -27,11 +27,14 @@ public class Event {
     @Column()
     @NotEmpty(message = "Field can't be empty")
     private String eventName;
+
     @Column()
     @NotEmpty(message = "Field can't be empty")
     private String address;
+
     @Column()
     private LocalDateTime date;
+
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -50,7 +53,6 @@ public class Event {
     }
 
     public void removeParticipant(Participant participant) {
-        System.out.println("Удалился " +participant.getName() );
         this.participants.remove(participant);
         participant.getEvents().remove(this);
     }

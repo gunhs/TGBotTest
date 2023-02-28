@@ -9,5 +9,4 @@ public class SearchForMessagesBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(SearchForMessagesBotApplication.class, args);
     }
-
 }

@@ -25,5 +25,4 @@ public class BotInitializer {
             System.out.println(e.getMessage());
         }
     }
-
 }

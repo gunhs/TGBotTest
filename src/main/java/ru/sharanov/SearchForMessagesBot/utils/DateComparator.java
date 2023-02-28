@@ -1,12 +1,10 @@
 package ru.sharanov.SearchForMessagesBot.utils;
 
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
-import ru.sharanov.SearchForMessagesBot.model.Event;
 
 import java.util.Comparator;
 
 public class DateComparator implements Comparator<EventDTO> {
-
 
     @Override
     public int compare(EventDTO o1, EventDTO o2) {

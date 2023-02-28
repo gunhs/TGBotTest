@@ -5,20 +5,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
-import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
+import ru.sharanov.SearchForMessagesBot.utils.DateComparator;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class EventsController {
     private final EventService eventService;
-    private final ParticipantRepository participantRepository;
 
-    public EventsController(EventService eventService, ParticipantRepository participantRepository) {
+    public EventsController(EventService eventService) {
         this.eventService = eventService;
-        this.participantRepository = participantRepository;
     }
 
     @GetMapping("/events")
@@ -77,7 +76,9 @@ public class EventsController {
     }
 
     public ArrayList<EventDTO> showEvents() {
-        return new ArrayList<>(eventService.getAllEvents());
+        List<EventDTO> eventDTOS = eventService.getAllEvents();
+        eventDTOS.sort(new DateComparator());
+        return new ArrayList<>(eventDTOS);
     }
 
     public ArrayList<ParticipantDTO> showParticipants(int id) {

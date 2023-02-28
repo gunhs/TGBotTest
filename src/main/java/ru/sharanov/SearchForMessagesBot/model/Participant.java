@@ -22,10 +22,13 @@ public class Participant {
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
     private Integer id;
+
     @Column
     private String name;
+
     @Column
     private String nickName;
+
     @Column
     private Long userId;
 

@@ -9,14 +9,13 @@ import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class EventService {
+
     private final EventRepository eventRepository;
     private final ParticipantRepository participantRepository;
 
@@ -73,8 +72,6 @@ public class EventService {
         return eventDTO;
     }
 
-
-
     public void addParticipantInEvent(Participant participant, String eventName) {
         Event event = getEventByEventName(eventName);
         event.addParticipant(participant);
@@ -105,11 +102,9 @@ public class EventService {
     }
 
     public void deleteParticipantFromEvent(int eventId, int userId) {
-        participantRepository.findAll().forEach(p-> System.out.println("Есть пользователи с id"+ p.getUserId()));
         Participant participant = participantRepository.findAll().stream().filter(p -> p.getId() == userId).
                 findFirst().orElse(null);
         assert participant != null;
-        System.out.println(participant.getName());
         Objects.requireNonNull(eventRepository.findById(eventId).orElse(null)).removeParticipant(participant);
         participantRepository.save(participant);
     }
