@@ -38,7 +38,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
-        commandHandler = new CommandHandler(this, participantService, eventService);
+        commandHandler = new CommandHandler(this, eventService);
     }
 
     @Override

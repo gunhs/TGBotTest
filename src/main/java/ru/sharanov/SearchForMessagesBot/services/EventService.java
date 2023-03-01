@@ -101,10 +101,6 @@ public class EventService {
         return eventDTO;
     }
 
-    public Event getEventByEventName(String eventName) {
-        return eventRepository.findEventByEventName(eventName);
-    }
-
     public void deleteParticipantFromEvent(int eventId, int userId) {
         Participant participant = participantRepository.findAll().stream().filter(p -> p.getId() == userId).
                 findFirst().orElse(null);
