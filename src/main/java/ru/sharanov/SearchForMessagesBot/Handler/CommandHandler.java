@@ -1,18 +1,21 @@
 package ru.sharanov.SearchForMessagesBot.Handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
 import ru.sharanov.SearchForMessagesBot.services.TelegramBot;
 
 import java.io.IOException;
-
+@Slf4j
 public class CommandHandler {
     private final TelegramBot telegramBot;
     private final EventService eventService;
-    private static final Logger usersActions = LogManager.getLogger();
+//    private static final Logger usersActions = LogManager.getLogger();
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(CommandHandler.class);
 
     public CommandHandler(TelegramBot telegramBot, EventService eventService) {
         this.telegramBot = telegramBot;
@@ -40,7 +43,8 @@ public class CommandHandler {
         }
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
-        usersActions.info(userName + " " + messageText);
+//        usersActions.info(userName + " " + messageText);
+        logger.info(userName + " " + messageText);
         if (messageText.equals("join event " + eventId)) {
             telegramBot.addParticipant(firstName, userName, chatId, idUser, eventId);
         } else if (messageText.equals("left event " + eventId)) {

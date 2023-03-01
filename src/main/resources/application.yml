@@ -27,21 +27,12 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-logging:
-  level:
-    org.springframework.web: DEBUG
-    ru.sharanov: INFO
-  appenders:
-    file:
-      name: File_Appender
-      filename: logs/newlogger.log
-      PatternLayout:
-        pattern: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  Loggers:
-    Logger:
-        -
-          name: ru.sharanov.SearchForMessagesBot.Handler
-          level: info
-          AppenderRef:
-            ref: File_Appender
-            level: info
+#logging:
+#  level:
+#    org.springframework.web: ERROR
+#    ru.sharanov.SearchForMessagesBot: INFO
+#  pattern:
+#    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#  file:
+#    name: logs/newlogger.log
+
