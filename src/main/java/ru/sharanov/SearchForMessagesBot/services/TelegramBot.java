@@ -1,5 +1,7 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -26,13 +28,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.Thread.sleep;
 
 @Service
+@Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
     private final EventService eventService;
     private final ParticipantService participantService;
     private final CommandHandler commandHandler;
-
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(TelegramBot.class);
 
     public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService) {
         this.config = config;
@@ -109,6 +112,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         participantDTO.setUserId(userId);
         participantService.addParticipant(participantDTO, eventId);
         showMessage(chatId, firstName + "  теперь участвует в мероприятии " + eventName);
+        logger.info(firstName+ " присоеденился к " + eventName);
     }
 
     public void removeParticipant(long chatId, String name, long idUser, String eventId)
@@ -117,11 +121,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (!eventService.getEventById(eventId).getParticipants()
                 .contains(participant)) {
             showMessage(chatId, "Вы не участвовали в мероприятии");
+            return;
         }
         if (participant != null) {
             showMessage(chatId, name + "  больше не участвует в мероприятии");
             participantService.delParticipant(idUser, eventId);
         }
+        logger.info(participant.getName()+ " больше не участвует в " + eventService.getEventById(eventId).getEventName());
     }
 
     public void showMessage(long chatId, String textToSend) throws TelegramApiException, InterruptedException {
@@ -158,6 +164,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             participantService.addParticipant(participantDTO, String.valueOf(e.getId()));
         }
         showMessage(chatId, firstName + "  теперь участвует во всех мероприятиях");
+        logger.info(firstName+ " присоеденился ко всем мероприятиям");
     }
 
     public String getNextEventId(String eventId) {

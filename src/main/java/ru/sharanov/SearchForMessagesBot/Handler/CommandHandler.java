@@ -25,6 +25,7 @@ public class CommandHandler {
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showEventsButton(chatIdMessage);
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
+            logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }
     }
 
@@ -40,7 +41,7 @@ public class CommandHandler {
         }
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
-        logger.info(userName + " " + messageText);
+        logger.info(userName + " click: " + messageText);
         if (messageText.equals("join event " + eventId)) {
             telegramBot.addParticipant(firstName, userName, chatId, idUser, eventId);
         } else if (messageText.equals("left event " + eventId)) {

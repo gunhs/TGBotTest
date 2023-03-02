@@ -14,7 +14,7 @@
         </layout>
     </appender>
 
-    <logger name="ru.sharanov.SearchForMessagesBot.Handler" level="info" additivity="false">
+    <logger name="ru.sharanov.SearchForMessagesBot" level="info" additivity="false">
         <appender-ref ref="file"/>
     </logger>
     <root level="info">
