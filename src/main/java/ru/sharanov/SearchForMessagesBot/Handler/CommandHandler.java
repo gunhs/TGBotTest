@@ -8,6 +8,7 @@ import ru.sharanov.SearchForMessagesBot.services.EventService;
 import ru.sharanov.SearchForMessagesBot.services.TelegramBot;
 
 import java.io.IOException;
+
 @Slf4j
 public class CommandHandler {
     private final TelegramBot telegramBot;
@@ -23,7 +24,7 @@ public class CommandHandler {
         String textMessage = update.getMessage().getText();
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
-            telegramBot.showEventsButton(chatIdMessage);
+            telegramBot.showMenu(chatIdMessage);
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }
@@ -47,17 +48,29 @@ public class CommandHandler {
         } else if (messageText.equals("left event " + eventId)) {
             telegramBot.removeParticipant(chatId, firstName, idUser, eventId);
         } else if (messageText.equals("back")) {
-            telegramBot.showEventsButton(chatId);
-        } else if (messageText.equals("next event " + eventId)) {
-            String nextEventId = telegramBot.getNextEventId(eventId);
-            telegramBot.showEvent(chatId, nextEventId);
-
+            telegramBot.showFutureEventsButton(chatId);
+        } else if (messageText.equals("future event " + eventId)) {
+            String nextEventId = telegramBot.getNextFutureEventId(eventId);
+            telegramBot.showFutureEvent(chatId, nextEventId);
         } else if (messageText.equals("join all")) {
             telegramBot.participantJoinAll(firstName, userName, chatId, idUser);
+        } else if (messageText.equals("past event " + eventId)) {
+            String nextEventId = telegramBot.getNextPastEventId(eventId);
+            telegramBot.showPastEvent(chatId, nextEventId);
+        } else if (messageText.equals("future events")) {
+            telegramBot.showFutureEventsButton(chatId);
+        } else if (messageText.equals("past events")) {
+            telegramBot.showPastEventsButton(chatId);
+        } else if (messageText.equals("menu button")) {
+            telegramBot.showMenu(chatId);
+        } else if (messageText.equals("past menu")) {
+            telegramBot.showPastEventsButton(chatId);
+        } else if (messageText.equals("quit button")) {
+            telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
         } else {
-            if (eventService.getAllEventsDTO().stream().map(e-> String.valueOf(e.getId()))
+            if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {
-                telegramBot.showEvent(chatId, messageText);
+                telegramBot.selectEvent(chatId, messageText);
             }
         }
     }

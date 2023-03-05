@@ -35,6 +35,9 @@ public class Event {
     @Column()
     private LocalDateTime date;
 
+    @Column()
+    private boolean done;
+
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -56,6 +59,8 @@ public class Event {
         this.participants.remove(participant);
         participant.getEvents().remove(this);
     }
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -9,6 +9,7 @@ import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class EventService {
         event.setEventName(eventDTO.getEventName());
         event.setAddress(eventDTO.getAddress());
         event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
+        event.setDone(event.getDate().isBefore(LocalDateTime.now()));
         eventRepository.save(event);
     }
 
@@ -42,10 +44,6 @@ public class EventService {
         List<EventDTO> events = new ArrayList<>();
         eventRepository.findAll().forEach(event -> events.add(newEventDTO(event)));
         return events;
-    }
-
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
     }
 
     public void deleteEvent(int id) {
@@ -63,6 +61,7 @@ public class EventService {
         }
         if (!eventDTO.getDate().isEmpty()) {
             event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
+            event.setDone(event.getDate().isBefore(LocalDateTime.now()));
         }
         eventRepository.save(event);
     }
@@ -73,6 +72,7 @@ public class EventService {
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
         eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
+        eventDTO.setDone(event.isDone());
         return eventDTO;
     }
 
@@ -90,6 +90,7 @@ public class EventService {
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
         eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
+        eventDTO.setDone(event.isDone());
         event.getParticipants().forEach(p -> {
             ParticipantDTO participantDTO = new ParticipantDTO();
             participantDTO.setUserId(p.getUserId());
