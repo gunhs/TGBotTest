@@ -36,7 +36,10 @@ public class Event {
     private LocalDateTime date;
 
     @Column()
-    private boolean done;
+    private Boolean done;
+
+    @Column()
+    private String url;
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,

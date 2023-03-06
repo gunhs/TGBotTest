@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit person</title>
+    <title>Show event</title>
     <style>
-        .ui-button{
+        .list-item {
+            margin-right: 10px;
+            min-height: auto;
+        }
+        .ui-button {
             appearance: auto;
             user-select: none;
             white-space: pre;
@@ -32,18 +36,21 @@
             border-radius: 3px;
             text-decoration: none;
             font-weight: normal;
-            font-family: Arial,serif;
+            font-family: Arial, serif;
             font-size: 13px;
         }
     </style>
 </head>
 <body>
-<p th:text="${'name: ' + event.getEventName()}">value</p>
-<p th:text="${'address: '+ event.getAddress()}"></p>
-<p th:text="${'date: '+ event.getDate()}"></p>
+<ol>
+    <li class="list-item"><p th:text="${'name: ' + event.getEventName()}">value</p></li>
+    <li class="list-item"><p th:text="${'address: '+ event.getAddress()}"></p></li>
+    <li class="list-item"><p th:text="${'date: '+ event.getDate()}"></p></li>
+    <li class="list-item"><a th:href="@{${event.getUrl()}}" th:text="${'url: ' + event.getUrl()}"></a></li>
+</ol>
 
-<a class="ui-button"  th:href="@{/events/{id}/edit(id=${event.getId()})}" >edit</a>
-<a class="ui-button"  href="/events" >back</a>
+<a class="ui-button" th:href="@{/events/{id}/edit(id=${event.getId()})}">edit</a>
+<a class="ui-button" href="/events">back</a>
 <div class="outline">
     <div class="content" th:each="participant : ${participants}">
         <ul class="list list-reset flex">
@@ -51,7 +58,8 @@
                 <a class="list-link" th:text="${participant.getName()}"> user </a>
                 <form style="display: inline-block;" th:method="DELETE"
                       th:action="@{/events/{id}/{userId}(id=${event.getId()}, userId=${participant.getId()})}">
-                    <button style="margin-left: 30px" class="ui-button" th:href="@{/events/{id}/edit(id=${event.getId()})}"> delete</button>
+                    <button class="ui-button" style="margin-left: 15px"
+                            th:href="@{/events/{id}/edit(id=${event.getId()})}">delete</button>
                 </form>
             </li>
         </ul>

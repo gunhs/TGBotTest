@@ -115,7 +115,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         String info = "Что: " + event.getEventName() + "\n" +
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate()) + "\n" +
-                "Список участников:\n" + participants;
+                "\nСписок участников:\n" + participants +
+                (event.getUrl().isEmpty() ? "" : ("\nсайт: " + event.getUrl()));
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.controlEventButton(eventId);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
@@ -136,7 +137,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         execute(sendMessage);
     }
-
 
     public void addParticipant(String firstName, String nickName, long chatId, long userId, String eventId)
             throws TelegramApiException, InterruptedException {
@@ -232,7 +232,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void selectEvent(long chatId, String eventId) throws TelegramApiException {
         Event event = eventService.getEventById(eventId);
-        if (event.isDone()) {
+//        if (event.isDone()) {
+        if (event.getDone()) {
             showPastEvent(chatId, eventId);
         } else {
             showFutureEvent(chatId, eventId);

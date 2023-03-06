@@ -33,3 +33,4 @@ build/
 .vscode/
 /database/events.trace.db
 /logs/eventlog.log
+/database/events.mv.db

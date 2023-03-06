@@ -14,6 +14,11 @@
             padding: 0 15px;
             margin: 0 auto;
         }
+        .body{
+            /*background-image: url("../static/images/field.png");*/
+            background-image: url("images/field.png");
+            background-size: cover ;
+        }
 
         .content {
             padding: 0 940px 0 0;
@@ -89,7 +94,7 @@
     </style>
 </head>
 
-<body>
+<body class="body">
 <div class="container">
     <div class="content" th:each="event : ${events}">
         <ul class="list list-reset flex">

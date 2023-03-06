@@ -60,6 +60,12 @@
     </div>
     <div>
         <br>
+        <label for="url">Url: </label>
+        <input type="text" th:field="*{url}" id="url"/>
+<!--        <div style="color: darkred" th:if="${#fields.hasErrors('date')}" th:erros="*{date}">wrong format. Format: dd.mm.yyyy hh:mm</div>-->
+    </div>
+    <div>
+        <br>
         <input type="submit" value="Edit Event">
         <a class="ui-button" href="/events">back</a>
     </div>

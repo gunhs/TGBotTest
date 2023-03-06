@@ -31,6 +31,7 @@ public class EventService {
         event.setAddress(eventDTO.getAddress());
         event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
         event.setDone(event.getDate().isBefore(LocalDateTime.now()));
+        event.setUrl((eventDTO.getUrl()));
         eventRepository.save(event);
     }
 
@@ -38,12 +39,6 @@ public class EventService {
         Event event = eventRepository.findById(id).orElse(null);
         assert event != null;
         return newEventDTO(event);
-    }
-
-    public List<EventDTO> getAllEventsDTO() {
-        List<EventDTO> events = new ArrayList<>();
-        eventRepository.findAll().forEach(event -> events.add(newEventDTO(event)));
-        return events;
     }
 
     public void deleteEvent(int id) {
@@ -63,6 +58,9 @@ public class EventService {
             event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
             event.setDone(event.getDate().isBefore(LocalDateTime.now()));
         }
+        if (!eventDTO.getUrl().isEmpty()) {
+            event.setUrl(eventDTO.getUrl());
+        }
         eventRepository.save(event);
     }
 
@@ -72,25 +70,28 @@ public class EventService {
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
         eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
-        eventDTO.setDone(event.isDone());
+//        eventDTO.setDone(event.isDone());
+        eventDTO.setDone(event.getDone());
+        eventDTO.setUrl(event.getUrl());
         return eventDTO;
     }
 
-    public void addParticipantInEvent(Participant participant, String eventId) {
-        Event event = getEventById(eventId);
-        event.addParticipant(participant);
-        eventRepository.save(event);
+    public List<EventDTO> getAllEventsDTO() {
+//        eventRepository.findAll().forEach(e -> {
+//            e.setUrl("");
+//            e.setDone(e.getDate().isBefore(LocalDateTime.now()));
+//            eventRepository.save(e);
+//        });
+
+        List<EventDTO> events = new ArrayList<>();
+        eventRepository.findAll().forEach(event -> events.add(newEventDTO(event)));
+        return events;
     }
 
     public EventDTO getEventDTOById(int id) {
         Event event = eventRepository.findById(id).orElse(null);
-        EventDTO eventDTO = new EventDTO();
         assert event != null;
-        eventDTO.setId(event.getId());
-        eventDTO.setEventName(event.getEventName());
-        eventDTO.setAddress(event.getAddress());
-        eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
-        eventDTO.setDone(event.isDone());
+        EventDTO eventDTO = newEventDTO(event);
         event.getParticipants().forEach(p -> {
             ParticipantDTO participantDTO = new ParticipantDTO();
             participantDTO.setUserId(p.getUserId());
@@ -100,6 +101,12 @@ public class EventService {
             eventDTO.getParticipantDTOList().add(participantDTO);
         });
         return eventDTO;
+    }
+
+    public void addParticipantInEvent(Participant participant, String eventId) {
+        Event event = getEventById(eventId);
+        event.addParticipant(participant);
+        eventRepository.save(event);
     }
 
     public void deleteParticipantFromEvent(int eventId, int userId) {

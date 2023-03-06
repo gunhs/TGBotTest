@@ -22,13 +22,13 @@ public class ParticipantService {
 
     public void addParticipant(ParticipantDTO participantDTO, String eventId) {
         Participant participant = new Participant();
-        participant.setName(participantDTO.getName());
-        participant.setNickName(participantDTO.getNickName());
-        participant.setUserId(participantDTO.getUserId());
-        if (!checkUserId(participantDTO.getUserId())) {
-            participantRepository.save(participant);
-        } else {
+        if (checkUserId(participantDTO.getUserId())) {
             participant = getParticipantByUserId(participantDTO.getUserId());
+        } else {
+            participant.setName(participantDTO.getName());
+            participant.setNickName(participantDTO.getNickName());
+            participant.setUserId(participantDTO.getUserId());
+            participantRepository.save(participant);
         }
         eventService.addParticipantInEvent(participant, eventId);
     }
