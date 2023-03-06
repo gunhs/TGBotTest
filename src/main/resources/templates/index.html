@@ -14,10 +14,12 @@
             padding: 0 15px;
             margin: 0 auto;
         }
-        .body{
-            /*background-image: url("../static/images/field.png");*/
+
+        .body {
             background-image: url("images/field.png");
-            background-size: cover ;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-color: darkgray;
         }
 
         .content {
@@ -103,7 +105,8 @@
                     user </a>
             </li>
             <li class="list-item">
-                <a class="ui-button list-link" style="margin-left: 15px" th:href="@{/events/{id}/edit(id=${event.getId()})}"> edit </a>
+                <a class="ui-button list-link" style="margin-left: 15px"
+                   th:href="@{/events/{id}/edit(id=${event.getId()})}"> edit </a>
             </li>
             <li class="list-item ">
                 <form style="display: inline-block;" th:method="DELETE"
