@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,9 +111,11 @@ public class ButtonHandler {
     private static ArrayList<List<InlineKeyboardButton>> addEventsRows(List<EventDTO> events) {
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
         events.forEach(e -> {
-            String[] date = e.getDate().split("\\s+");
+//            String[] date = e.getDate().split("\\s+");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+//            String date = e.getDate().format(dateTimeFormatter);
             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText(date[0] + "\n" + e.getEventName());
+//            inlineKeyboardButton1.setText(date + "\n" + e.getEventName());
             inlineKeyboardButton1.setCallbackData(String.valueOf(e.getId()));
             List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
             keyboardButtonsRow1.add(inlineKeyboardButton1);

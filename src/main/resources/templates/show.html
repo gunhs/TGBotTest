@@ -5,60 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show event</title>
-    <style>
-        .container {
-            width: 1200px;
-            padding: 0 15px;
-            margin: 0 auto;
-        }
-
-        .body {
-            background-image: url("http://localhost:8080/images/field.png");
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-color: darkgray;
-        }
-
-        .list-item {
-            margin-right: 10px;
-            min-height: auto;
-        }
-
-        .ui-button {
-            appearance: auto;
-            user-select: none;
-            white-space: pre;
-            align-items: flex-start;
-            text-align: center;
-            cursor: default;
-            box-sizing: border-box;
-            background-color: buttonface;
-            color: buttontext;
-            padding: 1px 6px;
-            border-width: 2px;
-            border-style: outset;
-            border-color: buttonface;
-            border-image: initial;
-            letter-spacing: normal;
-            word-spacing: normal;
-            line-height: normal;
-            text-transform: none;
-            text-indent: 0;
-            text-shadow: none;
-            display: inline-block;
-            text-rendering: auto;
-            border-radius: 3px;
-            text-decoration: none;
-            font-weight: normal;
-            font-family: Arial, serif;
-            font-size: 13px;
-        }
-    </style>
+    <link href="http://localhost:8080/css/styles.css" rel="stylesheet">
 </head>
 <body class="body">
 <div class="container">
     <ol>
-        <li class="list-item"><p th:text="${'name: ' + event.getEventName()}">value</p></li>
+        <li class="list-item"><p><label for="name">Name<em>*</em></label><p id="name" th:text="${event.getEventName()}">value</p></p></li>
         <li class="list-item"><p th:text="${'address: '+ event.getAddress()}"></p></li>
         <li class="list-item"><p th:text="${'date: '+ event.getDate()}"></p></li>
         <li class="list-item"><a th:href="@{${event.getUrl()}}" th:text="${'url: ' + event.getUrl()}"></a></li>
@@ -73,9 +25,9 @@
             <ul class="list list-reset flex">
                 <li class="list-item name">
                     <a class="list-link" th:text="${participant.getName()}"> user </a>
-                    <form style="display: inline-block;" th:method="DELETE"
+                    <form class="form-delete" th:method="DELETE"
                           th:action="@{/events/{id}/{userId}(id=${event.getId()}, userId=${participant.getId()})}">
-                        <button class="ui-button" style="margin-left: 15px"
+                        <button class="ui-button delete"
                                 th:href="@{/events/{id}/edit(id=${event.getId()})}">delete</button>
                     </form>
                 </li>

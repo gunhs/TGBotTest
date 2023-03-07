@@ -1,0 +1,97 @@
+.container {
+    width: 1200px;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+.body {
+    background-image: url("http://localhost:8080/images/field.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: darkgray;
+}
+
+.content {
+    padding: 0 940px 0 0;
+}
+
+.list-reset {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.list {
+    margin-bottom: 15px;
+    padding: 5px 0;
+}
+
+.list-item {
+    margin-right: 10px;
+    min-height: auto;
+}
+
+.list-item:last-child {
+    margin-right: 0;
+}
+
+.flex {
+    display: flex;
+}
+
+.list-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.name {
+    margin-right: auto;
+}
+
+.ui-button {
+    appearance: auto;
+    user-select: none;
+    white-space: pre;
+    align-items: flex-start;
+    text-align: center;
+    cursor: default;
+    box-sizing: border-box;
+    background-color: buttonface;
+    color: buttontext;
+    padding: 3px 6px;
+    border-width: 2px;
+    border-style: outset;
+    border-color: buttonface;
+    border-image: initial;
+    letter-spacing: normal;
+    word-spacing: normal;
+    line-height: normal;
+    text-transform: none;
+    text-indent: 0;
+    text-shadow: none;
+    display: inline-block;
+    text-rendering: auto;
+    border-radius: 3px;
+    text-decoration: none;
+    font-weight: normal;
+    font-family: Arial, serif;
+    font-size: 13px;
+}
+
+.ui-button {
+    margin-left: 15px;
+    display: inline-block;
+}
+
+.outline {
+    padding: 15px 1000px 15px 0;
+    border-top: 1px solid black;
+}
+
+.form-delete {
+    display: inline-block;
+}
+
+.error-message {
+    color: darkred;
+}

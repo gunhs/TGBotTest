@@ -2,98 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <!--    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/normalize.css">-->
-    <!--    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/styles.css">-->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://localhost:8080/css/styles.css" rel="stylesheet">
     <title>Events</title>
-    <style>
-        .container {
-            width: 1200px;
-            padding: 0 15px;
-            margin: 0 auto;
-        }
 
-        .body {
-            background-image: url("images/field.png");
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-color: darkgray;
-        }
-
-        .content {
-            padding: 0 940px 0 0;
-        }
-
-        .list-reset {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .list {
-            margin-bottom: 15px;
-            padding: 5px 0;
-        }
-
-        .list-item {
-            margin-right: 10px;
-            min-height: auto;
-        }
-
-        .list-item:last-child {
-            margin-right: 0;
-        }
-
-        .flex {
-            display: flex;
-        }
-
-        .list-link {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .name {
-            margin-right: auto;
-        }
-
-        .ui-button {
-            appearance: auto;
-            user-select: none;
-            white-space: pre;
-            align-items: flex-start;
-            text-align: center;
-            cursor: default;
-            box-sizing: border-box;
-            background-color: buttonface;
-            color: buttontext;
-            padding: 3px 6px;
-            border-width: 2px;
-            border-style: outset;
-            border-color: buttonface;
-            border-image: initial;
-            letter-spacing: normal;
-            word-spacing: normal;
-            line-height: normal;
-            text-transform: none;
-            text-indent: 0;
-            text-shadow: none;
-            display: inline-block;
-            text-rendering: auto;
-            border-radius: 3px;
-            text-decoration: none;
-            font-weight: normal;
-            font-family: Arial, serif;
-            font-size: 13px;
-        }
-
-        .outline {
-            padding: 15px 1000px 15px 0;
-            border-top: 1px solid black;
-        }
-    </style>
 </head>
 
 <body class="body">
@@ -109,9 +23,9 @@
                    th:href="@{/events/{id}/edit(id=${event.getId()})}"> edit </a>
             </li>
             <li class="list-item ">
-                <form style="display: inline-block;" th:method="DELETE"
+                <form class="form-delete" th:method="DELETE"
                       th:action="@{/events/{id}(id=${event.getId()})}">
-                    <button class="ui-button" style="margin-left: 15px" href="#"> delete</button>
+                    <button class="ui-button list-delete" style="margin-left: 15px" href="#"> delete</button>
                 </form>
             </li>
         </ul>

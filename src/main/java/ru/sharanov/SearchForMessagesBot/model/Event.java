@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,10 +34,10 @@ public class Event {
     private String address;
 
     @Column()
-    private LocalDateTime date;
+    private Date date;
 
     @Column()
-    private Boolean done;
+    private boolean done;
 
     @Column()
     private String url;
@@ -62,8 +63,6 @@ public class Event {
         this.participants.remove(participant);
         participant.getEvents().remove(this);
     }
-
-
 
     @Override
     public boolean equals(Object o) {
