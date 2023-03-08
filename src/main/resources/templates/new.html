@@ -12,37 +12,44 @@
 <div class="container">
     <!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
     <form th:method="POST" th:action="@{/events}" th:object="${event}">
-        <div>
-            <label for="name">Name<em>*</em>: </label>
-            <input type="text" th:field="*{eventName}" id="name"/>
-            <div class="error-message" th:if="${#fields.hasErrors('eventName')}" th:errors="*{eventName}">wrong name
+        <fieldset class="fields">
+            <div class="form-item"> <!-- Элемент целиком -->
+                <div class="field"> <!-- Конкретно поле ввода -->
+                    <label class="label" for="name">Name<em>*</em>:</label>
+                    <input class="input-field" type="text" th:field="*{eventName}" id="name">
+                </div>
+                <div class="error-message" th:if="${#fields.hasErrors('eventName')}" th:errors="*{eventName}">wrong name
+                </div>
             </div>
-        </div>
-        <div>
-            <br>
-            <label for="address">Address<em>*</em>: </label>
-            <input type="text" th:field="*{address}" id="address"/>
-            <!--                /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
-            <div class="error-message" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">wrong age</div>
-        </div>
-        <div>
-            <br>
-            <label for="date">Date<em>*</em>: </label>
-            <input type="datetime-local" th:field="*{date}" id="date"/>
-            <div class="error-message" th:if="${#fields.hasErrors('date')}" th:errors="*{date}" th:text="Error">wrong
-                format date
+            <div class="form-item">
+                <div class="field">
+                    <label class="label" for="address">Address<em>*</em>:</label>
+                    <input class="input-field" type="text" th:field="*{address}" id="address">
+                </div>
+                <!--                /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
+                <div class="error-message" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">wrong age
+                </div>
             </div>
-        </div>
-        <div>
-            <br>
-            <label for="url">Url: </label>
-            <input type="text" th:field="*{url}" id="url"/>
-        </div>
-        <div>
-            <br>
-            <input class="ui-button" type="submit" value="Add Event">
-            <a class="ui-button" href="/events">back</a>
-        </div>
+            <div class="form-item">
+                <div class="field">
+                    <label class="label" for="date">Date<em>*</em>:</label>
+                    <input class="input-field" type="datetime-local" th:field="*{date}" id="date">
+                </div>
+                <div class="error-message" th:if="${#fields.hasErrors('date')}" th:errors="*{date}" th:text="Error">
+                    wrong format date
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="field">
+                    <label class="label" for="url">Url:</label>
+                    <input class="input-field" type="text" th:field="*{url}" id="url">
+                </div>
+            </div>
+            <div>
+                <input class="ui-button" type="submit" value="Add Event">
+                <a class="ui-button" href="/events">back</a>
+            </div>
+        </fieldset>
     </form>
 </div>
 </body>

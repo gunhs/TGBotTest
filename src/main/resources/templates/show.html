@@ -9,13 +9,18 @@
 </head>
 <body class="body">
 <div class="container">
-    <ol>
-        <li class="list-item"><p><label for="name">Name: </label><p id="name" th:text="${event.getEventName()}">value</p></li>
-        <li class="list-item"><label for="address">Address: </label><p id="address" th:text="${event.getAddress()}"></p></li>
-        <li class="list-item"><label for="date">Date: </label><p id="date" th:text="${event.getDate()}"></p></li>
-        <li class="list-item"><label for="url">URL: </label><p><a id="url" th:href="@{${event.getUrl()}}" th:text="${event.getUrl()}"></a></li>
-    </ol>
-
+    <fieldset class="fields">
+        <ol class="list-list">
+            <li><label for="name">Name: </label>
+                <p class="list-item" id="name" th:text="${event.getEventName()}">value</p></li>
+            <li><label for="address">Address: </label>
+                <p class="list-item" id="address" th:text="${event.getAddress()}"></p></li>
+            <li><label for="date">Date: </label>
+                <p class="list-item" id="date" th:text="${event.getDate()}"></p></li>
+            <li><label for="url">URL: </label><a class="list-item" id="url" th:href="@{${event.getUrl()}}"
+                                                 th:text="${event.getUrl()}"></a></li>
+        </ol>
+    </fieldset>
     <a class="ui-button" th:href="@{/events/{id}/edit(id=${event.getId()})}">edit</a>
     <a class="ui-button" href="/events">back</a>
     <br>

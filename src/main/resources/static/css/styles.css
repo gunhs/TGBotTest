@@ -24,7 +24,7 @@
 }
 
 .list {
-    margin-bottom: 15px;
+    /*margin-bottom: 15px;*/
     padding: 5px 0;
 }
 
@@ -32,10 +32,18 @@
     margin-right: 10px;
     min-height: auto;
     display: inline-block;
+    bottom: 0;
+    margin-top: 10px;
 }
 
 .list-item:last-child {
     margin-right: 0;
+}
+
+.list-list{
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 20px;
 }
 
 .flex {
@@ -89,6 +97,7 @@
 .outline {
     padding: 15px 450px 15px 0;
     border-top: 1px solid black;
+    margin-top: 15px;
 }
 
 .form-delete {
@@ -99,6 +108,33 @@
     color: darkred;
 }
 
-.fields{
+.fields {
     width: 250px;
+    /*padding: 0 0 10px 0;*/
+    margin-bottom: 15px;
 }
+.event-label {
+    margin-right: auto;
+}
+
+
+/**/
+
+.form-item {
+    margin-bottom: 15px;
+}
+
+.field {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* .label {
+    display: inline-block;
+    min-width: 100px;
+} */
+
+.input-field {
+    width: 60%;
+}
+
