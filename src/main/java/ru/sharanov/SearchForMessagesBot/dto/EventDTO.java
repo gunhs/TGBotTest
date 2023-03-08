@@ -1,12 +1,11 @@
 package ru.sharanov.SearchForMessagesBot.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -15,12 +14,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class EventDTO {
-
     @NotEmpty(message = "Field can't be empty")
     private String eventName;
     @NotEmpty(message = "Field can't be empty")
     private String address;
-    private Date date;
+    @NotNull(message = "Choose date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime date;
     private boolean done;
     private String url;
     private int id;

@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,8 @@ public class Event {
     private String address;
 
     @Column()
-    private Date date;
+    @NotNull(message = "Choose date")
+    private LocalDateTime date;
 
     @Column()
     private boolean done;

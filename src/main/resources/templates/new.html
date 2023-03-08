@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://localhost:8080/css/styles.css" rel="stylesheet">
-    <title>New person</title>
+    <title>New event</title>
 
 </head>
 <body class="body">
@@ -13,21 +13,21 @@
     <!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
     <form th:method="POST" th:action="@{/events}" th:object="${event}">
         <div>
-            <label for="name">Name: </label>
+            <label for="name">Name<em>*</em>: </label>
             <input type="text" th:field="*{eventName}" id="name"/>
             <div class="error-message" th:if="${#fields.hasErrors('eventName')}" th:errors="*{eventName}">wrong name
             </div>
         </div>
         <div>
             <br>
-            <label for="address">Address: </label>
+            <label for="address">Address<em>*</em>: </label>
             <input type="text" th:field="*{address}" id="address"/>
             <!--                /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
             <div class="error-message" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">wrong age</div>
         </div>
         <div>
             <br>
-            <label for="date">Date: </label>
+            <label for="date">Date<em>*</em>: </label>
             <input type="datetime-local" th:field="*{date}" id="date"/>
             <div class="error-message" th:if="${#fields.hasErrors('date')}" th:errors="*{date}" th:text="Error">wrong
                 format date
@@ -37,11 +37,10 @@
             <br>
             <label for="url">Url: </label>
             <input type="text" th:field="*{url}" id="url"/>
-            <!--        <div style="color: darkred" th:if="${#fields.hasErrors('date')}" th:errors="*{date}" th:text="Error">wrong format date</div>-->
         </div>
         <div>
             <br>
-            <input type="submit" value="Add Event">
+            <input class="ui-button" type="submit" value="Add Event">
             <a class="ui-button" href="/events">back</a>
         </div>
     </form>

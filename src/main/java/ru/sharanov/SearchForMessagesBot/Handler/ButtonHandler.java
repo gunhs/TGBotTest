@@ -111,11 +111,10 @@ public class ButtonHandler {
     private static ArrayList<List<InlineKeyboardButton>> addEventsRows(List<EventDTO> events) {
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
         events.forEach(e -> {
-//            String[] date = e.getDate().split("\\s+");
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-//            String date = e.getDate().format(dateTimeFormatter);
+            String date = e.getDate().format(dateTimeFormatter);
             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-//            inlineKeyboardButton1.setText(date + "\n" + e.getEventName());
+            inlineKeyboardButton1.setText(date + "\n" + e.getEventName());
             inlineKeyboardButton1.setCallbackData(String.valueOf(e.getId()));
             List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
             keyboardButtonsRow1.add(inlineKeyboardButton1);

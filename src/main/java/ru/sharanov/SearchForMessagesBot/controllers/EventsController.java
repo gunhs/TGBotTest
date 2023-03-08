@@ -1,7 +1,5 @@
 package ru.sharanov.SearchForMessagesBot.controllers;
 
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
-import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,7 +34,7 @@ public class EventsController {
     }
 
     @GetMapping("events/new")
-    public ModelAndView newPerson(@ModelAttribute("event") EventDTO event) {
+    public ModelAndView newEvent(@ModelAttribute("event") EventDTO event) {
         return getModelAndView("new", event);
     }
 
@@ -55,17 +53,13 @@ public class EventsController {
         return getModelAndView("edit", eventDTO);
     }
 
-    //    @PatchMapping("/events/{id}")
-        @PatchMapping(path = "/events/{id}")
-//    public ModelAndView updateEvent(@PathVariable("id") int id,
-//                                    @ModelAttribute("event") @Valid EventDTO event, BindingResult bindingResult)
-        public ModelAndView updateEvent(
-                                    @RequestBody @Valid EventDTO event, BindingResult bindingResult) {
+    @PatchMapping("/events/{id}")
+    public ModelAndView updateEvent(@PathVariable("id") int id,
+                                    @ModelAttribute("event") @Valid EventDTO event, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            System.out.println(event.getDate());
             return getModelAndView("edit", event);
         }
-//        eventService.updateEvent(event, id);
+        eventService.updateEvent(event, id);
         return getView("redirect:/events");
     }
 

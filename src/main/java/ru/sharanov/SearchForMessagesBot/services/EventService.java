@@ -31,9 +31,8 @@ public class EventService {
         Event event = new Event();
         event.setEventName(eventDTO.getEventName());
         event.setAddress(eventDTO.getAddress());
-//        event.setDate(DateTypeConverter.newStringToLocalDateTimeConverter(eventDTO.getDate()));
         event.setDate(eventDTO.getDate());
-        event.setDone(event.getDate().before(Date.from(Instant.now())));
+        event.setDone(event.getDate().isBefore(LocalDateTime.now()));
         event.setUrl((eventDTO.getUrl()));
         eventRepository.save(event);
     }
@@ -57,14 +56,10 @@ public class EventService {
         if (!eventDTO.getAddress().isEmpty()) {
             event.setAddress(eventDTO.getAddress());
         }
-//        if (!eventDTO.getDate().isEmpty()) {
-//            event.setDate(DateTypeConverter.stringToLocalDateTimeConverter(eventDTO.getDate()));
-//            event.setDone(event.getDate().isBefore(LocalDateTime.now()));
-//        }
-//        if (!eventDTO.getDate().equals(event.getDate())) {
-//            event.setDate(eventDTO.getDate());
-//            event.setDone(event.getDate(). Before(LocalDateTime.now()));
-//        }
+        if (!eventDTO.getDate().equals(event.getDate())) {
+            event.setDate(eventDTO.getDate());
+            event.setDone(event.getDate().isBefore(LocalDateTime.now()));
+        }
         if (!eventDTO.getUrl().isEmpty()) {
             event.setUrl(eventDTO.getUrl());
         }
@@ -76,7 +71,6 @@ public class EventService {
         eventDTO.setId(event.getId());
         eventDTO.setEventName(event.getEventName());
         eventDTO.setAddress(event.getAddress());
-//        eventDTO.setDate(DateTypeConverter.localDateTimeToStringConverter(event.getDate()));
         eventDTO.setDate(event.getDate());
         eventDTO.setDone(event.isDone());
         eventDTO.setUrl(event.getUrl());
@@ -84,12 +78,6 @@ public class EventService {
     }
 
     public List<EventDTO> getAllEventsDTO() {
-//        eventRepository.findAll().forEach(e -> {
-//            e.setUrl("");
-//            e.setDone(e.getDate().isBefore(LocalDateTime.now()));
-//            eventRepository.save(e);
-//        });
-
         List<EventDTO> events = new ArrayList<>();
         eventRepository.findAll().forEach(event -> events.add(newEventDTO(event)));
         return events;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,10 +10,10 @@
 <body class="body">
 <div class="container">
     <ol>
-        <li class="list-item"><p><label for="name">Name<em>*</em></label><p id="name" th:text="${event.getEventName()}">value</p></p></li>
-        <li class="list-item"><p th:text="${'address: '+ event.getAddress()}"></p></li>
-        <li class="list-item"><p th:text="${'date: '+ event.getDate()}"></p></li>
-        <li class="list-item"><a th:href="@{${event.getUrl()}}" th:text="${'url: ' + event.getUrl()}"></a></li>
+        <li class="list-item"><p><label for="name">Name: </label><p id="name" th:text="${event.getEventName()}">value</p></li>
+        <li class="list-item"><label for="address">Address: </label><p id="address" th:text="${event.getAddress()}"></p></li>
+        <li class="list-item"><label for="date">Date: </label><p id="date" th:text="${event.getDate()}"></p></li>
+        <li class="list-item"><label for="url">URL: </label><p><a id="url" th:href="@{${event.getUrl()}}" th:text="${event.getUrl()}"></a></li>
     </ol>
 
     <a class="ui-button" th:href="@{/events/{id}/edit(id=${event.getId()})}">edit</a>

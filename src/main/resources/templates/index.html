@@ -19,13 +19,13 @@
                     user </a>
             </li>
             <li class="list-item">
-                <a class="ui-button list-link" style="margin-left: 15px"
+                <a class="ui-button list-link" style="margin-left: 10px"
                    th:href="@{/events/{id}/edit(id=${event.getId()})}"> edit </a>
             </li>
             <li class="list-item ">
                 <form class="form-delete" th:method="DELETE"
                       th:action="@{/events/{id}(id=${event.getId()})}">
-                    <button class="ui-button list-delete" style="margin-left: 15px" href="#"> delete</button>
+                    <button class="ui-button list-delete" style="margin-left: 10px" href="#"> delete</button>
                 </form>
             </li>
         </ul>
