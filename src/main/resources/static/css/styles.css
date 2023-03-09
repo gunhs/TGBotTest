@@ -13,7 +13,7 @@
 }
 
 .content {
-    width: 350px;
+    width: 250px;
     padding: 0 550px 0 0;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .fields {
-    width: 250px;
+    width: 450px;
     /*padding: 0 0 10px 0;*/
     margin-bottom: 15px;
 }
@@ -134,7 +134,14 @@
     min-width: 100px;
 } */
 
-.input-field {
-    width: 60%;
+/*.input-field {*/
+/*    width: 60%;*/
+/*}*/
+.input-coordinate {
+    width: 40px;
+    display: inline-block;
+}
+.label-coordinate{
+    margin-left: 15px;
 }
 

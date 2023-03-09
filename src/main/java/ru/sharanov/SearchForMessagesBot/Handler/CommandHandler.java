@@ -20,7 +20,7 @@ public class CommandHandler {
         this.eventService = eventService;
     }
 
-    public void MessageWatcherHandler(Update update) throws TelegramApiException, InterruptedException {
+    public void messageWatcherHandler(Update update) throws TelegramApiException, InterruptedException {
         String textMessage = update.getMessage().getText();
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
@@ -30,7 +30,7 @@ public class CommandHandler {
         }
     }
 
-    public void CallBackDataHandler(Update update) throws InterruptedException, TelegramApiException, IOException {
+    public void callBackDataHandler(Update update) throws InterruptedException, TelegramApiException, IOException {
         long idUser = update.getCallbackQuery().getFrom().getId();
         String firstName = update.getCallbackQuery().getFrom().getFirstName();
         String userName = update.getCallbackQuery().getFrom().getUserName();
@@ -57,7 +57,12 @@ public class CommandHandler {
         } else if (messageText.equals("past event " + eventId)) {
             String nextEventId = telegramBot.getNextPastEventId(eventId);
             telegramBot.showPastEvent(chatId, nextEventId);
-        } else if (messageText.equals("future events")) {
+        }else if (messageText.equals("show map " + eventId)) {
+            System.out.println("сообщение вызова карты: " + update.getCallbackQuery().getMessage().getMessageId());
+            telegramBot.showMap(chatId, eventId);
+            telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 12000);
+        }
+        else if (messageText.equals("future events")) {
             telegramBot.showFutureEventsButton(chatId);
         } else if (messageText.equals("past events")) {
             telegramBot.showPastEventsButton(chatId);
@@ -67,7 +72,12 @@ public class CommandHandler {
             telegramBot.showPastEventsButton(chatId);
         } else if (messageText.equals("quit button")) {
             telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
-        } else {
+        }
+        else if (messageText.equals("close map")) {
+            System.out.println("Пытается удалить сообщение " + update.getCallbackQuery().getMessage().getMessageId());
+            telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
+        }
+        else {
             if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {
                 telegramBot.selectEvent(chatId, messageText);

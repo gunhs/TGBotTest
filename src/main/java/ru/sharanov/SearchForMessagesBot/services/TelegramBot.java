@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendVenue;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -59,10 +60,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
+            if (update.hasMessage()) {
+                System.out.println("Message " + update.getMessage().getMessageId());
+            }
+            if (update.hasCallbackQuery()) {
+                System.out.println("CallbackQuery " + update.getCallbackQuery().getMessage().getMessageId());
+            }
             if (update.hasMessage() && update.getMessage().hasText()) {
-                commandHandler.MessageWatcherHandler(update);
+                commandHandler.messageWatcherHandler(update);
             } else if (update.hasCallbackQuery()) {
-                commandHandler.CallBackDataHandler(update);
+                commandHandler.callBackDataHandler(update);
             }
         } catch (TelegramApiException | IOException | InterruptedException ex) {
             ex.printStackTrace();
@@ -176,12 +183,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         message.setText(textToSend);
         Message sentOutMessage = execute(message);
         if (textToSend.equals(message.getText())) {
+            System.out.println("сообщение удалено");
             deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 30000);
         }
     }
 
     public void deleteMessage(long chatId, int messageId, long time)
             throws InterruptedException, TelegramApiException {
+        System.out.println("delete try delete message" + messageId);
         sleep(time);
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(chatId);
@@ -237,5 +246,20 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else {
             showFutureEvent(chatId, eventId);
         }
+    }
+
+    public void showMap(long chatId, String eventId) throws TelegramApiException {
+        Event event = eventService.getEventById(eventId);
+        InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.closeMap();
+        SendVenue sendVenue = new SendVenue();
+        sendVenue.setChatId(chatId);
+        sendVenue.setAddress(event.getAddress());
+        sendVenue.setTitle("Адрес:");
+        double latitude = event.getLatitude();
+        double longitude = event.getLongitude();
+        sendVenue.setLatitude(latitude);
+        sendVenue.setLongitude(longitude);
+        sendVenue.setReplyMarkup(inlineKeyboardMarkup);
+        execute(sendVenue);
     }
 }

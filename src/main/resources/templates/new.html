@@ -25,6 +25,10 @@
                 <div class="field">
                     <label class="label" for="address">Address<em>*</em>:</label>
                     <input class="input-field" type="text" th:field="*{address}" id="address">
+                    <label class="label" for="latitude">x<em>*</em>:</label>
+                    <input class="input-coordinate" type="text" th:field="*{latitude}" id="latitude">
+                    <label class="label" for="longitude">y<em>*</em>:</label>
+                    <input class="input-coordinate" type="text" th:field="*{longitude}" id="longitude">
                 </div>
                 <!--                /*@thymesVar id="#fields" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
                 <div class="error-message" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">wrong age

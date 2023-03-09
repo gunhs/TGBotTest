@@ -7,12 +7,9 @@ import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
-import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +31,8 @@ public class EventService {
         event.setDate(eventDTO.getDate());
         event.setDone(event.getDate().isBefore(LocalDateTime.now()));
         event.setUrl((eventDTO.getUrl()));
+        event.setLatitude(eventDTO.getLatitude());
+        event.setLongitude(eventDTO.getLongitude());
         eventRepository.save(event);
     }
 
@@ -63,6 +62,14 @@ public class EventService {
         if (!eventDTO.getUrl().isEmpty()) {
             event.setUrl(eventDTO.getUrl());
         }
+        if (!(eventDTO.getLatitude()==0)) {
+            event.setLatitude(eventDTO.getLatitude());
+            System.out.println("Широта: " + eventDTO.getLatitude());
+        }
+        if (!(eventDTO.getLongitude()==0)) {
+            event.setLongitude(eventDTO.getLongitude());
+            System.out.println("Долгота: " + eventDTO.getLongitude());
+        }
         eventRepository.save(event);
     }
 
@@ -74,6 +81,8 @@ public class EventService {
         eventDTO.setDate(event.getDate());
         eventDTO.setDone(event.isDone());
         eventDTO.setUrl(event.getUrl());
+        eventDTO.setLatitude(event.getLatitude());
+        eventDTO.setLongitude(event.getLongitude());
         return eventDTO;
     }
 

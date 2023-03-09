@@ -15,10 +15,12 @@ public class ButtonHandler {
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow3 = new ArrayList<>();
         InlineKeyboardButton addMe = new InlineKeyboardButton();
         InlineKeyboardButton deleteMe = new InlineKeyboardButton();
         InlineKeyboardButton notChoose = new InlineKeyboardButton();
         InlineKeyboardButton nextEvent = new InlineKeyboardButton();
+        InlineKeyboardButton showMap = new InlineKeyboardButton();
         addMe.setText("\uD83D\uDC83Я пойду\uD83D\uDD7A");
         addMe.setCallbackData("join event " + eventId);
         deleteMe.setText("Я не пойду\uD83D\uDEB7");
@@ -27,12 +29,16 @@ public class ButtonHandler {
         notChoose.setCallbackData("back");
         nextEvent.setText("Cледующее ⏩");
         nextEvent.setCallbackData("future event " + eventId);
+        showMap.setText("Показать на карте \uD83D\uDDFA");
+        showMap.setCallbackData("show map " + eventId);
         keyboardButtonsRow1.add(addMe);
         keyboardButtonsRow1.add(deleteMe);
         keyboardButtonsRow2.add(notChoose);
         keyboardButtonsRow2.add(nextEvent);
+        keyboardButtonsRow3.add(showMap);
         rowList.add(keyboardButtonsRow1);
         rowList.add(keyboardButtonsRow2);
+        rowList.add(keyboardButtonsRow3);
         inlineKeyboardMarkup.setKeyboard(rowList);
         return inlineKeyboardMarkup;
     }
@@ -82,7 +88,18 @@ public class ButtonHandler {
         return inlineKeyboardMarkup;
     }
 
-
+    public static InlineKeyboardMarkup closeMap() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+        inlineKeyboardButton.setText("Закрыть карту");
+        inlineKeyboardButton.setCallbackData("close map");
+        keyboardButtonsRow.add(inlineKeyboardButton);
+        rows.add(keyboardButtonsRow);
+        inlineKeyboardMarkup.setKeyboard(rows);
+        return inlineKeyboardMarkup;
+    }
     public static InlineKeyboardMarkup showMenuButton() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();

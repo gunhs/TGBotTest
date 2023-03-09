@@ -25,4 +25,8 @@ public class EventDTO {
     private String url;
     private int id;
     private List<ParticipantDTO> participantDTOList = new ArrayList<>();
+    @NotNull(message = "Field can't be empty")
+    private float latitude;
+    @NotNull(message = "Field can't be empty")
+    private float longitude;
 }

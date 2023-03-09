@@ -44,6 +44,12 @@ public class Event {
     @Column()
     private String url;
 
+    @Column()
+    private Float latitude;
+
+    @Column()
+    private Float longitude;
+
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
