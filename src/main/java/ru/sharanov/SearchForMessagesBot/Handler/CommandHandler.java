@@ -57,12 +57,9 @@ public class CommandHandler {
         } else if (messageText.equals("past event " + eventId)) {
             String nextEventId = telegramBot.getNextPastEventId(eventId);
             telegramBot.showPastEvent(chatId, nextEventId);
-        }else if (messageText.equals("show map " + eventId)) {
-            System.out.println("сообщение вызова карты: " + update.getCallbackQuery().getMessage().getMessageId());
+        } else if (messageText.equals("show map " + eventId)) {
             telegramBot.showMap(chatId, eventId);
-            telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 12000);
-        }
-        else if (messageText.equals("future events")) {
+        } else if (messageText.equals("future events")) {
             telegramBot.showFutureEventsButton(chatId);
         } else if (messageText.equals("past events")) {
             telegramBot.showPastEventsButton(chatId);
@@ -71,13 +68,12 @@ public class CommandHandler {
         } else if (messageText.equals("past menu")) {
             telegramBot.showPastEventsButton(chatId);
         } else if (messageText.equals("quit button")) {
+            telegramBot.closeApp(chatId);
+        } else if (messageText.equals("close map")) {
             telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
-        }
-        else if (messageText.equals("close map")) {
-            System.out.println("Пытается удалить сообщение " + update.getCallbackQuery().getMessage().getMessageId());
-            telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
-        }
-        else {
+        } else if (messageText.equals("past menu " + eventId)) {
+            telegramBot.showFutureEvent(chatId, eventId);
+        } else {
             if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {
                 telegramBot.selectEvent(chatId, messageText);

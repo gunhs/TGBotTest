@@ -88,14 +88,18 @@ public class ButtonHandler {
         return inlineKeyboardMarkup;
     }
 
-    public static InlineKeyboardMarkup closeMap() {
+    public static InlineKeyboardMarkup closeMap(String eventId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("Закрыть карту");
-        inlineKeyboardButton.setCallbackData("close map");
-        keyboardButtonsRow.add(inlineKeyboardButton);
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        inlineKeyboardButton1.setText("Закрыть карту");
+        inlineKeyboardButton1.setCallbackData("close map");
+        inlineKeyboardButton2.setText("Назад ↩");
+        inlineKeyboardButton2.setCallbackData("past menu " + eventId);
+        keyboardButtonsRow.add(inlineKeyboardButton1);
+        keyboardButtonsRow.add(inlineKeyboardButton2);
         rows.add(keyboardButtonsRow);
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;

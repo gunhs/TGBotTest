@@ -957,3 +957,117 @@
 09.03.2023 16:32:52.391 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
 09.03.2023 16:33:45.861 INFO  r.s.S.H.CommandHandler - null click: close map
 09.03.2023 16:34:17.806 INFO  r.s.S.H.CommandHandler - null click: close map
+09.03.2023 16:36:13.538 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 13660 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 16:36:13.543 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 16:36:28.608 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 16.147 seconds (JVM running for 19.515)
+09.03.2023 18:01:20.673 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:01:26.765 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:01:28.823 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 18:01:31.029 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 18:01:43.625 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
+09.03.2023 18:06:52.004 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 6304 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:06:52.011 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:07:09.527 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 19.276 seconds (JVM running for 22.523)
+09.03.2023 18:08:04.918 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:08:48.927 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:08:52.253 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 18:08:54.220 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 18:23:24.978 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 11816 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:23:24.980 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:23:44.767 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 21.041 seconds (JVM running for 23.143)
+09.03.2023 18:23:53.739 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
+09.03.2023 18:23:59.467 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:24:00.896 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:24:03.098 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 18:24:05.823 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 18:25:51.562 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 10568 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:25:51.564 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:26:05.854 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 15.43 seconds (JVM running for 18.303)
+09.03.2023 18:26:15.756 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:26:17.165 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:26:19.587 INFO  r.s.S.H.CommandHandler - Gunhsik click: 2
+09.03.2023 18:26:21.899 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 2
+09.03.2023 18:34:07.049 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 8312 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:34:07.051 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:34:22.295 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 16.62 seconds (JVM running for 20.259)
+09.03.2023 18:35:26.192 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:35:27.550 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:35:29.944 INFO  r.s.S.H.CommandHandler - Gunhsik click: menu button
+09.03.2023 18:35:31.290 INFO  r.s.S.H.CommandHandler - Gunhsik click: quit button
+09.03.2023 18:36:18.438 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 3712 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:36:18.445 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:36:36.185 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 19.09 seconds (JVM running for 22.035)
+09.03.2023 18:36:41.813 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:36:43.580 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:36:48.431 INFO  r.s.S.H.CommandHandler - Gunhsik click: menu button
+09.03.2023 18:36:49.723 INFO  r.s.S.H.CommandHandler - Gunhsik click: quit button
+09.03.2023 18:37:56.788 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 2636 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:37:56.793 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:38:13.673 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 18.65 seconds (JVM running for 21.715)
+09.03.2023 18:38:23.487 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:38:25.389 INFO  r.s.S.H.CommandHandler - Gunhsik click: quit button
+09.03.2023 18:38:46.457 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:38:47.858 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:38:51.000 INFO  r.s.S.H.CommandHandler - Gunhsik click: 2
+09.03.2023 18:38:54.051 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 2
+09.03.2023 18:47:07.785 INFO  r.s.S.H.CommandHandler - null input: /events@EventJavaBot
+09.03.2023 18:47:09.536 INFO  r.s.S.H.CommandHandler - null click: future events
+09.03.2023 18:47:20.742 INFO  r.s.S.H.CommandHandler - null click: 3
+09.03.2023 18:47:28.126 INFO  r.s.S.H.CommandHandler - null click: back
+09.03.2023 18:47:34.603 INFO  r.s.S.H.CommandHandler - null click: 4
+09.03.2023 18:47:40.095 INFO  r.s.S.H.CommandHandler - angelkrylova click: show map 4
+09.03.2023 18:48:46.243 INFO  r.s.S.H.CommandHandler - null click: quit button
+09.03.2023 18:55:11.755 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 9464 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 18:55:11.760 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 18:55:26.260 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 15.588 seconds (JVM running for 18.792)
+09.03.2023 18:56:07.602 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:56:09.135 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:56:11.290 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 18:56:13.817 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 18:58:26.492 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 18:58:29.534 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 18:58:42.209 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 18:58:49.774 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:01:50.199 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 19:01:51.700 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 19:01:53.200 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 19:01:55.108 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:03:07.294 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 13680 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 19:03:07.304 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 19:03:24.141 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 18.026 seconds (JVM running for 20.494)
+09.03.2023 19:03:35.787 INFO  r.s.S.H.CommandHandler - Gunhsik click: past menu 3
+09.03.2023 19:03:38.646 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:04:39.902 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
+09.03.2023 19:04:44.058 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 19:04:45.343 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 19:04:48.014 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 19:05:19.572 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:06:41.097 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 1752 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 19:06:41.099 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 19:06:55.543 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 15.594 seconds (JVM running for 18.647)
+09.03.2023 19:07:07.424 INFO  r.s.S.H.CommandHandler - Gunhsik click: past menu 3
+09.03.2023 19:07:09.485 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:08:10.757 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
+09.03.2023 19:08:11.684 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 19:08:13.214 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 19:08:15.787 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 19:08:18.007 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:09:19.597 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
+09.03.2023 19:09:39.501 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 2260 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 19:09:39.507 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 19:09:54.377 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 16.013 seconds (JVM running for 19.118)
+09.03.2023 19:09:55.829 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 19:10:01.130 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 19:10:10.692 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 19:10:16.274 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:11:17.675 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map
+09.03.2023 19:18:34.833 INFO  r.s.S.SearchForMessagesBotApplication - Starting SearchForMessagesBotApplication using Java 17.0.2 on DESKTOP-KCBR34O with PID 15392 (C:\Users\VSH\IdeaProjects\TGBotTest\target\classes started by VSH in C:\Users\VSH\IdeaProjects\TGBotTest)
+09.03.2023 19:18:34.835 INFO  r.s.S.SearchForMessagesBotApplication - No active profile set, falling back to 1 default profile: "default"
+09.03.2023 19:18:55.925 INFO  r.s.S.SearchForMessagesBotApplication - Started SearchForMessagesBotApplication in 22.662 seconds (JVM running for 26.126)
+09.03.2023 19:18:58.199 INFO  r.s.S.H.CommandHandler - Gunhsik input: /events
+09.03.2023 19:19:15.351 INFO  r.s.S.H.CommandHandler - Gunhsik click: future events
+09.03.2023 19:19:17.221 INFO  r.s.S.H.CommandHandler - Gunhsik click: 3
+09.03.2023 19:19:19.380 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:19:21.051 INFO  r.s.S.H.CommandHandler - Gunhsik click: past menu 3
+09.03.2023 19:19:22.878 INFO  r.s.S.H.CommandHandler - Gunhsik click: show map 3
+09.03.2023 19:19:24.254 INFO  r.s.S.H.CommandHandler - Gunhsik click: close map

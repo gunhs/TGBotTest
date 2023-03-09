@@ -60,12 +60,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            if (update.hasMessage()) {
-                System.out.println("Message " + update.getMessage().getMessageId());
-            }
-            if (update.hasCallbackQuery()) {
-                System.out.println("CallbackQuery " + update.getCallbackQuery().getMessage().getMessageId());
-            }
             if (update.hasMessage() && update.getMessage().hasText()) {
                 commandHandler.messageWatcherHandler(update);
             } else if (update.hasCallbackQuery()) {
@@ -80,7 +74,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showMenuButton();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText("Основное меню");
+        sendMessage.setText("Главное меню");
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         execute(sendMessage);
     }
@@ -190,7 +184,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void deleteMessage(long chatId, int messageId, long time)
             throws InterruptedException, TelegramApiException {
-        System.out.println("delete try delete message" + messageId);
         sleep(time);
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(chatId);
@@ -248,9 +241,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void showMap(long chatId, String eventId) throws TelegramApiException {
+    public void showMap(long chatId, String eventId) throws TelegramApiException, InterruptedException {
         Event event = eventService.getEventById(eventId);
-        InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.closeMap();
+        InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.closeMap(eventId);
         SendVenue sendVenue = new SendVenue();
         sendVenue.setChatId(chatId);
         sendVenue.setAddress(event.getAddress());
@@ -261,5 +254,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendVenue.setLongitude(longitude);
         sendVenue.setReplyMarkup(inlineKeyboardMarkup);
         execute(sendVenue);
+        long now = System.currentTimeMillis();
+        long executeTime = now + 60000;
+        if (executeTime == System.currentTimeMillis()) {
+            Message sentOutMessage = execute(sendVenue);
+            deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
+        }
+    }
+
+    public void closeApp(long chatId) throws TelegramApiException, InterruptedException {
+        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "Пока!");
+        Message sentOutMessage = execute(sendMessage);
+        deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
     }
 }
