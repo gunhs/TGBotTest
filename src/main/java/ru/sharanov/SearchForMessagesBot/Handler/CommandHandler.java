@@ -70,7 +70,7 @@ public class CommandHandler {
         } else if (messageText.equals("quit button")) {
             telegramBot.closeApp(chatId);
         } else if (messageText.equals("close map")) {
-            telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
+            telegramBot.closeApp(chatId);
         } else if (messageText.equals("past menu " + eventId)) {
             telegramBot.showFutureEvent(chatId, eventId);
         } else {

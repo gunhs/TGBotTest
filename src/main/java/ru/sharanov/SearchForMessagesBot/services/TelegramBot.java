@@ -70,36 +70,21 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void showMenu(long chatId) throws TelegramApiException {
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showMenuButton();
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText("Главное меню");
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage.setDisableNotification(true);
-        execute(sendMessage);
+        execute(getMessage(chatId, "Главное меню", inlineKeyboardMarkup));
     }
 
     public void showFutureEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
                 .filter(e -> !e.isDone()).collect(Collectors.toList());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showFutureEventButton(events);
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText("Выберите меропиятие:");
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage.setDisableNotification(true);
-        execute(sendMessage);
+        execute(getMessage(chatId, "Выберите меропиятие:", inlineKeyboardMarkup));
     }
 
     public void showPastEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
                 .filter(EventDTO::isDone).collect(Collectors.toList());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showPastEventButton(events);
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText("Выберите меропиятие:");
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage.setDisableNotification(true);
-        execute(sendMessage);
+        execute(getMessage(chatId, "Выберите меропиятие:", inlineKeyboardMarkup));
     }
 
     public void showFutureEvent(long chatId, String eventId) throws TelegramApiException {
@@ -112,15 +97,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         String info = "Что: " + event.getEventName() + "\n" +
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate()) + "\n" +
-                "\nСписок участников:\n" + participants +
+                (event.getParticipants().isEmpty() ? "" : "\nСписок участников:\n" + participants) +
                 (event.getUrl().isEmpty() ? "" : ("\nсайт: " + event.getUrl()));
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.controlEventButton(eventId);
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(info);
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage.setDisableNotification(true);
-        execute(sendMessage);
+        execute(getMessage(chatId, info, inlineKeyboardMarkup));
     }
 
     public void showPastEvent(long chatId, String eventId) throws TelegramApiException {
@@ -129,18 +109,13 @@ public class TelegramBot extends TelegramLongPollingBot {
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.backPastEventButton();
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(info);
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage.setDisableNotification(true);
-        execute(sendMessage);
+        execute(getMessage(chatId, info, inlineKeyboardMarkup));
     }
 
     public void addParticipant(String firstName, String nickName, long chatId, long userId, String eventId)
             throws TelegramApiException, InterruptedException {
         if (eventService.getEventById(eventId).getParticipants()
-                .stream().map(Participant::getUserId).toList().contains(userId)) {
+                .stream().anyMatch(p -> p.getUserId() == userId)) {
             showMessage(chatId, "Вы уже добавлены");
             return;
         }
@@ -173,6 +148,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textToSend);
+        message.setDisableNotification(true);
         Message sentOutMessage = execute(message);
         if (textToSend.equals(message.getText())) {
             deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 30000);
@@ -257,6 +233,15 @@ public class TelegramBot extends TelegramLongPollingBot {
             Message sentOutMessage = execute(sendVenue);
             deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
         }
+    }
+
+    public SendMessage getMessage(long chatId, String text, InlineKeyboardMarkup inlineKeyboardMarkup) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setDisableNotification(true);
+        return sendMessage;
     }
 
     public void closeApp(long chatId) throws TelegramApiException, InterruptedException {
