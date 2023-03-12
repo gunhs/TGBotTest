@@ -16,7 +16,10 @@
     width: 250px;
     padding: 0 550px 0 0;
 }
-
+.content-list-participants{
+    width: 150px;
+    padding: 0 550px 0 0;
+}
 .list-reset {
     margin: 0;
     padding: 0;
@@ -91,7 +94,8 @@
 
 .ui-button.delete {
     margin-left: 15px;
-    display: inline-block;
+    /*display: inline-block;*/
+    justify-content: right;
 }
 
 .outline {
@@ -110,7 +114,6 @@
 
 .fields {
     width: 450px;
-    /*padding: 0 0 10px 0;*/
     margin-bottom: 15px;
 }
 .event-label {
@@ -128,15 +131,6 @@
     display: flex;
     justify-content: space-between;
 }
-
-/* .label {
-    display: inline-block;
-    min-width: 100px;
-} */
-
-/*.input-field {*/
-/*    width: 60%;*/
-/*}*/
 .input-coordinate {
     width: 40px;
     display: inline-block;
@@ -144,4 +138,10 @@
 .label-coordinate{
     margin-left: 15px;
 }
-
+.fields-participants{
+    background-color: lightgray;
+    width: 150px;
+}
+.list-participants{
+    width: 150px;
+}

@@ -18,12 +18,10 @@ import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
-import ru.sharanov.SearchForMessagesBot.utils.DateComparator;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -76,33 +74,31 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setChatId(chatId);
         sendMessage.setText("Главное меню");
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setDisableNotification(true);
         execute(sendMessage);
     }
 
     public void showFutureEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
                 .filter(e -> !e.isDone()).collect(Collectors.toList());
-        DateComparator comparator = new DateComparator();
-        events.sort(comparator);
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showFutureEventButton(events);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText("Выберите меропиятие:");
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setDisableNotification(true);
         execute(sendMessage);
     }
 
     public void showPastEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
                 .filter(EventDTO::isDone).collect(Collectors.toList());
-        DateComparator comparator = new DateComparator();
-        events.sort(comparator);
-        events.sort(Collections.reverseOrder());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showPastEventButton(events);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText("Выберите меропиятие:");
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setDisableNotification(true);
         execute(sendMessage);
     }
 
@@ -123,6 +119,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setChatId(chatId);
         sendMessage.setText(info);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setDisableNotification(true);
         execute(sendMessage);
     }
 
@@ -136,6 +133,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setChatId(chatId);
         sendMessage.setText(info);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setDisableNotification(true);
         execute(sendMessage);
     }
 
@@ -177,7 +175,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         message.setText(textToSend);
         Message sentOutMessage = execute(message);
         if (textToSend.equals(message.getText())) {
-            System.out.println("сообщение удалено");
             deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 30000);
         }
     }
@@ -222,7 +219,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private String getId(ArrayList<EventDTO> events, String eventId) {
-        events.sort(new DateComparator());
         for (int i = 0; i < events.size(); i++) {
             if (events.get(i).getId() == Integer.parseInt(eventId)) {
                 i = (i + 1 == events.size()) ? 0 : i + 1;
@@ -253,6 +249,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendVenue.setLatitude(latitude);
         sendVenue.setLongitude(longitude);
         sendVenue.setReplyMarkup(inlineKeyboardMarkup);
+        sendVenue.setDisableNotification(true);
         execute(sendVenue);
         long now = System.currentTimeMillis();
         long executeTime = now + 60000;

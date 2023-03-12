@@ -25,19 +25,23 @@
     <a class="ui-button" href="/events">back</a>
     <br>
     <div class="outline">
-        <p>Список участников:</p>
-        <div class="content" th:each="participant : ${participants}">
-            <ul class="list list-reset flex">
-                <li class="list-item name">
-                    <a class="list-link" th:text="${participant.getName()}"> user </a>
-                    <form class="form-delete" th:method="DELETE"
-                          th:action="@{/events/{id}/{userId}(id=${event.getId()}, userId=${participant.getId()})}">
-                        <button class="ui-button delete"
-                                th:href="@{/events/{id}/edit(id=${event.getId()})}">delete</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
+        <fieldset class = "fields-participants">
+            <legend>Список участников:</legend>
+            <ol class="list-participants">
+                <div class="content-list-participants" th:each="participant : ${participants}">
+                    <ul class="list list-reset flex">
+                        <li class="list-item name">
+                            <a class="list-link" th:text="${participant.getName()}"> user </a>
+                            <form class="form-delete" th:method="DELETE"
+                                  th:action="@{/events/{id}/{userId}(id=${event.getId()}, userId=${participant.getId()})}">
+                                <button class="ui-button delete"
+                                        th:href="@{/events/{id}/edit(id=${event.getId()})}">delete</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </ol>
+        </fieldset>
     </div>
 </div>
 </body>

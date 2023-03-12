@@ -36,7 +36,7 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public EventDTO getEvent(int id) {
+    public EventDTO getEventDTO(int id) {
         Event event = eventRepository.findById(id).orElse(null);
         assert event != null;
         return newEventDTO(event);
@@ -64,11 +64,9 @@ public class EventService {
         }
         if (!(eventDTO.getLatitude()==0)) {
             event.setLatitude(eventDTO.getLatitude());
-            System.out.println("Широта: " + eventDTO.getLatitude());
         }
         if (!(eventDTO.getLongitude()==0)) {
             event.setLongitude(eventDTO.getLongitude());
-            System.out.println("Долгота: " + eventDTO.getLongitude());
         }
         eventRepository.save(event);
     }
@@ -88,7 +86,7 @@ public class EventService {
 
     public List<EventDTO> getAllEventsDTO() {
         List<EventDTO> events = new ArrayList<>();
-        eventRepository.findAll().forEach(event -> events.add(newEventDTO(event)));
+        eventRepository.findAllByOrderByDateAsc().forEach(e->events.add(newEventDTO(e)));
         return events;
     }
 

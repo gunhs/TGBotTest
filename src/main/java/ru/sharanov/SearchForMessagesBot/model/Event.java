@@ -36,6 +36,7 @@ public class Event {
 
     @Column()
     @NotNull(message = "Choose date")
+//    @OrderBy
     private LocalDateTime date;
 
     @Column()

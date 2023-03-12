@@ -6,7 +6,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
-import ru.sharanov.SearchForMessagesBot.utils.DateComparator;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class EventsController {
 
     @GetMapping("/events/{id}")
     public ModelAndView getEvent(@PathVariable("id") int id) {
-        EventDTO eventDTO = eventService.getEvent(id);
+        EventDTO eventDTO = eventService.getEventDTO(id);
         ModelAndView modelAndView = getModelAndView("show", eventDTO);
         modelAndView.addObject("participants", showParticipants(eventDTO.getId()));
         return modelAndView;
@@ -49,7 +48,7 @@ public class EventsController {
 
     @GetMapping("/events/{id}/edit")
     public ModelAndView edit(@PathVariable("id") int id) {
-        EventDTO eventDTO = eventService.getEvent(id);
+        EventDTO eventDTO = eventService.getEventDTO(id);
         return getModelAndView("edit", eventDTO);
     }
 
@@ -78,7 +77,6 @@ public class EventsController {
 
     public ArrayList<EventDTO> showEvents() {
         List<EventDTO> eventDTOS = eventService.getAllEventsDTO();
-        eventDTOS.sort(new DateComparator());
         return new ArrayList<>(eventDTOS);
     }
 
