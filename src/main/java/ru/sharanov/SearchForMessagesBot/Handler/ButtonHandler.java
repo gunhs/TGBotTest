@@ -11,137 +11,63 @@ import java.util.List;
 public class ButtonHandler {
 
     public static InlineKeyboardMarkup controlEventButton(String eventId) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow3 = new ArrayList<>();
-        InlineKeyboardButton addMe = new InlineKeyboardButton();
-        InlineKeyboardButton deleteMe = new InlineKeyboardButton();
-        InlineKeyboardButton notChoose = new InlineKeyboardButton();
-        InlineKeyboardButton nextEvent = new InlineKeyboardButton();
-        InlineKeyboardButton showMap = new InlineKeyboardButton();
-        addMe.setText("\uD83D\uDC83Я пойду\uD83D\uDD7A");
-        addMe.setCallbackData("join event " + eventId);
-        deleteMe.setText("Я не пойду\uD83D\uDEB7");
-        deleteMe.setCallbackData("left event " + eventId);
-        notChoose.setText("К событиям ↩️");
-        notChoose.setCallbackData("back");
-        nextEvent.setText("Cледующее ⏩");
-        nextEvent.setCallbackData("future event " + eventId);
-        showMap.setText("Показать на карте \uD83D\uDDFA");
-        showMap.setCallbackData("show map " + eventId);
-        keyboardButtonsRow1.add(addMe);
-        keyboardButtonsRow1.add(deleteMe);
-        keyboardButtonsRow2.add(notChoose);
-        keyboardButtonsRow2.add(nextEvent);
-        keyboardButtonsRow3.add(showMap);
-        rowList.add(keyboardButtonsRow1);
-        rowList.add(keyboardButtonsRow2);
-        rowList.add(keyboardButtonsRow3);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        return inlineKeyboardMarkup;
+        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        rows.get(0).add(addButton("\uD83D\uDC83Я пойду\uD83D\uDD7A", "join event " + eventId));
+        rows.get(0).add(addButton("Я не пойду\uD83D\uDEB7", "left event " + eventId));
+        rows.get(1).add(addButton("К событиям ↩️", "back"));
+        rows.get(1).add(addButton("Cледующее ⏩", "future event " + eventId));
+        rows.get(2).add(addButton("Показать на карте \uD83D\uDDFA", "show map " + eventId));
+        return new InlineKeyboardMarkup(rows);
     }
 
     public static InlineKeyboardMarkup showFutureEventButton(List<EventDTO> events) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = addEventsRows(events);
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("Записаться на всё");
-        inlineKeyboardButton1.setCallbackData("join all");
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        keyboardButtonsRow1.add(inlineKeyboardButton1);
-        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("Назад ↩");
-        inlineKeyboardButton.setCallbackData("menu button");
-        keyboardButtonsRow.add(inlineKeyboardButton);
-        rows.add(keyboardButtonsRow1);
-        rows.add(keyboardButtonsRow);
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
+        rows.add(List.of(addButton("Записаться на всё", "join all")));
+        rows.add(List.of(addButton("Назад ↩", "menu button")));
+        return new InlineKeyboardMarkup(rows);
     }
 
     public static InlineKeyboardMarkup showPastEventButton(List<EventDTO> events) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = addEventsRows(events);
-        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("Назад ↩");
-        inlineKeyboardButton.setCallbackData("menu button");
-        keyboardButtonsRow.add(inlineKeyboardButton);
-        rows.add(keyboardButtonsRow);
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
+        rows.add(List.of(addButton("Назад ↩", "menu button")));
+        return new InlineKeyboardMarkup(rows);
     }
 
     public static InlineKeyboardMarkup backPastEventButton() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("Назад ↩");
-        inlineKeyboardButton.setCallbackData("past menu");
-        keyboardButtonsRow.add(inlineKeyboardButton);
-        rows.add(keyboardButtonsRow);
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
+        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>());
+        rows.get(0).add(addButton("Назад ↩", "past menu"));
+        return new InlineKeyboardMarkup(rows);
     }
 
     public static InlineKeyboardMarkup closeMap(String eventId) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("Закрыть карту");
-        inlineKeyboardButton1.setCallbackData("close map");
-        inlineKeyboardButton2.setText("Назад ↩");
-        inlineKeyboardButton2.setCallbackData("past menu " + eventId);
-        keyboardButtonsRow.add(inlineKeyboardButton1);
-        keyboardButtonsRow.add(inlineKeyboardButton2);
-        rows.add(keyboardButtonsRow);
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
+        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>());
+        rows.get(0).add(addButton("Закрыть карту", "close map"));
+        rows.get(0).add(addButton("Назад ↩", "past menu " + eventId));
+        return new InlineKeyboardMarkup(rows);
     }
+
     public static InlineKeyboardMarkup showMenuButton() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("Ближайшие мероприятия");
-        inlineKeyboardButton1.setCallbackData("future events");
-        inlineKeyboardButton2.setText("Прошедшие мероприятия");
-        inlineKeyboardButton2.setCallbackData("past events");
-        inlineKeyboardButton3.setText("Выйти");
-        inlineKeyboardButton3.setCallbackData("quit button");
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow3 = new ArrayList<>();
-        keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow2.add(inlineKeyboardButton2);
-        keyboardButtonsRow3.add(inlineKeyboardButton3);
-        rows.add(keyboardButtonsRow1);
-        rows.add(keyboardButtonsRow2);
-        rows.add(keyboardButtonsRow3);
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
+        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        rows.get(0).add(addButton("Ближайшие мероприятия", "future events"));
+        rows.get(1).add(addButton("Прошедшие мероприятия", "past events"));
+        rows.get(2).add(addButton("Выйти", "quit button"));
+        return new InlineKeyboardMarkup(rows);
     }
 
     private static ArrayList<List<InlineKeyboardButton>> addEventsRows(List<EventDTO> events) {
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
         events.forEach(e -> {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            String date = e.getDate().format(dateTimeFormatter);
-            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText(date + "\n" + e.getEventName());
-            inlineKeyboardButton1.setCallbackData(String.valueOf(e.getId()));
+            String date = e.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-            keyboardButtonsRow1.add(inlineKeyboardButton1);
+            keyboardButtonsRow1.add(addButton(date + "\n" + e.getEventName(), String.valueOf(e.getId())));
             rows.add(keyboardButtonsRow1);
         });
         return rows;
     }
 
+    private static InlineKeyboardButton addButton(String text, String callBackData) {
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(text);
+        inlineKeyboardButton.setCallbackData(callBackData);
+        return inlineKeyboardButton;
+    }
 }
