@@ -1,6 +1,7 @@
 package ru.sharanov.SearchForMessagesBot.Handler;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 
@@ -24,6 +25,7 @@ public class ButtonHandler {
         List<List<InlineKeyboardButton>> rows = addEventsRows(events);
         rows.add(List.of(addButton("Записаться на всё", "join all")));
         rows.add(List.of(addButton("Назад ↩", "menu button")));
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         return new InlineKeyboardMarkup(rows);
     }
 
@@ -36,6 +38,7 @@ public class ButtonHandler {
     public static InlineKeyboardMarkup backPastEventButton() {
         List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>());
         rows.get(0).add(addButton("Назад ↩", "past menu"));
+        InlineKeyboardMarkup inlineKeyboardMarkup =new InlineKeyboardMarkup();
         return new InlineKeyboardMarkup(rows);
     }
 
@@ -58,9 +61,9 @@ public class ButtonHandler {
         ArrayList<List<InlineKeyboardButton>> rows = new ArrayList<>();
         events.forEach(e -> {
             String date = e.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-            keyboardButtonsRow1.add(addButton(date + "\n" + e.getEventName(), String.valueOf(e.getId())));
-            rows.add(keyboardButtonsRow1);
+            List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+            keyboardButtonsRow.add(addButton(date + "\n" + e.getEventName(), String.valueOf(e.getId())));
+            rows.add(keyboardButtonsRow);
         });
         return rows;
     }

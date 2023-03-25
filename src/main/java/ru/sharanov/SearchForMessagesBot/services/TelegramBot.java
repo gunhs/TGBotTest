@@ -21,6 +21,7 @@ import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,14 +76,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void showFutureEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
-                .filter(e -> !e.isDone()).collect(Collectors.toList());
+                .filter(e -> (e.getDate().isAfter(LocalDateTime.now()))).collect(Collectors.toList());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showFutureEventButton(events);
         execute(getMessage(chatId, "Выберите меропиятие:", inlineKeyboardMarkup));
     }
 
     public void showPastEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
-                .filter(EventDTO::isDone).collect(Collectors.toList());
+                .filter(e -> (!e.getDate().isAfter(LocalDateTime.now()))).collect(Collectors.toList());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showPastEventButton(events);
         execute(getMessage(chatId, "Выберите меропиятие:", inlineKeyboardMarkup));
     }
@@ -92,13 +93,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         StringBuilder participants = new StringBuilder();
         AtomicInteger number = new AtomicInteger(1);
         event.getParticipants().forEach(p -> participants.append(number.getAndIncrement())
-                .append(". ").append(p.getName()).append(" (@")
-                .append(p.getNickName() == null ? "☠" : p.getNickName()).append(")").append("\n"));
+                .append(". ").append(p.getName()).append(" (")
+                .append(p.getNickName() == null ? "☠" : "https://t.me/" + p.getNickName()).append(")").append("\n"));
         String info = "Что: " + event.getEventName() + "\n" +
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate()) + "\n" +
-                (event.getParticipants().isEmpty() ? "" : "\nСписок участников:\n" + participants) +
-                (event.getUrl().isEmpty() ? "" : ("\nсайт: " + event.getUrl()));
+                (event.getUrl().isEmpty() ? "" : ("сайт: " + event.getUrl())+"\n")+
+                (event.getParticipants().isEmpty() ? "" : "\nСписок участников:\n" + participants+"\n");
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.controlEventButton(eventId);
         execute(getMessage(chatId, info, inlineKeyboardMarkup));
     }
@@ -109,6 +110,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.backPastEventButton();
+//        if (event.getId() == ){
+//
+//        }
         execute(getMessage(chatId, info, inlineKeyboardMarkup));
     }
 

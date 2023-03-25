@@ -1,5 +1,6 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;

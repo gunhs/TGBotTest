@@ -42,7 +42,7 @@ public class CommandHandler {
         }
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
-        logger.info(userName + " click: " + messageText);
+        logger.info(firstName + " (" + userName + ") click: " + messageText);
         if (messageText.equals("join event " + eventId)) {
             telegramBot.addParticipant(firstName, userName, chatId, idUser, eventId);
         } else if (messageText.equals("left event " + eventId)) {
