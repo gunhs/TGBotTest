@@ -2,6 +2,7 @@ package ru.sharanov.SearchForMessagesBot.Handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
@@ -25,6 +26,7 @@ public class CommandHandler {
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showMenu(chatIdMessage);
+
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }

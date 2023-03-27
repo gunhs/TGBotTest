@@ -98,8 +98,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         String info = "Что: " + event.getEventName() + "\n" +
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate()) + "\n" +
-                (event.getUrl().isEmpty() ? "" : ("сайт: " + event.getUrl())+"\n")+
-                (event.getParticipants().isEmpty() ? "" : "\nСписок участников:\n" + participants+"\n");
+                (event.getUrl().isEmpty() ? "" : ("сайт: " + event.getUrl()) + "\n") +
+                (event.getParticipants().isEmpty() ? "" : "\nСписок участников:\n" + participants + "\n");
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.controlEventButton(eventId);
         execute(getMessage(chatId, info, inlineKeyboardMarkup));
     }
@@ -110,9 +110,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.backPastEventButton();
-//        if (event.getId() == ){
-//
-//        }
         execute(getMessage(chatId, info, inlineKeyboardMarkup));
     }
 
@@ -149,23 +146,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void showMessage(long chatId, String textToSend) throws TelegramApiException, InterruptedException {
-        SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(chatId));
-        message.setText(textToSend);
-        message.setDisableNotification(true);
-        Message sentOutMessage = execute(message);
-        if (textToSend.equals(message.getText())) {
-            deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 30000);
-        }
+        Message sentOutMessage = execute(
+                SendMessage.builder().chatId(String.valueOf(chatId)).text(textToSend).disableNotification(true).build());
+        deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 10000);
     }
 
     public void deleteMessage(long chatId, int messageId, long time)
             throws InterruptedException, TelegramApiException {
         sleep(time);
-        DeleteMessage deleteMessage = new DeleteMessage();
-        deleteMessage.setChatId(chatId);
-        deleteMessage.setMessageId(messageId);
-        execute(deleteMessage);
+        execute(DeleteMessage.builder().chatId(chatId).messageId(messageId).build());
     }
 
     public void participantJoinAll(String firstName, String userName, long chatId, long idUser)
@@ -220,16 +209,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void showMap(long chatId, String eventId) throws TelegramApiException, InterruptedException {
         Event event = eventService.getEventById(eventId);
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.closeMap(eventId);
-        SendVenue sendVenue = new SendVenue();
-        sendVenue.setChatId(chatId);
-        sendVenue.setAddress(event.getAddress());
-        sendVenue.setTitle("Адрес:");
-        double latitude = event.getLatitude();
-        double longitude = event.getLongitude();
-        sendVenue.setLatitude(latitude);
-        sendVenue.setLongitude(longitude);
-        sendVenue.setReplyMarkup(inlineKeyboardMarkup);
-        sendVenue.setDisableNotification(true);
+        SendVenue sendVenue = SendVenue.builder().chatId(chatId).address(event.getAddress()).title("Адрес:")
+                .latitude((double)event.getLatitude()).longitude((double)event.getLongitude())
+                        .replyMarkup(inlineKeyboardMarkup).disableNotification(true).build();
         execute(sendVenue);
         long now = System.currentTimeMillis();
         long executeTime = now + 60000;
@@ -240,17 +222,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public SendMessage getMessage(long chatId, String text, InlineKeyboardMarkup inlineKeyboardMarkup) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage.setDisableNotification(true);
-        return sendMessage;
+        return SendMessage.builder().chatId(chatId).text(text).replyMarkup(inlineKeyboardMarkup)
+                .disableNotification(true).build();
     }
 
     public void closeApp(long chatId) throws TelegramApiException, InterruptedException {
-        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "Пока!");
-        Message sentOutMessage = execute(sendMessage);
+        Message sentOutMessage = execute(SendMessage.builder().chatId(chatId).text("Пока!").build());
         deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
     }
 }
