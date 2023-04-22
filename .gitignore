@@ -31,7 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
-/database/events.trace.db
-/database/events.mv.db
+/src/main/resources/database/events.trace.db
+/src/main/resources/database/events.mv.db
 /src/main/resources/application.yml
 logs/eventlog.log
