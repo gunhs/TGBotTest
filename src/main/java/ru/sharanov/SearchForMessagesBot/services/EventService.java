@@ -1,29 +1,31 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
-import org.springframework.context.annotation.Scope;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
+import ru.sharanov.SearchForMessagesBot.model.Guest;
+import ru.sharanov.SearchForMessagesBot.model.GuestKey;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
+import ru.sharanov.SearchForMessagesBot.repositories.GuestRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
     private final ParticipantRepository participantRepository;
-
-    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository) {
-        this.eventRepository = eventRepository;
-        this.participantRepository = participantRepository;
-    }
+    private final GuestRepository guestRepository;
 
     public void addEvent(EventDTO eventDTO) {
         Event event = new Event();
@@ -63,10 +65,10 @@ public class EventService {
         if (!eventDTO.getUrl().isEmpty()) {
             event.setUrl(eventDTO.getUrl());
         }
-        if (!(eventDTO.getLatitude()==0)) {
+        if (!(eventDTO.getLatitude() == 0)) {
             event.setLatitude(eventDTO.getLatitude());
         }
-        if (!(eventDTO.getLongitude()==0)) {
+        if (!(eventDTO.getLongitude() == 0)) {
             event.setLongitude(eventDTO.getLongitude());
         }
         eventRepository.save(event);
@@ -86,9 +88,16 @@ public class EventService {
     }
 
     public List<EventDTO> getAllEventsDTO() {
-        List<EventDTO> events = new ArrayList<>();
-        eventRepository.findAllByOrderByDateAsc().forEach(e->events.add(newEventDTO(e)));
-        return events;
+        List<EventDTO> eventDTOList = new ArrayList<>();
+        eventRepository.findAllByOrderByDateAsc().forEach(e -> eventDTOList.add(newEventDTO(e)));
+        List<Event> eventList = eventRepository.findAll();
+        eventList.forEach(e -> {
+            if (!e.getDate().isAfter(ChronoLocalDateTime.from(LocalDateTime.now()))) {
+                e.setDone(true);
+            }
+        });
+        eventRepository.saveAll(eventList);
+        return eventDTOList;
     }
 
     public EventDTO getEventDTOById(int id) {
@@ -122,5 +131,25 @@ public class EventService {
 
     public Event getEventById(String eventId) {
         return eventRepository.findById(Integer.valueOf(eventId)).orElse(null);
+    }
+
+    public void addGuest(int eventId, long participantId) {
+        Guest guest = new Guest();
+        guest.setId(new GuestKey(eventId, participantId));
+        guestRepository.save(guest);
+    }
+
+    public boolean removeGuest(int eventId, long participantId) {
+        Guest guest = guestRepository.findAll().stream().filter(g -> g.getId().getEventID() == eventId
+                && g.getId().getParticipantID() == participantId).findFirst().orElse(null);
+        if (guest != null) {
+            guestRepository.delete(guest);
+            return true;
+        } else return false;
+    }
+
+    public List<Guest> getGuestsByEventId(int eventId) {
+        return guestRepository.findAll().stream().filter(guest -> guest.getId().getEventID() == eventId)
+                .collect(Collectors.toList());
     }
 }

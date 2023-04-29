@@ -75,6 +75,10 @@ public class CommandHandler {
             telegramBot.closeApp(chatId);
         } else if (messageText.equals("past menu " + eventId)) {
             telegramBot.showFutureEvent(chatId, eventId);
+        } else if (messageText.equals("add guest " + eventId)) {
+            telegramBot.addGuest(chatId, eventId, idUser, firstName);
+        } else if (messageText.equals("remove guest " + eventId)) {
+            telegramBot.removeGuest(chatId, eventId, idUser, firstName);
         } else {
             if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {

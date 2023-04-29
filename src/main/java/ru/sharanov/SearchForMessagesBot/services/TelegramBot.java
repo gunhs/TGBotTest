@@ -17,13 +17,17 @@ import ru.sharanov.SearchForMessagesBot.config.BotConfig;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
+import ru.sharanov.SearchForMessagesBot.model.Guest;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -92,9 +96,18 @@ public class TelegramBot extends TelegramLongPollingBot {
         Event event = eventService.getEventById(eventId);
         StringBuilder participants = new StringBuilder();
         AtomicInteger number = new AtomicInteger(1);
-        event.getParticipants().forEach(p -> participants.append(number.getAndIncrement())
-                .append(". ").append(p.getName()).append(" (")
-                .append(p.getNickName() == null ? "☠" : "https://t.me/" + p.getNickName()).append(")").append("\n"));
+        List<Guest> guests = eventService.getGuestsByEventId(Integer.parseInt(eventId));
+        event.getParticipants().forEach(p -> {
+            int countOfGuests = (int) guests.stream().filter(g -> Objects.equals(g.getId().getParticipantID(),
+                    p.getUserId())).count();
+            System.out.println(countOfGuests);
+            participants.append(number.getAndIncrement())
+                    .append(". ").append(p.getName()).append(" (")
+                    .append(p.getNickName() == null ? "☠" : p.getNickName())
+                    .append(")")
+                    .append(countOfGuests == 0 ? "" : " +" + countOfGuests)
+                    .append("\n");
+        });
         String info = "Что: " + event.getEventName() + "\n" +
                 "Где: " + event.getAddress() + "\n" +
                 "Когда: " + DateTypeConverter.localDateTimeToStringConverter(event.getDate()) + "\n" +
@@ -210,8 +223,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         Event event = eventService.getEventById(eventId);
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.closeMap(eventId);
         SendVenue sendVenue = SendVenue.builder().chatId(chatId).address(event.getAddress()).title("Адрес:")
-                .latitude((double)event.getLatitude()).longitude((double)event.getLongitude())
-                        .replyMarkup(inlineKeyboardMarkup).disableNotification(true).build();
+                .latitude((double) event.getLatitude()).longitude((double) event.getLongitude())
+                .replyMarkup(inlineKeyboardMarkup).disableNotification(true).build();
         execute(sendVenue);
         long now = System.currentTimeMillis();
         long executeTime = now + 60000;
@@ -229,5 +242,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void closeApp(long chatId) throws TelegramApiException, InterruptedException {
         Message sentOutMessage = execute(SendMessage.builder().chatId(chatId).text("Пока!").build());
         deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
+    }
+
+    public void addGuest(long chatId, String eventId, long idUser, String firstName) throws TelegramApiException, InterruptedException {
+        eventService.addGuest(Integer.parseInt(eventId), idUser);
+        showMessage(chatId, firstName + " добавил гостя");
+    }
+
+    public void removeGuest(long chatId, String eventId, long idUser, String firstName) throws TelegramApiException, InterruptedException {
+        if (eventService.removeGuest(Integer.parseInt(eventId), idUser)) {
+            showMessage(chatId, firstName + " удалил гостя");
+        }
     }
 }

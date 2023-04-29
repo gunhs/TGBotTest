@@ -12,12 +12,15 @@ import java.util.List;
 public class ButtonHandler {
 
     public static InlineKeyboardMarkup controlEventButton(String eventId) {
-        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(), new ArrayList<>());
         rows.get(0).add(addButton("\uD83D\uDC83Я пойду\uD83D\uDD7A", "join event " + eventId));
         rows.get(0).add(addButton("Я не пойду\uD83D\uDEB7", "left event " + eventId));
-        rows.get(1).add(addButton("К событиям ↩️", "back"));
-        rows.get(1).add(addButton("Cледующее ⏩", "future event " + eventId));
-        rows.get(2).add(addButton("Показать на карте \uD83D\uDDFA", "show map " + eventId));
+        rows.get(1).add(addButton("Добавить гостя", "add guest " + eventId));
+        rows.get(1).add(addButton("Удалить гостя", "remove guest " + eventId));
+        rows.get(2).add(addButton("К событиям ↩️", "back"));
+        rows.get(2).add(addButton("Cледующее ⏩", "future event " + eventId));
+        rows.get(3).add(addButton("Показать на карте \uD83D\uDDFA", "show map " + eventId));
         return new InlineKeyboardMarkup(rows);
     }
 
