@@ -133,17 +133,38 @@ public class EventService {
         return eventRepository.findById(Integer.valueOf(eventId)).orElse(null);
     }
 
-    public void addGuest(int eventId, long participantId) {
-        Guest guest = new Guest();
-        guest.setId(new GuestKey(eventId, participantId));
-        guestRepository.save(guest);
+    public boolean addGuest(int eventId, long participantId) {
+        if (getEventById(String.valueOf(eventId)).getParticipants().stream().noneMatch(p -> p.getId() == participantId)) {
+            Participant participant = participantRepository.findParticipantsByUserId(participantId);
+            addParticipantInEvent(participant, String.valueOf(eventId));
+        }
+        Guest guest = guestRepository.findAll().stream().filter(g -> g.getId().getEventID() == eventId &&
+                g.getId().getParticipantID() == participantId).findFirst().orElse(null);
+        if (guest == null) {
+            guest = new Guest();
+            guest.setId(new GuestKey(eventId, participantId));
+            guest.setCount(1);
+            guestRepository.save(guest);
+            return true;
+        } else {
+            int count = guest.getCount();
+            if (count < 3) {
+                guest.setCount(count + 1);
+                guestRepository.save(guest);
+                return true;
+            } else return false;
+        }
     }
 
     public boolean removeGuest(int eventId, long participantId) {
         Guest guest = guestRepository.findAll().stream().filter(g -> g.getId().getEventID() == eventId
                 && g.getId().getParticipantID() == participantId).findFirst().orElse(null);
         if (guest != null) {
-            guestRepository.delete(guest);
+            int count = guest.getCount();
+            if (count > 0) {
+                guest.setCount(count - 1);
+                guestRepository.save(guest);
+            } else return false;
             return true;
         } else return false;
     }

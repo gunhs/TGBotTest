@@ -6,4 +6,5 @@ import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Integer> {
+    Participant findParticipantsByUserId(long id);
 }

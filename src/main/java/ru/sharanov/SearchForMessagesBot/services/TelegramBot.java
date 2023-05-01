@@ -22,9 +22,7 @@ import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -98,9 +96,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         AtomicInteger number = new AtomicInteger(1);
         List<Guest> guests = eventService.getGuestsByEventId(Integer.parseInt(eventId));
         event.getParticipants().forEach(p -> {
-            int countOfGuests = (int) guests.stream().filter(g -> Objects.equals(g.getId().getParticipantID(),
-                    p.getUserId())).count();
-            System.out.println(countOfGuests);
+            int countOfGuests = guests.stream().filter(g -> Objects.equals(g.getId().getParticipantID(),
+                    p.getUserId())).findFirst().get().getCount();
             participants.append(number.getAndIncrement())
                     .append(". ").append(p.getName()).append(" (")
                     .append(p.getNickName() == null ? "☠" : p.getNickName())
@@ -245,13 +242,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void addGuest(long chatId, String eventId, long idUser, String firstName) throws TelegramApiException, InterruptedException {
-        eventService.addGuest(Integer.parseInt(eventId), idUser);
-        showMessage(chatId, firstName + " добавил гостя");
+        if (eventService.addGuest(Integer.parseInt(eventId), idUser)) {
+            showMessage(chatId, firstName + " добавил гостя");
+        } else {
+            showMessage(chatId, "Слишком много гостей");
+        }
     }
 
     public void removeGuest(long chatId, String eventId, long idUser, String firstName) throws TelegramApiException, InterruptedException {
         if (eventService.removeGuest(Integer.parseInt(eventId), idUser)) {
             showMessage(chatId, firstName + " удалил гостя");
+        } else {
+            showMessage(chatId, "Невозможно удалить гостя");
         }
     }
 }
