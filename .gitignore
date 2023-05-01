@@ -35,3 +35,4 @@ build/
 /src/main/resources/database/events.mv.db
 /src/main/resources/application.yml
 logs/eventlog.log
+src/main/resources/application-dev.yml
