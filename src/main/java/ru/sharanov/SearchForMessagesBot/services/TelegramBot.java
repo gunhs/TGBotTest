@@ -96,8 +96,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         AtomicInteger number = new AtomicInteger(1);
         List<Guest> guests = eventService.getGuestsByEventId(Integer.parseInt(eventId));
         event.getParticipants().forEach(p -> {
-            int countOfGuests = guests.stream().filter(g -> Objects.equals(g.getId().getParticipantID(),
-                    p.getUserId())).findFirst().get().getCount();
+            Guest guest = guests.stream().filter(g -> Objects.equals(g.getId().getParticipantID(),
+                    p.getUserId())).findFirst().orElse(null);
+
+            int countOfGuests = guest != null ? guest.getCount() : 0;
             participants.append(number.getAndIncrement())
                     .append(". ").append(p.getName()).append(" (")
                     .append(p.getNickName() == null ? "☠" : p.getNickName())
