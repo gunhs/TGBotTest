@@ -36,3 +36,7 @@ build/
 /src/main/resources/application.yml
 logs/eventlog.log
 src/main/resources/application-dev.yml
+/database/events.trace.db
+/out/
+/src/main/resources/META-INF/
+/log.txt
