@@ -2,9 +2,18 @@ package ru.sharanov.SearchForMessagesBot.Handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.telegram.telegrambots.meta.api.methods.GetMe;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.BotSession;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
 import ru.sharanov.SearchForMessagesBot.services.TelegramBot;
 
@@ -26,7 +35,7 @@ public class CommandHandler {
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showMenu(chatIdMessage);
-
+            telegramBot.checkAdmin(chatIdMessage);
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }
@@ -77,7 +86,9 @@ public class CommandHandler {
             telegramBot.showFutureEvent(chatId, eventId);
         } else if (messageText.equals("add guest " + eventId)) {
             telegramBot.addGuest(chatId, eventId, idUser, firstName);
-        } else if (messageText.equals("remove guest " + eventId)) {
+        }
+        else if (messageText.equals("remove guest " + eventId))
+        {
             telegramBot.removeGuest(chatId, eventId, idUser, firstName);
         } else {
             if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
@@ -86,4 +97,6 @@ public class CommandHandler {
             }
         }
     }
+
+
 }

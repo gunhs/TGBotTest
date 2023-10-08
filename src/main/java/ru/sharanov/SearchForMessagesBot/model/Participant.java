@@ -8,6 +8,8 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +33,9 @@ public class Participant {
 
     @Column
     private Long userId;
+
+    @Column
+    private LocalDate birthday;
 
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
     private List<Event> events = new ArrayList<>();

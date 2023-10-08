@@ -2,18 +2,26 @@ package ru.sharanov.SearchForMessagesBot.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendVenue;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Handler.ButtonHandler;
 import ru.sharanov.SearchForMessagesBot.Handler.CommandHandler;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
+import ru.sharanov.SearchForMessagesBot.config.ChatIds;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
@@ -21,11 +29,11 @@ import ru.sharanov.SearchForMessagesBot.model.Guest;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -39,12 +47,19 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final EventService eventService;
     private final ParticipantService participantService;
     private final CommandHandler commandHandler;
+    private final ConfigurableEnvironment environment;
+    private final String chatAdminId;
+    private final ChatIds chatIds;
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(TelegramBot.class);
 
-    public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService) {
+    public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService,
+                       ConfigurableEnvironment environment, Environment env, @Value("${chatAdminId}") String chatAdminId, ChatIds chatIds) {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
+        this.environment = environment;
+        this.chatIds = chatIds;
+        this.chatAdminId = chatAdminId;
         commandHandler = new CommandHandler(this, eventService);
     }
 
@@ -63,6 +78,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             if (update.hasMessage() && update.getMessage().hasText()) {
                 commandHandler.messageWatcherHandler(update);
+
             } else if (update.hasCallbackQuery()) {
                 commandHandler.callBackDataHandler(update);
             }
@@ -73,6 +89,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void showMenu(long chatId) throws TelegramApiException {
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showMenuButton();
+        System.out.println(environment.getProperty("chatAdminId"));
         execute(getMessage(chatId, "Главное меню", inlineKeyboardMarkup));
     }
 
@@ -257,5 +274,43 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else {
             showMessage(chatId, "Невозможно удалить гостя");
         }
+    }
+
+    public void checkAdmin(long chatIdMessage) {
+        GetChatAdministrators getChatAdministrators = new GetChatAdministrators();
+        getChatAdministrators.setChatId(chatIdMessage);
+        try {
+            ArrayList<ChatMember> administrators = execute(getChatAdministrators);
+            // Проверка, является ли бот администратором
+            boolean isBotAdmin = false;
+            for (ChatMember administrator : administrators) {
+                User user = administrator.getUser();
+                 if (user.getFirstName() .equals(getBotUsername())) {
+                    isBotAdmin = true;
+                    break;
+                }
+            }
+            if (isBotAdmin){
+                chatIds.writePropertyToFile("chatAdminId", chatAdminId);
+//                environment.getPropertySources()
+//                        .addLast(new MapPropertySource("myConfigSource",
+//                                Collections.singletonMap("chatAdminId", chatAdminId)));
+//                Properties properties = new Properties();
+//                try {
+//                    OutputStream output = new FileOutputStream("src/main/resources/application.properties");
+//                    properties.setProperty("chatAdminId.name", "value1");
+//                    properties.store(output, null);
+//                } catch (IOException io) {
+//                    io.printStackTrace();
+//                }
+            }
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void testMessage(long chatId){
+
     }
 }
