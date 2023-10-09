@@ -13,5 +13,6 @@ public class ParticipantDTO {
     private String name;
     private String nickName;
     private long userId;
+    private long chatId;
     private List<EventDTO> eventDTOList = new ArrayList<>();
 }

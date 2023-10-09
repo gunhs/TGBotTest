@@ -24,31 +24,16 @@ public class Event {
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
     private Integer id;
-
-    @Column()
     @NotEmpty(message = "Field can't be empty")
     private String eventName;
-
-    @Column()
     @NotEmpty(message = "Field can't be empty")
     private String address;
-
-    @Column()
     @NotNull(message = "Choose date")
     private LocalDateTime date;
-
-    @Column()
     private boolean done;
-
-    @Column()
     private String url;
-
-    @Column()
     private Float latitude;
-
-    @Column()
     private Float longitude;
-
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -59,6 +44,7 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
+    @ToString.Exclude
     private List<Participant> participants;
 
     public void addParticipant(Participant participant) {

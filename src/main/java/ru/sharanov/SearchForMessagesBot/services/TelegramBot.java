@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators;
@@ -21,7 +19,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Handler.ButtonHandler;
 import ru.sharanov.SearchForMessagesBot.Handler.CommandHandler;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
-import ru.sharanov.SearchForMessagesBot.config.ChatIds;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
@@ -29,11 +26,11 @@ import ru.sharanov.SearchForMessagesBot.model.Guest;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -49,16 +46,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final CommandHandler commandHandler;
     private final ConfigurableEnvironment environment;
     private final String chatAdminId;
-    private final ChatIds chatIds;
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(TelegramBot.class);
 
     public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService,
-                       ConfigurableEnvironment environment, Environment env, @Value("${chatAdminId}") String chatAdminId, ChatIds chatIds) {
+                       ConfigurableEnvironment environment, @Value("${chatAdminId}") String chatAdminId) {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
         this.environment = environment;
-        this.chatIds = chatIds;
         this.chatAdminId = chatAdminId;
         commandHandler = new CommandHandler(this, eventService);
     }
@@ -154,7 +149,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         participantDTO.setName(firstName);
         participantDTO.setNickName(nickName);
         participantDTO.setUserId(userId);
-        participantService.addParticipant(participantDTO, eventId);
+        participantDTO.setChatId(chatId);
+        participantService.addParticipant(participantDTO, eventId, chatId);
         showMessage(chatId, firstName + "  теперь участвует в мероприятии " + eventName);
         logger.info(firstName + " присоеденился к " + eventName);
     }
@@ -192,13 +188,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         participantDTO.setName(firstName);
         participantDTO.setNickName(userName);
         participantDTO.setUserId(idUser);
+        participantDTO.setChatId(chatId);
         for (EventDTO e : eventService.getAllEventsDTO()) {
             if (eventService.getEventById(String.valueOf(e.getId())).getParticipants()
                     .stream().map(Participant::getUserId).toList().contains(idUser)) {
                 showMessage(chatId, firstName + ", Вы уже добавлены на мероприятие " + e.getEventName());
                 continue;
             }
-            participantService.addParticipant(participantDTO, String.valueOf(e.getId()));
+            participantService.addParticipant(participantDTO, String.valueOf(e.getId()), chatId);
         }
         showMessage(chatId, firstName + "  теперь участвует во всех мероприятиях");
         logger.info(firstName + " присоеденился ко всем мероприятиям");
@@ -282,16 +279,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             ArrayList<ChatMember> administrators = execute(getChatAdministrators);
             // Проверка, является ли бот администратором
-            boolean isBotAdmin = false;
             for (ChatMember administrator : administrators) {
                 User user = administrator.getUser();
                  if (user.getFirstName() .equals(getBotUsername())) {
-                    isBotAdmin = true;
-                    break;
-                }
+//                     chatIds.writePropertyToFile("chatAdminId", chatAdminId);
+                     System.out.println(chatIdMessage);
+                     break;
+                 }
             }
-            if (isBotAdmin){
-                chatIds.writePropertyToFile("chatAdminId", chatAdminId);
 //                environment.getPropertySources()
 //                        .addLast(new MapPropertySource("myConfigSource",
 //                                Collections.singletonMap("chatAdminId", chatAdminId)));
@@ -303,14 +298,15 @@ public class TelegramBot extends TelegramLongPollingBot {
 //                } catch (IOException io) {
 //                    io.printStackTrace();
 //                }
-            }
+
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
 
-    public void testMessage(long chatId){
+    public void testMessage(long chatId) throws TelegramApiException, InterruptedException {
 
+        showMessage(Long.parseLong(chatAdminId), "Слишком много гостей");
     }
 }

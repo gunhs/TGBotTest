@@ -9,7 +9,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,20 +23,14 @@ public class Participant {
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
     private Integer id;
-
-    @Column
     private String name;
-
-    @Column
     private String nickName;
-
-    @Column
     private Long userId;
-
-    @Column
     private LocalDate birthday;
+    private Long chatId;
 
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
+    @ToString.Exclude
     private List<Event> events = new ArrayList<>();
 
     @Override

@@ -20,7 +20,7 @@ public class ParticipantService {
         this.eventRepository = eventRepository;
     }
 
-    public void addParticipant(ParticipantDTO participantDTO, String eventId) {
+    public void addParticipant(ParticipantDTO participantDTO, String eventId, Long chatId) {
         Participant participant = new Participant();
         if (checkUserId(participantDTO.getUserId())) {
             participant = getParticipantByUserId(participantDTO.getUserId());
@@ -28,6 +28,7 @@ public class ParticipantService {
             participant.setName(participantDTO.getName());
             participant.setNickName(participantDTO.getNickName());
             participant.setUserId(participantDTO.getUserId());
+            participant.setChatId(chatId);
             participantRepository.save(participant);
         }
         eventService.addParticipantInEvent(participant, eventId);

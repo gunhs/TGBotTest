@@ -134,7 +134,8 @@ public class EventService {
     }
 
     public boolean addGuest(int eventId, long participantId) {
-        if (getEventById(String.valueOf(eventId)).getParticipants().stream().noneMatch(p -> p.getId() == participantId)) {
+        if (getEventById(String.valueOf(eventId)).getParticipants().stream()
+                .noneMatch(p -> p.getUserId() == participantId)) {
             Participant participant = participantRepository.findParticipantsByUserId(participantId);
             addParticipantInEvent(participant, String.valueOf(eventId));
         }
