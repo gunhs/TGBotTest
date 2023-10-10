@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Handler.ButtonHandler;
 import ru.sharanov.SearchForMessagesBot.Handler.CommandHandler;
+import ru.sharanov.SearchForMessagesBot.Sheduler.Birthday;
 import ru.sharanov.SearchForMessagesBot.config.BotConfig;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
@@ -46,16 +48,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final CommandHandler commandHandler;
     private final ConfigurableEnvironment environment;
     private final String chatAdminId;
+    private final Birthday birthday;
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(TelegramBot.class);
 
     public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService,
-                       ConfigurableEnvironment environment, @Value("${chatAdminId}") String chatAdminId) {
+                       ConfigurableEnvironment environment, @Value("${chatAdminId}") String chatAdminId, Birthday birthday) {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
         this.environment = environment;
         this.chatAdminId = chatAdminId;
         commandHandler = new CommandHandler(this, eventService);
+        this.birthday = birthday;
     }
 
     @Override
@@ -281,11 +285,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             // Проверка, является ли бот администратором
             for (ChatMember administrator : administrators) {
                 User user = administrator.getUser();
-                 if (user.getFirstName() .equals(getBotUsername())) {
+                if (user.getFirstName().equals(getBotUsername())) {
 //                     chatIds.writePropertyToFile("chatAdminId", chatAdminId);
-                     System.out.println(chatIdMessage);
-                     break;
-                 }
+                    System.out.println(chatIdMessage);
+                    break;
+                }
             }
 //                environment.getPropertySources()
 //                        .addLast(new MapPropertySource("myConfigSource",
@@ -304,9 +308,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-
-    public void testMessage(long chatId) throws TelegramApiException, InterruptedException {
-
-        showMessage(Long.parseLong(chatAdminId), "Слишком много гостей");
+    @Scheduled(fixedRateString = "P1D")
+    public void congratulation() throws TelegramApiException, InterruptedException {
+        String namesakes = birthday.checkBirthday();
+        if (!namesakes.isEmpty()) {
+            showMessage(Long.parseLong(chatAdminId), "Сегодня день рождения у " + namesakes + "!!! " +
+                    "Поздравляем! ");
+        }
     }
 }
