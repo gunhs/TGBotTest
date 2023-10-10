@@ -24,14 +24,18 @@ public class CommandHandler {
         String textMessage = update.getMessage().getText();
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/start")) {
-            telegramBot.showMessage(update.getMessage().getChatId(),
+            telegramBot.showMessage(chatIdMessage,
                     "Нажмите кнопку \"Меню\"\nPress \"Menu\" Button");
         }
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showMenu(chatIdMessage);
             telegramBot.checkAdmin(chatIdMessage);
+            telegramBot.helloMessage(chatIdMessage);
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
+        }
+        if (textMessage.matches("мой день рождения \\d.+")) {
+            telegramBot.addBirthday(chatIdMessage, textMessage, update.getMessage().getFrom().getId());
         }
     }
 

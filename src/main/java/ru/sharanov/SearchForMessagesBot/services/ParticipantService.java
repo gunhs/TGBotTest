@@ -1,11 +1,14 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
 import org.springframework.stereotype.Service;
+import ru.sharanov.SearchForMessagesBot.Handler.ConvertMonth;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
+
+import java.time.LocalDate;
 
 @Service
 public class ParticipantService {
@@ -49,5 +52,34 @@ public class ParticipantService {
     public Participant getParticipantByUserId(long userId) {
         return participantRepository.findAll().stream()
                 .filter(p -> p.getUserId() == userId).findFirst().orElse(null);
+    }
+
+    public void addBirthdayInDB(String text, Participant participant) {
+        text = text.replaceAll("мой день рождения ", "").strip();
+        text = text.replaceAll("\\s+", ".");
+        if (!text.matches("\\d{1,2}\\.[А-яa-zA-Z0-9]+\\.\\d{2,4}")) {
+            return;
+        }
+        String[] components = text.split("\\.");
+        int monthDigital;
+        int yearDigital;
+        if (!(components.length == 2 || components.length == 3)) {
+            return;
+        }
+        if (components.length != 3) {
+            yearDigital = 1900;
+        } else {
+            yearDigital = Integer.parseInt(components[2]);
+        }
+        String month = components[1];
+        if (month.matches("\\[А-яa-zA-Z]")) {
+            monthDigital = ConvertMonth.convertMonthWordInDigital(month);
+        } else {
+            monthDigital = Integer.parseInt(month);
+        }
+        LocalDate birthday = LocalDate.of(Integer.parseInt(components[0]),
+                monthDigital, yearDigital);
+        participant.setBirthday(birthday);
+        participantRepository.save(participant);
     }
 }

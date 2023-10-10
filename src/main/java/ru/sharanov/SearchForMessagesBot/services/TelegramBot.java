@@ -52,7 +52,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(TelegramBot.class);
 
     public TelegramBot(BotConfig config, EventService eventService, ParticipantService participantService,
-                       ConfigurableEnvironment environment, @Value("${chatAdminId}") String chatAdminId, Birthday birthday) {
+                       ConfigurableEnvironment environment, @Value("${chatAdminId}") String chatAdminId,
+                       Birthday birthday) throws TelegramApiException, InterruptedException {
         this.config = config;
         this.eventService = eventService;
         this.participantService = participantService;
@@ -60,6 +61,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.chatAdminId = chatAdminId;
         commandHandler = new CommandHandler(this, eventService);
         this.birthday = birthday;
+        congratulation();
     }
 
     @Override
@@ -171,7 +173,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             showMessage(chatId, name + "  больше не участвует в мероприятии");
             participantService.delParticipant(idUser, eventId);
         }
-        logger.info(participant.getName() + " больше не участвует в " + eventService.getEventById(eventId).getEventName());
+        logger.info(participant.getName() + " больше не участвует в "
+                + eventService.getEventById(eventId).getEventName());
     }
 
     public void showMessage(long chatId, String textToSend) throws TelegramApiException, InterruptedException {
@@ -258,10 +261,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void closeApp(long chatId) throws TelegramApiException, InterruptedException {
         Message sentOutMessage = execute(SendMessage.builder().chatId(chatId).text("Пока!").build());
-        deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
+        deleteMessage(chatId, sentOutMessage.getMessageId(), 5);
     }
 
-    public void addGuest(long chatId, String eventId, long idUser, String firstName) throws TelegramApiException, InterruptedException {
+    public void addGuest(long chatId, String eventId, long idUser, String firstName)
+            throws TelegramApiException, InterruptedException {
         if (eventService.addGuest(Integer.parseInt(eventId), idUser)) {
             showMessage(chatId, firstName + " добавил гостя");
         } else {
@@ -269,7 +273,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void removeGuest(long chatId, String eventId, long idUser, String firstName) throws TelegramApiException, InterruptedException {
+    public void removeGuest(long chatId, String eventId, long idUser, String firstName)
+            throws TelegramApiException, InterruptedException {
         if (eventService.removeGuest(Integer.parseInt(eventId), idUser)) {
             showMessage(chatId, firstName + " удалил гостя");
         } else {
@@ -282,38 +287,46 @@ public class TelegramBot extends TelegramLongPollingBot {
         getChatAdministrators.setChatId(chatIdMessage);
         try {
             ArrayList<ChatMember> administrators = execute(getChatAdministrators);
-            // Проверка, является ли бот администратором
             for (ChatMember administrator : administrators) {
                 User user = administrator.getUser();
                 if (user.getFirstName().equals(getBotUsername())) {
-//                     chatIds.writePropertyToFile("chatAdminId", chatAdminId);
                     System.out.println(chatIdMessage);
                     break;
                 }
             }
-//                environment.getPropertySources()
-//                        .addLast(new MapPropertySource("myConfigSource",
-//                                Collections.singletonMap("chatAdminId", chatAdminId)));
-//                Properties properties = new Properties();
-//                try {
-//                    OutputStream output = new FileOutputStream("src/main/resources/application.properties");
-//                    properties.setProperty("chatAdminId.name", "value1");
-//                    properties.store(output, null);
-//                } catch (IOException io) {
-//                    io.printStackTrace();
-//                }
-
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
 
-    @Scheduled(fixedRateString = "P1D")
+    @Scheduled(fixedRateString = "PT1M")
     public void congratulation() throws TelegramApiException, InterruptedException {
         String namesakes = birthday.checkBirthday();
         if (!namesakes.isEmpty()) {
             showMessage(Long.parseLong(chatAdminId), "Сегодня день рождения у " + namesakes + "!!! " +
                     "Поздравляем! ");
         }
+    }
+
+    public void addBirthday(long chatId, String text, long userId) throws TelegramApiException, InterruptedException {
+        Participant participant = participantService.getParticipantByUserId(userId);
+        if (participant == null) {
+            showMessage(chatId, "Вы не записывались на мероприятия");
+            return;
+        }
+        participantService.addBirthdayInDB(text, participant);
+        showMessage(chatId, participant.getName() + "внёс информацию о своём дне рождения");
+    }
+
+    public void helloMessage(long chatIdMessage) throws TelegramApiException, InterruptedException {
+        Message sentOutMessage = execute(SendMessage.builder().chatId(chatIdMessage).text("""
+                Привет! Я бот и живу в этом чате
+                Я покажу какие меропрития ожидаюся, а так же какие меропритяи уже прошли
+                А ещё я умею запоминать дни рождения
+                Напишите: мой день рождения и укажите дату
+                Например:
+                мой день рождения 1 января 2021
+                Правда я запомнию дни рождения только тех, кто ходит на мероприятия 😉""").build());
+        deleteMessage(chatIdMessage, sentOutMessage.getMessageId(), 60000);
     }
 }

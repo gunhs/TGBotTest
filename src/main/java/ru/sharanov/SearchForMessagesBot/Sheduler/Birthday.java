@@ -20,11 +20,9 @@ public class Birthday {
         LocalDateTime today = LocalDateTime.now();
         List<String> participants = new ArrayList<>();
         if (today.getHour() == 0 && today.getMinute() == 1) {
-            participantRepository.findAll().stream().forEach(p -> {
-                if (p.getBirthday().getDayOfYear() == today.getDayOfYear()) {
-                    participants.add(p.getName());
-                }
-            });
+            participantRepository.findAll().stream()
+                    .filter(p -> p.getBirthday().getDayOfYear() == today.getDayOfYear())
+                    .forEach(p -> participants.add(p.getName()));
         }
         if (!participants.isEmpty()) {
             return String.join(",", participants);

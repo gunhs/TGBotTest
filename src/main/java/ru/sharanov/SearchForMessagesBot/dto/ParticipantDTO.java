@@ -3,6 +3,7 @@ package ru.sharanov.SearchForMessagesBot.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,5 +15,6 @@ public class ParticipantDTO {
     private String nickName;
     private long userId;
     private long chatId;
+    private LocalDate birthday;
     private List<EventDTO> eventDTOList = new ArrayList<>();
 }
