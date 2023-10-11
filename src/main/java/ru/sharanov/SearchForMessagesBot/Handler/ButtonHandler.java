@@ -53,10 +53,12 @@ public class ButtonHandler {
     }
 
     public static InlineKeyboardMarkup showMenuButton() {
-        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(), new ArrayList<>());
         rows.get(0).add(addButton("Ближайшие мероприятия", "future events"));
         rows.get(1).add(addButton("Прошедшие мероприятия", "past events"));
-        rows.get(2).add(addButton("Выйти", "quit button"));
+        rows.get(2).add(addButton("Дни рождения", "birthdays"));
+        rows.get(3).add(addButton("Выйти", "quit button"));
         return new InlineKeyboardMarkup(rows);
     }
 

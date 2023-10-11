@@ -9,6 +9,9 @@ import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ParticipantService {
@@ -61,6 +64,7 @@ public class ParticipantService {
             return;
         }
         String[] components = text.split("\\.");
+        int dayDigital = Integer.parseInt(components[0]);
         int monthDigital;
         int yearDigital;
         if (!(components.length == 2 || components.length == 3)) {
@@ -72,14 +76,32 @@ public class ParticipantService {
             yearDigital = Integer.parseInt(components[2]);
         }
         String month = components[1];
-        if (month.matches("\\[А-яa-zA-Z]")) {
+        if (month.matches("[А-яa-zA-Z]+")) {
             monthDigital = ConvertMonth.convertMonthWordInDigital(month);
         } else {
             monthDigital = Integer.parseInt(month);
         }
-        LocalDate birthday = LocalDate.of(Integer.parseInt(components[0]),
-                monthDigital, yearDigital);
+        System.out.println("Посмотрим что у нас получилось: " + dayDigital + "." + monthDigital + "." + yearDigital);
+        LocalDate birthday = LocalDate.of(yearDigital,
+                monthDigital, dayDigital);
         participant.setBirthday(birthday);
+        System.out.println("Сохрнаяем в БД день рождения");
         participantRepository.save(participant);
+    }
+
+    public List<Participant> getAllParticipants() {
+        return participantRepository.findAll();
+    }
+
+    public String getNamesakes() {
+        List<String> participants = new ArrayList<>();
+        participantRepository.findAll().stream()
+                .filter(p -> p.getBirthday().getDayOfYear() == LocalDateTime.now().getDayOfYear())
+                .forEach(p -> participants.add(p.getName()));
+        if (!participants.isEmpty()) {
+            return String.join(",", participants);
+        } else {
+            return "";
+        }
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -183,6 +184,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 10000);
     }
 
+    @Async
     public void deleteMessage(long chatId, int messageId, long time)
             throws InterruptedException, TelegramApiException {
         sleep(time);
@@ -299,9 +301,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    @Scheduled(fixedRateString = "PT1M")
     public void congratulation() throws TelegramApiException, InterruptedException {
-        String namesakes = birthday.checkBirthday();
+        String namesakes = participantService.getNamesakes();
         if (!namesakes.isEmpty()) {
             showMessage(Long.parseLong(chatAdminId), "Сегодня день рождения у " + namesakes + "!!! " +
                     "Поздравляем! ");
@@ -315,18 +316,37 @@ public class TelegramBot extends TelegramLongPollingBot {
             return;
         }
         participantService.addBirthdayInDB(text, participant);
-        showMessage(chatId, participant.getName() + "внёс информацию о своём дне рождения");
+        showMessage(chatId, participant.getName() + " внёс информацию о своём дне рождения");
     }
 
-    public void helloMessage(long chatIdMessage) throws TelegramApiException, InterruptedException {
+    public void helloMessage(long chatIdMessage) throws TelegramApiException {
         Message sentOutMessage = execute(SendMessage.builder().chatId(chatIdMessage).text("""
                 Привет! Я бот и живу в этом чате
-                Я покажу какие меропрития ожидаюся, а так же какие меропритяи уже прошли
-                А ещё я умею запоминать дни рождения
+                Я покажу, какие мероприятия ожидаюся, а какие - уже прошли.
+                А ещё я умею запоминать дни рождения!
                 Напишите: мой день рождения и укажите дату
                 Например:
                 мой день рождения 1 января 2021
-                Правда я запомнию дни рождения только тех, кто ходит на мероприятия 😉""").build());
-        deleteMessage(chatIdMessage, sentOutMessage.getMessageId(), 60000);
+                мой день рождения 2 февраля
+                мой день рождения 3.03.2023
+                Правда, я запоминаю дни рождения только тех, кто ходит на мероприятия 😉""").build());
+        new Thread(() -> {
+            try {
+                deleteMessage(chatIdMessage, sentOutMessage.getMessageId(), 10000);
+            } catch (InterruptedException | TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    public void showBirthdays(long chatId) throws TelegramApiException, InterruptedException {
+        StringBuilder participants = new StringBuilder();
+        participantService.getAllParticipants().stream().filter(p -> p.getBirthday() != null).forEach(p -> {
+            participants.append(p.getName()).append(" - ").append(p.getBirthday()).append("\n");
+        });
+        Message sentOutMessage = execute(
+                SendMessage.builder().chatId(String.valueOf(chatId)).text(participants.toString())
+                        .disableNotification(true).build());
+        deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 60000);
     }
 }

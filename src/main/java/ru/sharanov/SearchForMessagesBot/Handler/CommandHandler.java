@@ -34,7 +34,7 @@ public class CommandHandler {
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }
-        if (textMessage.matches("мой день рождения \\d.+")) {
+        if (textMessage.matches("мой день рождения\\s+\\d.+")) {
             telegramBot.addBirthday(chatIdMessage, textMessage, update.getMessage().getFrom().getId());
         }
     }
@@ -86,7 +86,10 @@ public class CommandHandler {
             telegramBot.addGuest(chatId, eventId, idUser, firstName);
         } else if (messageText.equals("remove guest " + eventId)) {
             telegramBot.removeGuest(chatId, eventId, idUser, firstName);
-        } else {
+        } else if (messageText.equals("birthdays")) {
+            telegramBot.showBirthdays(chatId);
+        }
+        else {
             if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {
                 telegramBot.selectEvent(chatId, messageText);
