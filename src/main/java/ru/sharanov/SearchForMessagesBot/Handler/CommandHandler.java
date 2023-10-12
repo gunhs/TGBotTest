@@ -34,7 +34,7 @@ public class CommandHandler {
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }
-        if (textMessage.matches("мой день рождения\\s+\\d.+")) {
+        if (textMessage.matches("(м|М)ой день рождения\\s+\\d.+")) {
             telegramBot.addBirthday(chatIdMessage, textMessage, update.getMessage().getFrom().getId());
         }
     }

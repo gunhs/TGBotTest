@@ -1,4 +1,4 @@
-package ru.sharanov.SearchForMessagesBot.Handler;
+package ru.sharanov.SearchForMessagesBot.utils;
 
 public class ConvertMonth {
 

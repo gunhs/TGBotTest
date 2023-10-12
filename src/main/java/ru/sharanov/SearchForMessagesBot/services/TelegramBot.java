@@ -3,7 +3,6 @@ package ru.sharanov.SearchForMessagesBot.services;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -30,6 +29,7 @@ import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,14 +90,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
                 .filter(e -> (e.getDate().isAfter(LocalDateTime.now()))).collect(Collectors.toList());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showFutureEventButton(events);
-        execute(getMessage(chatId, "Выберите меропиятие:", inlineKeyboardMarkup));
+        execute(getMessage(chatId, "Выберите мероприятие:", inlineKeyboardMarkup));
     }
 
     public void showPastEventsButton(long chatId) throws TelegramApiException {
         List<EventDTO> events = eventService.getAllEventsDTO().stream()
                 .filter(e -> (!e.getDate().isAfter(LocalDateTime.now()))).collect(Collectors.toList());
         InlineKeyboardMarkup inlineKeyboardMarkup = ButtonHandler.showPastEventButton(events);
-        execute(getMessage(chatId, "Выберите меропиятие:", inlineKeyboardMarkup));
+        execute(getMessage(chatId, "Выберите мероприятие:", inlineKeyboardMarkup));
     }
 
     public void showFutureEvent(long chatId, String eventId) throws TelegramApiException {
@@ -203,7 +203,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             participantService.addParticipant(participantDTO, String.valueOf(e.getId()), chatId);
         }
         showMessage(chatId, firstName + "  теперь участвует во всех мероприятиях", 10000);
-        logger.info(firstName + " присоеденился ко всем мероприятиям");
+        logger.info(firstName + " присоединился ко всем мероприятиям");
     }
 
     public String getNextFutureEventId(String eventId) {
@@ -292,9 +292,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
     @Scheduled(cron = "0 00 12 * * *")
     public void congratulation() throws TelegramApiException {
-        String namesakes = participantService.getNamesakes();
+        String namesakes = participantService.getNamesakes(Long.parseLong(chatAdminId));
         if (!namesakes.isEmpty()) {
             showMessage(Long.parseLong(chatAdminId), "Сегодня день рождения у " + namesakes + "!!! " +
                     "Поздравляем! ", 43200000);
@@ -327,9 +328,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void showBirthdays(long chatId) throws TelegramApiException {
         StringBuilder participants = new StringBuilder();
-        participantService.getAllParticipants().stream().filter(p -> p.getBirthday() != null).forEach(p -> {
-            participants.append(p.getName()).append(" - ").append(p.getBirthday()).append("\n");
-        });
+        List<ParticipantDTO> participantList = participantService.getAllParticipants(chatAdminId);
+        Collections.sort(participantList);
+        participantList.stream()
+                .filter(p -> p.getBirthday() != null)
+                .filter(p -> p.getChatId() == Long.parseLong(chatAdminId))
+                .forEach(p -> participants.append(p.getName()).append(" - ")
+                        .append(DateTypeConverter.localDateToStringConverter(p.getBirthday())).append("\n"));
         Message sentOutMessage = execute(
                 SendMessage.builder().chatId(String.valueOf(chatId)).text(participants.toString())
                         .disableNotification(true).build());
