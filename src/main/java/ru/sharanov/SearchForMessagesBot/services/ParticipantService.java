@@ -11,7 +11,9 @@ import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ParticipantService {
@@ -58,9 +60,9 @@ public class ParticipantService {
     }
 
     public void addBirthdayInDB(String text, Participant participant) {
-        text = text.replaceAll("мой день рождения ", "").strip();
+        text = text.replaceAll("мой день рождения", "").strip();
         text = text.replaceAll("\\s+", ".");
-        if (!text.matches("\\d{1,2}\\.[А-яa-zA-Z0-9]+\\.\\d{2,4}")) {
+        if (!text.matches("\\d{1,2}\\.[А-яa-zA-Z0-9]{1,8}(\\.\\d{2,4})?")) {
             return;
         }
         String[] components = text.split("\\.");
@@ -70,22 +72,13 @@ public class ParticipantService {
         if (!(components.length == 2 || components.length == 3)) {
             return;
         }
-        if (components.length != 3) {
-            yearDigital = 1900;
-        } else {
-            yearDigital = Integer.parseInt(components[2]);
-        }
+        yearDigital = components.length != 3? 1900: Integer.parseInt(components[2]);
         String month = components[1];
-        if (month.matches("[А-яa-zA-Z]+")) {
-            monthDigital = ConvertMonth.convertMonthWordInDigital(month);
-        } else {
-            monthDigital = Integer.parseInt(month);
-        }
-        System.out.println("Посмотрим что у нас получилось: " + dayDigital + "." + monthDigital + "." + yearDigital);
+        monthDigital = month.matches("[А-яa-zA-Z]+") ? ConvertMonth.convertMonthWordInDigital(month) :
+                Integer.parseInt(month);
         LocalDate birthday = LocalDate.of(yearDigital,
                 monthDigital, dayDigital);
         participant.setBirthday(birthday);
-        System.out.println("Сохрнаяем в БД день рождения");
         participantRepository.save(participant);
     }
 
@@ -96,12 +89,9 @@ public class ParticipantService {
     public String getNamesakes() {
         List<String> participants = new ArrayList<>();
         participantRepository.findAll().stream()
+                .filter(p -> p.getBirthday() != null)
                 .filter(p -> p.getBirthday().getDayOfYear() == LocalDateTime.now().getDayOfYear())
                 .forEach(p -> participants.add(p.getName()));
-        if (!participants.isEmpty()) {
-            return String.join(",", participants);
-        } else {
-            return "";
-        }
+        return !participants.isEmpty() ? String.join(",", participants) : "";
     }
 }

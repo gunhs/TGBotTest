@@ -25,7 +25,7 @@ public class CommandHandler {
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/start")) {
             telegramBot.showMessage(chatIdMessage,
-                    "Нажмите кнопку \"Меню\"\nPress \"Menu\" Button");
+                    "Нажмите кнопку \"Меню\"\nPress \"Menu\" Button", 10000);
         }
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showMenu(chatIdMessage);
