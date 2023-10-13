@@ -1,5 +1,6 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.model.Event;
@@ -19,25 +20,46 @@ public class ParticipantService {
     private final ParticipantRepository participantRepository;
     private final EventService eventService;
     private final EventRepository eventRepository;
+    private final String chatAdminId;
 
-    public ParticipantService(ParticipantRepository participantRepository, EventService eventService, EventRepository eventRepository) {
+    public ParticipantService(ParticipantRepository participantRepository, EventService eventService,
+                              EventRepository eventRepository, @Value("${chatAdminId}") String chatAdminId) {
         this.participantRepository = participantRepository;
         this.eventService = eventService;
         this.eventRepository = eventRepository;
+        this.chatAdminId = chatAdminId;
+        deleteMethod();
     }
 
-    public void addParticipant(ParticipantDTO participantDTO, String eventId, Long chatId) {
+    public void addParticipant(String eventId, long chatId, String firstName,
+                               String nickName, long userId) {
+        boolean chatMember = chatId == Long.parseLong(chatAdminId);
+        ParticipantDTO participantDTO = createParticipantDTO(firstName, nickName, userId, chatMember);
         Participant participant = new Participant();
-        if (checkUserId(participantDTO.getUserId())) {
-            participant = getParticipantByUserId(participantDTO.getUserId());
+        if (checkUserId(userId)) {
+            participant = getParticipantByUserId(userId);
+            if (chatMember && !participant.isChatMember()) {
+                participant.setChatMember(true);
+                participantRepository.save(participant);
+            }
         } else {
             participant.setName(participantDTO.getName());
             participant.setNickName(participantDTO.getNickName());
             participant.setUserId(participantDTO.getUserId());
-            participant.setChatId(chatId);
+            participant.setChatMember(chatMember);
             participantRepository.save(participant);
         }
         eventService.addParticipantInEvent(participant, eventId);
+    }
+
+    private ParticipantDTO createParticipantDTO(String firstName,
+                                                String nickName, long userId, boolean chatMember) {
+        ParticipantDTO participantDTO = new ParticipantDTO();
+        participantDTO.setName(firstName);
+        participantDTO.setNickName(nickName);
+        participantDTO.setUserId(userId);
+        participantDTO.setChatMember(chatMember);
+        return participantDTO;
     }
 
     public void delParticipant(long idUser, String eventId) {
@@ -57,20 +79,24 @@ public class ParticipantService {
                 .filter(p -> p.getUserId() == userId).findFirst().orElse(null);
     }
 
-    public void addBirthdayInDB(String text, Participant participant) {
+    public boolean addBirthdayInDB(String text, Participant participant) {
         text = text.replaceAll("мой день рождения", "").strip();
         text = text.replaceAll("\\s+", ".");
-        if (!text.matches("\\d{1,2}\\.[А-яa-zA-Z0-9]{1,8}(\\.\\d{2,4})?")) {
-            return;
+        if (!text.matches("\\d{1,2}\\.[А-яa-zA-Z0-9]{1,8}(\\.\\d{4})?")) {
+            return false;
         }
         String[] components = text.split("\\.");
         int dayDigital = Integer.parseInt(components[0]);
         int monthDigital;
         int yearDigital;
         if (!(components.length == 2 || components.length == 3)) {
-            return;
+            return false;
         }
-        yearDigital = components.length != 3 ? 1900 : Integer.parseInt(components[2]);
+        yearDigital = components.length != 3 ? 1000 : Integer.parseInt(components[2]);
+        if (yearDigital > LocalDate.now().getYear() ||
+                ((yearDigital < LocalDate.now().getYear() - 120) && (yearDigital != 1000))) {
+            return false;
+        }
         String month = components[1];
         monthDigital = month.matches("[А-яa-zA-Z]+") ? ConvertMonth.convertMonthWordInDigital(month) :
                 Integer.parseInt(month);
@@ -78,36 +104,34 @@ public class ParticipantService {
                 monthDigital, dayDigital);
         participant.setBirthday(birthday);
         participantRepository.save(participant);
+        return true;
     }
 
-    public List<ParticipantDTO> getAllParticipants(String chatId) {
+    public List<ParticipantDTO> getAllParticipants() {
         List<ParticipantDTO> result = new ArrayList<>();
         participantRepository.findAll().forEach(p -> {
-            ParticipantDTO participantDTO = new ParticipantDTO();
-            participantDTO.setName(p.getName());
-            participantDTO.setNickName(p.getNickName());
+            ParticipantDTO participantDTO = createParticipantDTO(p.getName(),
+                    p.getNickName(), p.getUserId(), p.isChatMember());
             participantDTO.setId(p.getId());
-            participantDTO.setBirthday(p.getBirthday());
-            participantDTO.setUserId(p.getUserId());
-            if (p.getChatId() == null) {
-                participantDTO.setChatId(Long.parseLong(chatId));
-            } else {
-                participantDTO.setChatId(p.getChatId());
-            }
             if (p.getBirthday() != null) {
+                participantDTO.setBirthday(p.getBirthday());
                 result.add(participantDTO);
             }
         });
         return result;
     }
 
-    public String getNamesakes(long chatId) {
+    public String getNamesakes() {
         List<String> participants = new ArrayList<>();
-        participantRepository.findAll().stream()
-                .filter(p -> p.getChatId() == chatId)
+        List<Participant> users = participantRepository.findAll();
+        users.stream().filter(Participant::isChatMember)
                 .filter(p -> p.getBirthday() != null)
                 .filter(p -> p.getBirthday().getDayOfYear() == LocalDateTime.now().getDayOfYear())
                 .forEach(p -> participants.add(p.getName()));
         return !participants.isEmpty() ? String.join(",", participants) : "";
+    }
+
+    private void deleteMethod(){
+        participantRepository.findAll().forEach(p->p.setChatMember(true));
     }
 }

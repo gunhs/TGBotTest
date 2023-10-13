@@ -27,7 +27,7 @@ public class Participant {
     private String nickName;
     private Long userId;
     private LocalDate birthday;
-    private Long chatId;
+    private boolean chatMember;
 
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
     @ToString.Exclude

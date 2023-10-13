@@ -29,12 +29,12 @@ public class CommandHandler {
         }
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showMenu(chatIdMessage);
-            telegramBot.checkAdmin(chatIdMessage);
+//            telegramBot.checkAdmin(chatIdMessage);
             telegramBot.helloMessage(chatIdMessage);
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }
-        if (textMessage.matches("(м|М)ой день рождения\\s+\\d.+")) {
+        if (textMessage.toLowerCase().matches("мой день рождения\\s+\\d.+")) {
             telegramBot.addBirthday(chatIdMessage, textMessage, update.getMessage().getFrom().getId());
         }
     }
@@ -45,10 +45,7 @@ public class CommandHandler {
         String userName = update.getCallbackQuery().getFrom().getUserName();
         String messageText = update.getCallbackQuery().getData();
         String[] components = messageText.split("\\s", 3);
-        String eventId = "";
-        if (components.length == 3) {
-            eventId = components[2];
-        }
+        String eventId = components.length == 3 ? components[2] : "";
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         telegramBot.deleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId(), 10);
         logger.info(firstName + " (" + userName + ") click: " + messageText);
@@ -87,9 +84,8 @@ public class CommandHandler {
         } else if (messageText.equals("remove guest " + eventId)) {
             telegramBot.removeGuest(chatId, eventId, idUser, firstName);
         } else if (messageText.equals("birthdays")) {
-            telegramBot.showBirthdays(chatId);
-        }
-        else {
+            telegramBot.showBirthdays(chatId, idUser);
+        } else {
             if (eventService.getAllEventsDTO().stream().map(e -> String.valueOf(e.getId()))
                     .toList().contains(messageText)) {
                 telegramBot.selectEvent(chatId, messageText);

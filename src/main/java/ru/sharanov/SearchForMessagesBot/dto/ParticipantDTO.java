@@ -15,7 +15,7 @@ public class ParticipantDTO implements Comparable<ParticipantDTO> {
     private String name;
     private String nickName;
     private long userId;
-    private long chatId;
+    private boolean chatMember;
     private LocalDate birthday;
     private List<EventDTO> eventDTOList = new ArrayList<>();
 
