@@ -264,6 +264,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         showMessage(chatId, message, 10000);
     }
 
+    //метод чтобы узнать id чата в котором будет рабоать бот
 //    public void checkAdmin(long chatIdMessage) {
 //        GetChatAdministrators getChatAdministrators = new GetChatAdministrators();
 //        getChatAdministrators.setChatId(chatIdMessage);
@@ -281,7 +282,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        }
 //    }
 
-    @Scheduled(cron = "0 16 22 * * *")
+    @Scheduled(cron = "0 00 12 * * *")
     public void congratulation() throws TelegramApiException {
         String namesakes = participantService.getNamesakes();
         if (!namesakes.isEmpty()) {
