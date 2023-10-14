@@ -8,6 +8,7 @@ import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.repositories.EventRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 import ru.sharanov.SearchForMessagesBot.utils.ConvertMonth;
+import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,7 +29,6 @@ public class ParticipantService {
         this.eventService = eventService;
         this.eventRepository = eventRepository;
         this.chatAdminId = chatAdminId;
-        deleteMethod();
     }
 
     public void addParticipant(String eventId, long chatId, String firstName,
@@ -38,7 +38,7 @@ public class ParticipantService {
         Participant participant = new Participant();
         if (checkUserId(userId)) {
             participant = getParticipantByUserId(userId);
-            if (chatMember && !participant.isChatMember()) {
+            if (chatMember && !participant.getChatMember()) {
                 participant.setChatMember(true);
                 participantRepository.save(participant);
             }
@@ -102,7 +102,9 @@ public class ParticipantService {
                 Integer.parseInt(month);
         LocalDate birthday = LocalDate.of(yearDigital,
                 monthDigital, dayDigital);
-        participant.setBirthday(birthday);
+        String birthdayString = DateTypeConverter.localDateToStringConverterForDB(birthday);
+        participant.setBirthday(birthdayString);
+        System.out.println(birthday);
         participantRepository.save(participant);
         return true;
     }
@@ -111,10 +113,11 @@ public class ParticipantService {
         List<ParticipantDTO> result = new ArrayList<>();
         participantRepository.findAll().forEach(p -> {
             ParticipantDTO participantDTO = createParticipantDTO(p.getName(),
-                    p.getNickName(), p.getUserId(), p.isChatMember());
+                    p.getNickName(), p.getUserId(), p.getChatMember());
             participantDTO.setId(p.getId());
             if (p.getBirthday() != null) {
-                participantDTO.setBirthday(p.getBirthday());
+                LocalDate birth = DateTypeConverter.stringToLocalDateConverterForDB(p.getBirthday());
+                participantDTO.setBirthday(birth);
                 result.add(participantDTO);
             }
         });
@@ -124,14 +127,11 @@ public class ParticipantService {
     public String getNamesakes() {
         List<String> participants = new ArrayList<>();
         List<Participant> users = participantRepository.findAll();
-        users.stream().filter(Participant::isChatMember)
+        users.stream().filter(Participant::getChatMember)
                 .filter(p -> p.getBirthday() != null)
-                .filter(p -> p.getBirthday().getDayOfYear() == LocalDateTime.now().getDayOfYear())
+                .filter(p -> DateTypeConverter.stringToLocalDateConverterForDB(p.getBirthday()).getDayOfYear()
+                        == LocalDateTime.now().getDayOfYear())
                 .forEach(p -> participants.add(p.getName()));
         return !participants.isEmpty() ? String.join(",", participants) : "";
-    }
-
-    private void deleteMethod(){
-        participantRepository.findAll().forEach(p->p.setChatMember(true));
     }
 }

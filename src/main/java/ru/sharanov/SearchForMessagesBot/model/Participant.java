@@ -8,7 +8,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,8 +25,8 @@ public class Participant {
     private String name;
     private String nickName;
     private Long userId;
-    private LocalDate birthday;
-    private boolean chatMember;
+    private String birthday;
+    private Boolean chatMember;
 
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
     @ToString.Exclude

@@ -184,7 +184,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         for (EventDTO e : eventService.getAllEventsDTO()) {
             if (eventService.getEventById(String.valueOf(e.getId())).getParticipants()
                     .stream().map(Participant::getUserId).toList().contains(idUser)) {
-                showMessage(chatId, firstName + ", Вы уже добавлены на мероприятие " + e.getEventName(), 10000);
+                showMessage(chatId, firstName +
+                        ", Вы уже добавлены на мероприятие " + e.getEventName(), 10000);
                 continue;
             }
             participantService.addParticipant(String.valueOf(e.getId()), chatId, firstName, userName, idUser);
@@ -280,7 +281,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        }
 //    }
 
-    @Scheduled(cron = "0 55 16 * * *")
+    @Scheduled(cron = "0 16 22 * * *")
     public void congratulation() throws TelegramApiException {
         String namesakes = participantService.getNamesakes();
         if (!namesakes.isEmpty()) {
@@ -310,13 +311,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                 мой день рождения 1 января 2021
                 мой день рождения 2 февраля
                 мой день рождения 3.03.2023
-                Правда, я запоминаю дни рождения только тех, кто ходит на мероприятия 😉""").build());
+                Правда, я запоминаю дни рождения только тех, кто ходит на мероприятия 😉
+                Чтобы видеть дни рождения, запишитесь на мероприятие в группе Skillbox Java СПб""").build());
         deleteMessage(chatIdMessage, sentOutMessage.getMessageId(), 10000);
     }
 
     public void showBirthdays(long chatId, long userId) throws TelegramApiException {
         StringBuilder participants = new StringBuilder();
-        boolean chatMember = participantService.getParticipantByUserId(userId).isChatMember();
+        boolean chatMember = participantService.getParticipantByUserId(userId).getChatMember();
         List<ParticipantDTO> participantList = participantService.getAllParticipants();
         Collections.sort(participantList);
         participantList.stream()

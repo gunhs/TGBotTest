@@ -14,9 +14,20 @@ public class DateTypeConverter {
     }
 
     public static String localDateToStringConverter(LocalDate dateTime) {
-        DateTimeFormatter dateTimeFormat = dateTime.getYear() == 1900 ?
+        DateTimeFormatter dateTimeFormat = dateTime.getYear() == 1000 ?
                 ofPattern("dd MMMM", new Locale("ru")) :
                 ofPattern("dd MMMM yyyy", new Locale("ru"));
         return dateTime.format(dateTimeFormat);
     }
+
+    public static LocalDate stringToLocalDateConverterForDB(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return LocalDate.parse(date, formatter);
+    }
+
+    public static String localDateToStringConverterForDB(LocalDate date) {
+        DateTimeFormatter formatter = ofPattern("dd.MM.yyyy", new Locale("ru"));
+        return date.format(formatter);
+    }
+
 }
