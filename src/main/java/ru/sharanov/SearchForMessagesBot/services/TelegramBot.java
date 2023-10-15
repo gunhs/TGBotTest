@@ -231,13 +231,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         SendVenue sendVenue = SendVenue.builder().chatId(chatId).address(event.getAddress()).title("Адрес:")
                 .latitude((double) event.getLatitude()).longitude((double) event.getLongitude())
                 .replyMarkup(inlineKeyboardMarkup).disableNotification(true).build();
-        execute(sendVenue);
-        long now = System.currentTimeMillis();
-        long executeTime = now + 60000;
-        if (executeTime == System.currentTimeMillis()) {
-            Message sentOutMessage = execute(sendVenue);
-            deleteMessage(chatId, sentOutMessage.getMessageId(), 0);
-        }
+        Message sentOutMessage = execute(sendVenue);
+        deleteMessage(chatId, sentOutMessage.getMessageId(), 60000);
     }
 
     public SendMessage getMessage(long chatId, String text, InlineKeyboardMarkup inlineKeyboardMarkup) {
@@ -252,7 +247,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void addGuest(long chatId, String eventId, long idUser, String firstName)
             throws TelegramApiException {
-        String message = eventService.addGuest(Integer.parseInt(eventId), idUser) ? firstName + " добавил гостя" :
+        String message = eventService.addGuest(eventId, idUser) ? firstName + " добавил гостя" :
                 "Слишком много гостей";
         showMessage(chatId, message, 10000);
     }
@@ -286,7 +281,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void congratulation() throws TelegramApiException {
         String namesakes = participantService.getNamesakes();
         if (!namesakes.isEmpty()) {
-            showMessage(Long.parseLong(chatAdminId), "Сегодня день рождения у " + namesakes + "!!! " +
+            showMessage(Long.parseLong(chatAdminId), "Сегодня день рождения у " + namesakes +
+                    "!!! \uD83C\uDF89" +
                     "Поздравляем! ", 43200000);
         }
     }
@@ -319,18 +315,22 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void showBirthdays(long chatId, long userId) throws TelegramApiException {
         StringBuilder participants = new StringBuilder();
-        boolean chatMember = participantService.getParticipantByUserId(userId).getChatMember();
+        Participant participant = participantService.getParticipantByUserId(userId);
+        boolean chatMember = false;
+        if (participant != null) {
+            chatMember = participant.getChatMember();
+        }
         List<ParticipantDTO> participantList = participantService.getAllParticipants();
         Collections.sort(participantList);
-        participantList.stream()
-                .filter(p -> p.getBirthday() != null)
-                .filter(ParticipantDTO::isChatMember)
-                .forEach(p -> participants.append(p.getName()).append(" - ")
-                        .append(DateTypeConverter.localDateToStringConverter(p.getBirthday())).append("\n"));
+        participantList.stream().filter(p -> p.getBirthday() != null).filter(ParticipantDTO::isChatMember)
+                .forEach(p -> participants
+                        .append(p.getName())
+                        .append(" - ")
+                        .append(DateTypeConverter.localDateToStringConverter(p.getBirthday()))
+                        .append("\n"));
         String text = chatMember ? participants.toString() : "Вы не сосотоите в чате. Обратитесь к @Gunhsik";
-        Message sentOutMessage = execute(
-                SendMessage.builder().chatId(String.valueOf(chatId)).text(text)
-                        .disableNotification(true).build());
+        Message sentOutMessage = execute(SendMessage.builder().chatId(String.valueOf(chatId)).text(text)
+                .disableNotification(true).build());
         deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 60000);
     }
 }

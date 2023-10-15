@@ -91,12 +91,10 @@ public class EventService {
         List<EventDTO> eventDTOList = new ArrayList<>();
         eventRepository.findAllByOrderByDateAsc().forEach(e -> eventDTOList.add(newEventDTO(e)));
         List<Event> eventList = eventRepository.findAll();
-        eventList.forEach(e -> {
-            if (!e.getDate().isAfter(ChronoLocalDateTime.from(LocalDateTime.now()))) {
-                e.setDone(true);
-            }
-        });
-        eventRepository.saveAll(eventList);
+        if (!eventList.isEmpty()) {
+            eventList.stream().filter(e -> !e.getDate().isAfter(LocalDateTime.now())).forEach(f -> f.setDone(true));
+            eventRepository.saveAll(eventList);
+        }
         return eventDTOList;
     }
 
@@ -133,17 +131,18 @@ public class EventService {
         return eventRepository.findById(Integer.valueOf(eventId)).orElse(null);
     }
 
-    public boolean addGuest(int eventId, long participantId) {
-        if (getEventById(String.valueOf(eventId)).getParticipants().stream()
+    public boolean addGuest(String eventId, long participantId) {
+        if (getEventById(eventId).getParticipants().stream()
                 .noneMatch(p -> p.getUserId() == participantId)) {
             Participant participant = participantRepository.findParticipantsByUserId(participantId);
-            addParticipantInEvent(participant, String.valueOf(eventId));
+            addParticipantInEvent(participant, eventId);
         }
-        Guest guest = guestRepository.findAll().stream().filter(g -> g.getId().getEventID() == eventId &&
+        int eventIdDigital = Integer.parseInt(eventId);
+        Guest guest = guestRepository.findAll().stream().filter(g -> g.getId().getEventID() == eventIdDigital &&
                 g.getId().getParticipantID() == participantId).findFirst().orElse(null);
         if (guest == null) {
             guest = new Guest();
-            guest.setId(new GuestKey(eventId, participantId));
+            guest.setId(new GuestKey(eventIdDigital, participantId));
             guest.setCount(1);
             guestRepository.save(guest);
             return true;

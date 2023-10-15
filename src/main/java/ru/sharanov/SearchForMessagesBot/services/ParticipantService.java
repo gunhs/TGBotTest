@@ -35,18 +35,16 @@ public class ParticipantService {
                                String nickName, long userId) {
         boolean chatMember = chatId == Long.parseLong(chatAdminId);
         ParticipantDTO participantDTO = createParticipantDTO(firstName, nickName, userId, chatMember);
-        Participant participant = new Participant();
-        if (checkUserId(userId)) {
-            participant = getParticipantByUserId(userId);
-            if (chatMember && !participant.getChatMember()) {
-                participant.setChatMember(true);
-                participantRepository.save(participant);
-            }
-        } else {
+        Participant participant = getParticipantByUserId(userId);
+        if (participant == null) {
+            participant = new Participant();
             participant.setName(participantDTO.getName());
             participant.setNickName(participantDTO.getNickName());
             participant.setUserId(participantDTO.getUserId());
             participant.setChatMember(chatMember);
+            participantRepository.save(participant);
+        } else if (chatMember && !participant.getChatMember()) {
+            participant.setChatMember(true);
             participantRepository.save(participant);
         }
         eventService.addParticipantInEvent(participant, eventId);
@@ -68,10 +66,6 @@ public class ParticipantService {
         Event event = eventService.getEventById(eventId);
         event.removeParticipant(participant);
         eventRepository.save(event);
-    }
-
-    public boolean checkUserId(long userId) {
-        return participantRepository.findAll().stream().anyMatch(p -> p.getUserId() == userId);
     }
 
     public Participant getParticipantByUserId(long userId) {
