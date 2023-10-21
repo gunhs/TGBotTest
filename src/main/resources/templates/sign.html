@@ -2,41 +2,43 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!--  <link href="http://80.90.191.154:8080/css/styles.css" rel="stylesheet">-->
-      <link href="https://localhost:8443/css/styles.css" rel="stylesheet">
-  <title>Auth</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://80.90.191.154:8443/css/styles.css" rel="stylesheet">
+    <!--  <link href="http://80.90.191.154:8080/css/styles.css" rel="stylesheet">-->
+    <!--      <link href="https://localhost:8443/css/styles.css" rel="stylesheet">-->
+    <title>Auth</title>
 
 </head>
 <body>
 <div class="container">
-  <!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
-  <form th:method="POST" th:action="@{/sign}" th:object="${user}">
-    <fieldset class="fields">
-      <div class="form-item"> <!-- Элемент целиком -->
-        <div class="field"> <!-- Конкретно поле ввода -->
-          <label class="label" for="name">Name<em>*</em>:</label>
-          <input class="input-field" type="text" th:field="*{name}" id="name">
-        </div>
-        <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">can't be empty
-        </div>
-      </div>
-      <div class="form-item">
-        <div class="field">
-          <label class="event-label" for="address">Address: </label>
-          <input type="text" th:field="*{password}" id="address" style="margin-left: 15px"/>
-          <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">can't be empty
-          </div>
-        </div>
-      </div>
-      <div>
-        <input class="ui-button" type="submit" value="Add Event">
-        <a class="ui-button" href="/events">back</a>
-      </div>
-    </fieldset>
-  </form>
+    <!--/*@thymesVar id="person" type="ru.sharanov.SearchForMessagesBot.model.Event"*/-->
+    <form th:method="POST" th:action="@{/sign}" th:object="${user}">
+        <fieldset class="fields">
+            <div class="form-item"> <!-- Элемент целиком -->
+                <div class="field"> <!-- Конкретно поле ввода -->
+                    <label class="label" for="name">Name<em>*</em>:</label>
+                    <input class="input-field" type="text" th:field="*{name}" id="name">
+                </div>
+                <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">can't be empty
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="field">
+                    <label class="event-label" for="address">Address: </label>
+                    <input type="text" th:field="*{password}" id="address" style="margin-left: 15px"/>
+                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">can't be
+                        empty
+                    </div>
+                </div>
+            </div>
+            <div>
+                <input class="ui-button" type="submit" value="Add Event">
+                <a class="ui-button" href="/events">back</a>
+            </div>
+        </fieldset>
+    </form>
 </div>
 </body>
 </html>

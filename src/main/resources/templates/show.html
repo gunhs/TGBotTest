@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show event</title>
-    <link href="https://localhost:8443/css/styles.css" rel="stylesheet">
-<!--    <link href="http://80.90.191.154:8080/css/styles.css" rel="stylesheet">-->
+    <link href="https://80.90.191.154:8443/css/styles.css" rel="stylesheet">
+    <!--    <link href="http://80.90.191.154:8080/css/styles.css" rel="stylesheet">-->
+    <!--    <link href="https://localhost:8443/css/styles.css" rel="stylesheet">-->
 </head>
 <body class="body">
 <div class="container">
@@ -26,7 +27,7 @@
     <a class="ui-button" href="/events">back</a>
     <br>
     <div class="outline">
-        <fieldset class = "fields-participants">
+        <fieldset class="fields-participants">
             <legend>Список участников:</legend>
             <ol class="list-participants">
                 <div class="content-list-participants" th:each="participant : ${participants}">
@@ -36,7 +37,8 @@
                             <form class="form-delete" th:method="DELETE"
                                   th:action="@{/events/{id}/{userId}(id=${event.getId()}, userId=${participant.getId()})}">
                                 <button class="ui-button delete"
-                                        th:href="@{/events/{id}/edit(id=${event.getId()})}">delete</button>
+                                        th:href="@{/events/{id}/edit(id=${event.getId()})}">delete
+                                </button>
                             </form>
                         </li>
                     </ul>
