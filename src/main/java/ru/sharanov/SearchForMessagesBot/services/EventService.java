@@ -1,6 +1,7 @@
 package ru.sharanov.SearchForMessagesBot.services;
 
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
 import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
@@ -13,7 +14,6 @@ import ru.sharanov.SearchForMessagesBot.repositories.GuestRepository;
 import ru.sharanov.SearchForMessagesBot.repositories.ParticipantRepository;
 
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +42,7 @@ public class EventService {
     public EventDTO getEventDTO(int id) {
         Event event = eventRepository.findById(id).orElse(null);
         assert event != null;
-        return newEventDTO(event);
+        return createEventDTO(event);
     }
 
     public void deleteEvent(int id) {
@@ -74,7 +74,7 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    private EventDTO newEventDTO(Event event) {
+    private EventDTO createEventDTO(Event event) {
         EventDTO eventDTO = new EventDTO();
         eventDTO.setId(event.getId());
         eventDTO.setEventName(event.getEventName());
@@ -89,19 +89,14 @@ public class EventService {
 
     public List<EventDTO> getAllEventsDTO() {
         List<EventDTO> eventDTOList = new ArrayList<>();
-        eventRepository.findAllByOrderByDateAsc().forEach(e -> eventDTOList.add(newEventDTO(e)));
-        List<Event> eventList = eventRepository.findAll();
-        if (!eventList.isEmpty()) {
-            eventList.stream().filter(e -> !e.getDate().isAfter(LocalDateTime.now())).forEach(f -> f.setDone(true));
-            eventRepository.saveAll(eventList);
-        }
+        eventRepository.findAllByOrderByDateAsc().forEach(e -> eventDTOList.add(createEventDTO(e)));
         return eventDTOList;
     }
 
     public EventDTO getEventDTOById(int id) {
         Event event = eventRepository.findById(id).orElse(null);
         assert event != null;
-        EventDTO eventDTO = newEventDTO(event);
+        EventDTO eventDTO = createEventDTO(event);
         event.getParticipants().forEach(p -> {
             ParticipantDTO participantDTO = new ParticipantDTO();
             participantDTO.setUserId(p.getUserId());
@@ -172,5 +167,14 @@ public class EventService {
     public List<Guest> getGuestsByEventId(int eventId) {
         return guestRepository.findAll().stream().filter(guest -> guest.getId().getEventID() == eventId)
                 .collect(Collectors.toList());
+    }
+
+    @Scheduled(cron = "0 59 23 * * *")
+    public void checkStatusEvent(){
+        List<Event> eventList = eventRepository.findAll();
+        if (!eventList.isEmpty()) {
+            eventList.stream().filter(e -> !e.getDate().isAfter(LocalDateTime.now())).forEach(f -> f.setDone(true));
+            eventRepository.saveAll(eventList);
+        }
     }
 }

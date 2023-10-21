@@ -1,5 +1,6 @@
 package ru.sharanov.SearchForMessagesBot.Handler;
 
+import org.telegram.telegrambots.meta.api.objects.LoginUrl;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
@@ -51,11 +52,12 @@ public class ButtonHandler {
 
     public static InlineKeyboardMarkup showMenuButton() {
         List<List<InlineKeyboardButton>> rows = List.of(new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         rows.get(0).add(addButton("Ближайшие мероприятия", "future events"));
         rows.get(1).add(addButton("Прошедшие мероприятия", "past events"));
-        rows.get(2).add(addButton("Дни рождения", "birthdays"));
-        rows.get(3).add(addButton("Выйти", "quit button"));
+        rows.get(2).add(addButtonLink("Добавить мероприятие"));
+        rows.get(3).add(addButton("Дни рождения", "birthdays"));
+        rows.get(4).add(addButton("Выйти", "quit button"));
         return new InlineKeyboardMarkup(rows);
     }
 
@@ -75,4 +77,15 @@ public class ButtonHandler {
         inlineKeyboardButton.setCallbackData(callBackData);
         return inlineKeyboardButton;
     }
+    private static InlineKeyboardButton addButtonLink(String text) {
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(text);
+//        inlineKeyboardButton.setUrl("http://80.90.191.154:8080/");
+//        LoginUrl loginUrl = LoginUrl.builder().url("http://80.90.191.154:8080/sign").build();
+        LoginUrl loginUrl = LoginUrl.builder().url("https://localhost:8443/").build();
+        inlineKeyboardButton.setLoginUrl(loginUrl);
+        return inlineKeyboardButton;
+    }
+
+
+
 }

@@ -30,7 +30,7 @@ public class CommandHandler {
         if (textMessage.equals("/events@EventJavaBot") || textMessage.equals("/events")) {
             telegramBot.showMenu(chatIdMessage);
 //            telegramBot.checkAdmin(chatIdMessage);
-            telegramBot.helloMessage(chatIdMessage);
+//            telegramBot.helloMessage(chatIdMessage);
             telegramBot.deleteMessage(chatIdMessage, update.getMessage().getMessageId(), 10);
             logger.info(update.getMessage().getFrom().getUserName() + " input: " + textMessage);
         }

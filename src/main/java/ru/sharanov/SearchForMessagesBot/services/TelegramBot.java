@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendVenue;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.SearchForMessagesBot.Handler.ButtonHandler;
@@ -24,7 +25,9 @@ import ru.sharanov.SearchForMessagesBot.model.Participant;
 import ru.sharanov.SearchForMessagesBot.utils.DateTypeConverter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,10 +75,31 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             } else if (update.hasCallbackQuery()) {
                 commandHandler.callBackDataHandler(update);
+            } else if (update.getMessage().getNewChatMembers().size() > 0) {
+                User user = update.getMessage().getNewChatMembers().get(0);
+                helloNewChatMember(update, user);
             }
         } catch (TelegramApiException | IOException | InterruptedException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void helloNewChatMember(Update update, User user) throws TelegramApiException {
+        String message = " Привет! " + user.getFirstName() + "! " +
+                "Добро пожаловать в чать Skillbox Java СПб!\n" +
+                "Расскажи немноного о себе: с какой района, чем занимаешься\n"+
+                "Я бот и живу в этом чате.\n" +
+                "Я покажу, какие мероприятия ожидаюся, а какие - уже прошли.\n" +
+                "А ещё я умею запоминать дни рождения!\n" +
+                "Напишите: мой день рождения и укажите дату\n" +
+                "Например:\n" +
+                "мой день рождения 1 января 2021\n" +
+                "мой день рождения 2 февраля\n" +
+                "мой день рождения 3.03.2023\n" +
+                "Правда, я запоминаю дни рождения только тех, кто ходит на мероприятия \uD83D\uDE09\n" +
+                "Чтобы видеть дни рождения, запишитесь на мероприятие в группе \"\"" +
+                "\nЧтобы позвать меня напиши /events или нажми на меню снизу";
+        showMessage(update.getMessage().getChatId(), message, 180000);
     }
 
     public void showMenu(long chatId) throws TelegramApiException {
@@ -298,20 +322,20 @@ public class TelegramBot extends TelegramLongPollingBot {
         showMessage(chatId, message, 10000);
     }
 
-    public void helloMessage(long chatIdMessage) throws TelegramApiException {
-        Message sentOutMessage = execute(SendMessage.builder().chatId(chatIdMessage).text("""
-                Привет! Я бот и живу в этом чате
-                Я покажу, какие мероприятия ожидаюся, а какие - уже прошли.
-                А ещё я умею запоминать дни рождения!
-                Напишите: мой день рождения и укажите дату
-                Например:
-                мой день рождения 1 января 2021
-                мой день рождения 2 февраля
-                мой день рождения 3.03.2023
-                Правда, я запоминаю дни рождения только тех, кто ходит на мероприятия 😉
-                Чтобы видеть дни рождения, запишитесь на мероприятие в группе Skillbox Java СПб""").build());
-        deleteMessage(chatIdMessage, sentOutMessage.getMessageId(), 10000);
-    }
+//    public void helloMessage(long chatIdMessage) throws TelegramApiException {
+//        Message sentOutMessage = execute(SendMessage.builder().chatId(chatIdMessage).text("""
+//                Привет! Я бот и живу в этом чате
+//                Я покажу, какие мероприятия ожидаюся, а какие - уже прошли.
+//                А ещё я умею запоминать дни рождения!
+//                Напишите: мой день рождения и укажите дату
+//                Например:
+//                мой день рождения 1 января 2021
+//                мой день рождения 2 февраля
+//                мой день рождения 3.03.2023
+//                Правда, я запоминаю дни рождения только тех, кто ходит на мероприятия 😉
+//                Чтобы видеть дни рождения, запишитесь на мероприятие в группе Skillbox Java СПб""").build());
+//        deleteMessage(chatIdMessage, sentOutMessage.getMessageId(), 10000);
+//    }
 
     public void showBirthdays(long chatId, long userId) throws TelegramApiException {
         StringBuilder participants = new StringBuilder();
@@ -332,5 +356,33 @@ public class TelegramBot extends TelegramLongPollingBot {
         Message sentOutMessage = execute(SendMessage.builder().chatId(String.valueOf(chatId)).text(text)
                 .disableNotification(true).build());
         deleteMessage(sentOutMessage.getChatId(), sentOutMessage.getMessageId(), 60000);
+    }
+
+    @Scheduled(cron = "0 00 17 * * *")
+    public void eventNotification() throws TelegramApiException {
+        List<EventDTO> events = eventService.getAllEventsDTO();
+        LocalDate today = LocalDate.now();
+        long chatId = Long.parseLong(chatAdminId);
+        for (EventDTO e : events) {
+            LocalDate event = e.getDate().toLocalDate();
+            int days = Period.between(event, today).getDays();
+            switch (days) {
+                case 7 -> showMessage(chatId, "Через неделю будет мероприятие " + getMessage(e), 43200000);
+                case 3 -> showMessage(chatId, "Через три дня будет мероприятие " + getMessage(e), 43200000);
+                case 1 -> showMessage(chatId, "Завтра будет мероприятие " + getMessage(e), 43200000);
+            }
+        }
+    }
+
+    private String getMessage(EventDTO e) {
+        StringBuilder participants = new StringBuilder(e.getEventName() + "\nПойдут:\n");
+        AtomicInteger number = new AtomicInteger(1);
+        eventService.getEventById(String.valueOf(e.getId())).getParticipants().forEach(p -> participants
+                .append(number.getAndIncrement())
+                .append(". ").append(p.getName()).append(" (")
+                .append(p.getNickName() == null ? "☠" : "@" + p.getNickName())
+                .append(")")
+                .append("\n"));
+        return participants.toString().strip();
     }
 }

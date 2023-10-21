@@ -5,14 +5,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://80.90.191.154:8080/css/styles.css" rel="stylesheet">
-<!--    <link href="http://localhost:8080/css/styles.css" rel="stylesheet">-->
+<!--    <link href="http://80.90.191.154:8080/css/styles.css" rel="stylesheet">-->
+    <link href="https://localhost:8443/css/styles.css" rel="stylesheet">
     <title>Events</title>
 
 </head>
 
 <body class="body">
 <div class="container">
+    <div>
+        <a class="ui-button" id="auth" href="/sign" style="float: right">Войти</a>
+    </div>
     <div class="content" th:each="event : ${events}">
         <ul class="list list-reset flex">
             <li class="list-item name">
