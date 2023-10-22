@@ -79,10 +79,10 @@ public class ButtonHandler {
     }
     private static InlineKeyboardButton addButtonLink(String text) {
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(text);
-//        inlineKeyboardButton.setUrl("http://80.90.191.154:8080/");
-        LoginUrl loginUrl = LoginUrl.builder().url("https://80.90.191.154:8443").build();
+        inlineKeyboardButton.setUrl("http://80.90.191.154:8080/");
+//        LoginUrl loginUrl = LoginUrl.builder().url("https://80.90.191.154:8443").build();
 //        LoginUrl loginUrl = LoginUrl.builder().url("https://localhost:8443/").build();
-        inlineKeyboardButton.setLoginUrl(loginUrl);
+//        inlineKeyboardButton.setLoginUrl(loginUrl);
         return inlineKeyboardButton;
     }
 
