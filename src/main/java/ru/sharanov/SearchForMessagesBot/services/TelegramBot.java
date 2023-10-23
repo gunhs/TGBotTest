@@ -365,7 +365,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         long chatId = Long.parseLong(chatAdminId);
         for (EventDTO e : events) {
             LocalDate event = e.getDate().toLocalDate();
-            int days = Period.between(event, today).getDays();
+            int days = Period.between(today, event).getDays();
             switch (days) {
                 case 7 -> showMessage(chatId, "Через неделю будет мероприятие " + getMessage(e), 43200000);
                 case 3 -> showMessage(chatId, "Через три дня будет мероприятие " + getMessage(e), 43200000);

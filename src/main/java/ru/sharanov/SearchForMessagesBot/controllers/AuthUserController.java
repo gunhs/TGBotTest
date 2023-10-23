@@ -13,16 +13,24 @@ import javax.validation.Valid;
 @RestController
 public class AuthUserController {
     @GetMapping("/sign")
-    public ModelAndView getAuth() {
-        return new ModelAndView("sign");
+    public ModelAndView newEvent(@ModelAttribute("user") EventChatUserDTO user) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("sign");
+        modelAndView.addObject("user", user);
+        return modelAndView;
     }
 
     @PostMapping(value = "/sign")
     public ModelAndView checkUser(@ModelAttribute("user") @Valid EventChatUserDTO user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ModelAndView("sign");
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("sign");
+            modelAndView.addObject("user", user);
+            return modelAndView;
         } else {
-            return new ModelAndView("redirect:/events");
+            ModelAndView modelAndView = new ModelAndView("redirect:/events");
+            modelAndView.addObject("user", user);
+            return modelAndView;
         }
     }
 }
