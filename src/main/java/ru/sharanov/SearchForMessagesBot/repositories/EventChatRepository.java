@@ -8,4 +8,6 @@ import ru.sharanov.SearchForMessagesBot.security.EventChatUser;
 public interface EventChatRepository extends JpaRepository<EventChatUser, Integer> {
 
     EventChatUser getUserByName(String username);
+    EventChatUser getUserByIdTelegram(Long userId);
+
 }

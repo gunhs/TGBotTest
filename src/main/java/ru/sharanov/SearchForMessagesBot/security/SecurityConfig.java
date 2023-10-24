@@ -39,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/websocket/**").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().formLogin()
-                .loginPage("/sign").failureUrl("/sign");
+                .loginPage("/sign")
+                .failureUrl("/sign");
     }
 }

@@ -13,4 +13,5 @@ public class EventChatUser {
     private Long id;
     private String name;
     private String password;
+    private Long idTelegram;
 }
