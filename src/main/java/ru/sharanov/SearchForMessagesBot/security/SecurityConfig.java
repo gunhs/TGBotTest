@@ -13,30 +13,31 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final EventUserDetailService eventUserDetailService;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
 
-    public SecurityConfig(EventUserDetailService eventUserDetailService) {
-        this.eventUserDetailService = eventUserDetailService;
+    public SecurityConfig(CustomAuthenticationProvider customAuthenticationProvider) {
+        this.customAuthenticationProvider = customAuthenticationProvider;
     }
 
     @Bean
-    public PasswordEncoder getPasswordEncoder(){
+    public PasswordEncoder getPasswordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
+                .authenticationProvider(customAuthenticationProvider);
 //                .jdbcAuthentication()
-                .userDetailsService(eventUserDetailService)
-                .passwordEncoder(getPasswordEncoder());
+//                .userDetailsService(eventUserDetailService)
+//                .passwordEncoder(getPasswordEncoder());
 
     }
 
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
 //        http.authorizeRequests().anyRequest().permitAll();
-//        http.addFilter(new TelegramAuthenticationFilter());
+//        http.addFilter(new TelegramAuthenticationServlet());
 //    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {

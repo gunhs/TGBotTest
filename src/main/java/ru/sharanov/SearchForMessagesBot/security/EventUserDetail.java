@@ -3,20 +3,17 @@ package ru.sharanov.SearchForMessagesBot.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 import java.util.Collection;
 import java.util.List;
 
 public class EventUserDetail implements UserDetails {
 
-    private final EventChatUser eventChatUser;
+    private final Participant participant;
 
-    public EventUserDetail(EventChatUser eventChatUser) {
-        this.eventChatUser = eventChatUser;
-    }
-
-    public EventChatUser getEventChatUser() {
-        return eventChatUser;
+    public EventUserDetail(Participant participant) {
+        this.participant = participant;
     }
 
     @Override
@@ -26,12 +23,12 @@ public class EventUserDetail implements UserDetails {
 
     @Override
     public String getPassword() {
-        return eventChatUser.getPassword();
+        return String.valueOf(participant.getUserId());
     }
 
     @Override
     public String getUsername() {
-        return eventChatUser.getName();
+        return participant.getName();
     }
 
     @Override
