@@ -27,10 +27,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
+//                .jdbcAuthentication()
                 .userDetailsService(eventUserDetailService)
                 .passwordEncoder(getPasswordEncoder());
+
     }
 
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.authorizeRequests().anyRequest().permitAll();
+//        http.addFilter(new TelegramAuthenticationFilter());
+//    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
