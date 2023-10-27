@@ -8,31 +8,34 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CustomAuthenticationProvider customAuthenticationProvider;
+//    private final CustomAuthenticationProvider customAuthenticationProvider;
+//
+//    public SecurityConfig(CustomAuthenticationProvider customAuthenticationProvider) {
+//        this.customAuthenticationProvider = customAuthenticationProvider;
+//    }
 
-    public SecurityConfig(CustomAuthenticationProvider customAuthenticationProvider) {
-        this.customAuthenticationProvider = customAuthenticationProvider;
-    }
+
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .authenticationProvider(customAuthenticationProvider);
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth
+////                .authenticationProvider(customAuthenticationProvider);
 //                .jdbcAuthentication()
-//                .userDetailsService(eventUserDetailService)
-//                .passwordEncoder(getPasswordEncoder());
-
-    }
+////                .userDetailsService(eventUserDetailService)
+////                .passwordEncoder(getPasswordEncoder());
+//
+//    }
 
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
@@ -41,13 +44,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/sign").anonymous()
-                .antMatchers("/websocket/**").permitAll()
-                .antMatchers("/**").authenticated()
-                .and().formLogin()
-                .loginPage("/sign")
-                .failureUrl("/sign");
+
+////////////////////
+//        http.authorizeRequests()
+//                .antMatchers("/login").permitAll()
+//                .anyRequest().authenticated();
+//        http.authorizeRequests()
+//                .antMatchers("/secure/ *  * ").hasRole("ADMIN")
+//                .and()
+//                .addFilterBefore(new LogoutFilter(), "preAuthenticate");
+/////////////////////
+//        http.authorizeRequests()
+//                .antMatchers("/sign").anonymous()
+//                .antMatchers("/websocket/**").permitAll()
+//                .antMatchers("/**").authenticated()
+//                .and().formLogin()
+//                .loginPage("/sign")
+//                .failureUrl("/sign");
     }
 }
