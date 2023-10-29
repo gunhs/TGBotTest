@@ -6,60 +6,40 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final EventUserDetailService eventUserDetailService;
 
-//    private final CustomAuthenticationProvider customAuthenticationProvider;
-//
-//    public SecurityConfig(CustomAuthenticationProvider customAuthenticationProvider) {
-//        this.customAuthenticationProvider = customAuthenticationProvider;
-//    }
-
-
-
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+    public SecurityConfig(EventUserDetailService eventUserDetailService) {
+        this.eventUserDetailService = eventUserDetailService;
     }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-////                .authenticationProvider(customAuthenticationProvider);
-//                .jdbcAuthentication()
-////                .userDetailsService(eventUserDetailService)
-////                .passwordEncoder(getPasswordEncoder());
-//
-//    }
-
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests().anyRequest().permitAll();
-//        http.addFilter(new TelegramAuthenticationServlet());
-//    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.addFilterBefore(urlAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests()
+                .antMatchers("/**").authenticated()
+                .antMatchers("/sign").permitAll()
+                .and().httpBasic()
+                .and().csrf().disable();
+    }
 
-////////////////////
-//        http.authorizeRequests()
-//                .antMatchers("/login").permitAll()
-//                .anyRequest().authenticated();
-//        http.authorizeRequests()
-//                .antMatchers("/secure/ *  * ").hasRole("ADMIN")
-//                .and()
-//                .addFilterBefore(new LogoutFilter(), "preAuthenticate");
-/////////////////////
-//        http.authorizeRequests()
-//                .antMatchers("/sign").anonymous()
-//                .antMatchers("/websocket/**").permitAll()
-//                .antMatchers("/**").authenticated()
-//                .and().formLogin()
-//                .loginPage("/sign")
-//                .failureUrl("/sign");
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(eventUserDetailService).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public UrlAuthenticationFilter urlAuthenticationFilter() throws Exception {
+        return new UrlAuthenticationFilter(authenticationManager(), eventUserDetailService);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
