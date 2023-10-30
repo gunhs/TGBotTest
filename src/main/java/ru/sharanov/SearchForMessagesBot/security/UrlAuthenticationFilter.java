@@ -6,8 +6,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -28,10 +26,8 @@ public class UrlAuthenticationFilter extends AbstractAuthenticationProcessingFil
             throws AuthenticationException {
         String username = request.getParameter("first_name");
         String password = request.getParameter("id");
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (userDetails != null && password.equals(userDetails.getPassword())) {
-            System.out.println("Пароли совпали");
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, password,
                     userDetails.getAuthorities());
             return getAuthenticationManager().authenticate(authentication);
