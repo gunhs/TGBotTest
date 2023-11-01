@@ -1,28 +1,32 @@
 package ru.sharanov.SearchForMessagesBot.security;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ru.sharanov.SearchForMessagesBot.model.Participant;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class EventUserDetail implements UserDetails {
     private final Participant participant;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public EventUserDetail(Participant participant) {
+    public EventUserDetail(Participant participant, BCryptPasswordEncoder passwordEncoder) {
         this.participant = participant;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return Collections.emptyList();
+//        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
     public String getPassword() {
-        return String.valueOf(participant.getUserId());
+        String password = String.valueOf(participant.getUserId());
+        return passwordEncoder.encode(password);
     }
 
     @Override

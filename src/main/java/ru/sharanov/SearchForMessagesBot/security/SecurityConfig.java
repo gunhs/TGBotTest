@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -25,8 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.addFilterBefore(urlAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/sign").permitAll()
-                .and().httpBasic()
+                .antMatchers("/**").permitAll()
+                .and().formLogin().successHandler(appAuthenticationSuccessHandler())
                 .and().csrf().disable();
     }
 
@@ -37,6 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UrlAuthenticationFilter urlAuthenticationFilter() throws Exception {
-        return new UrlAuthenticationFilter(authenticationManager(), eventUserDetailService);
+        return new UrlAuthenticationFilter(authenticationManager(), eventUserDetailService, passwordEncoder);
+    }
+    @Bean
+    public AuthenticationSuccessHandler appAuthenticationSuccessHandler(){
+        return new AppAuthenticationSuccessHandler();
     }
 }
