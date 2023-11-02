@@ -13,5 +13,4 @@ public class AppAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
                           Authentication authentication) throws IOException, ServletException {
 
     }
-
 }

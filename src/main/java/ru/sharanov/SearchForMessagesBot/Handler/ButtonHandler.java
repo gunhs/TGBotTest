@@ -79,9 +79,9 @@ public class ButtonHandler {
     }
     private static InlineKeyboardButton addButtonLink(String text) {
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(text);
-        inlineKeyboardButton.setUrl("http://localhost:8080/");
-//        LoginUrl loginUrl = LoginUrl.builder().url("https://eventjavaspb.ru/sign").requestWriteAccess(false).build();
-//        inlineKeyboardButton.setLoginUrl(loginUrl);
+//        inlineKeyboardButton.setUrl("http://localhost:8080/");
+        LoginUrl loginUrl = LoginUrl.builder().url("https://eventjavaspb.ru/sign").requestWriteAccess(false).build();
+        inlineKeyboardButton.setLoginUrl(loginUrl);
         return inlineKeyboardButton;
     }
 
