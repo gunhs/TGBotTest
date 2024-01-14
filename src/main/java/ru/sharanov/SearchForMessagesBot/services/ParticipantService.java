@@ -52,12 +52,12 @@ public class ParticipantService {
 
     private ParticipantDTO createParticipantDTO(String firstName,
                                                 String nickName, long userId, boolean chatMember) {
-        ParticipantDTO participantDTO = new ParticipantDTO();
-        participantDTO.setName(firstName);
-        participantDTO.setNickName(nickName);
-        participantDTO.setUserId(userId);
-        participantDTO.setChatMember(chatMember);
-        return participantDTO;
+        return ParticipantDTO.builder()
+                .name(firstName)
+                .nickName(nickName)
+                .userId(userId)
+                .chatMember(chatMember)
+                .build();
     }
 
     public void delParticipant(long idUser, String eventId) {
