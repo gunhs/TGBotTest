@@ -98,11 +98,12 @@ public class EventService {
         assert event != null;
         EventDTO eventDTO = createEventDTO(event);
         event.getParticipants().forEach(p -> {
-            ParticipantDTO participantDTO = new ParticipantDTO();
-            participantDTO.setUserId(p.getUserId());
-            participantDTO.setName(p.getName());
-            participantDTO.setNickName(p.getNickName());
-            participantDTO.setId(p.getId());
+            ParticipantDTO participantDTO = ParticipantDTO.builder()
+                    .userId(p.getUserId())
+                    .name(p.getName())
+                    .nickName(p.getNickName())
+                    .id(p.getId())
+                    .build();
             eventDTO.getParticipantDTOList().add(participantDTO);
         });
         return eventDTO;

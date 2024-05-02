@@ -1,93 +1,70 @@
 package ru.sharanov.SearchForMessagesBot.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.SearchForMessagesBot.dto.EventDTO;
-import ru.sharanov.SearchForMessagesBot.dto.ParticipantDTO;
 import ru.sharanov.SearchForMessagesBot.services.EventService;
+import ru.sharanov.SearchForMessagesBot.services.ModelAndViewService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/events")
 public class EventsController {
+
     private final EventService eventService;
+    private final ModelAndViewService modelAndViewService;
 
-    public EventsController(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-    @GetMapping("/events")
+    @GetMapping
     public ModelAndView getEvents() {
-        return getView("index");
+        return modelAndViewService.getView("index");
     }
 
-    @GetMapping("/events/{id}")
+    @GetMapping("/{id}")
     public ModelAndView getEvent(@PathVariable("id") int id) {
         EventDTO eventDTO = eventService.getEventDTO(id);
-        ModelAndView modelAndView = getModelAndView("show", eventDTO);
-        modelAndView.addObject("participants", showParticipants(eventDTO.getId()));
+        ModelAndView modelAndView = modelAndViewService.getModelAndView("show", eventDTO);
+        modelAndView.addObject("participants", eventService.getEventDTOById(eventDTO.getId()).getParticipantDTOList());
         return modelAndView;
     }
 
-    @GetMapping("events/new")
+    @GetMapping("/new")
     public ModelAndView newEvent(@ModelAttribute("event") EventDTO event) {
-        return getModelAndView("new", event);
+        return modelAndViewService.getModelAndView("new", event);
     }
 
-    @PostMapping(value = "/events")
+    @PostMapping
     public ModelAndView addEvent(@ModelAttribute("event") @Valid EventDTO event, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return getModelAndView("new", event);
+            return modelAndViewService.getModelAndView("new", event);
         }
         eventService.addEvent(event);
-        return getView("redirect:/events");
+        return modelAndViewService.getView("redirect:/events");
     }
 
-    @GetMapping("/events/{id}/edit")
+    @GetMapping("/{id}/edit")
     public ModelAndView edit(@PathVariable("id") int id) {
         EventDTO eventDTO = eventService.getEventDTO(id);
-        return getModelAndView("edit", eventDTO);
+        return modelAndViewService.getModelAndView("edit", eventDTO);
     }
 
-    @PatchMapping("/events/{id}")
+    @PatchMapping("/{id}")
     public ModelAndView updateEvent(@PathVariable("id") int id,
                                     @ModelAttribute("event") @Valid EventDTO event, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return getModelAndView("edit", event);
+            return modelAndViewService.getModelAndView("edit", event);
         }
         eventService.updateEvent(event, id);
-        return getView("redirect:/events");
+        return modelAndViewService.getView("redirect:/events");
     }
 
-
-    @DeleteMapping("/events/{id}")
+    @DeleteMapping("/{id}")
     public ModelAndView deleteEvent(@PathVariable("id") int id) {
         eventService.deleteEvent(id);
-        return getView("redirect:/events");
+        return modelAndViewService.getView("redirect:/events");
     }
 
-    public ModelAndView getView(String view) {
-        ModelAndView modelAndView = new ModelAndView(view);
-        modelAndView.addObject("events", showEvents());
-        return modelAndView;
-    }
-
-    public ArrayList<EventDTO> showEvents() {
-        List<EventDTO> eventDTOS = eventService.getAllEventsDTO();
-        return new ArrayList<>(eventDTOS);
-    }
-
-    public ArrayList<ParticipantDTO> showParticipants(int id) {
-        return new ArrayList<>(eventService.getEventDTOById(id).getParticipantDTOList());
-    }
-
-    private ModelAndView getModelAndView(String view, EventDTO event) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName(view);
-        modelAndView.addObject("event", event);
-        return modelAndView;
-    }
 }

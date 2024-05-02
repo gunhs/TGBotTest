@@ -1,7 +1,7 @@
 package ru.sharanov.SearchForMessagesBot.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class ParticipantDTO implements Comparable<ParticipantDTO> {
     private Integer id;
     private String name;

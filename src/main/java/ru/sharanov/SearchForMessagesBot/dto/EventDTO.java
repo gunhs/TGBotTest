@@ -14,19 +14,32 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class EventDTO {
-    @NotEmpty(message = "Field can't be empty")
+
+    private static final String NOT_EMPTY_FIELD_MESSAGE = "Field can't be empty";
+    private static final String CHOOSE_DATE_MESSAGE = "Choose date";
+
+    @NotEmpty(message = NOT_EMPTY_FIELD_MESSAGE)
     private String eventName;
-    @NotEmpty(message = "Field can't be empty")
+
+    @NotEmpty(message = NOT_EMPTY_FIELD_MESSAGE)
     private String address;
-    @NotNull(message = "Choose date")
+
+    @NotNull(message = CHOOSE_DATE_MESSAGE)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
+
     private boolean done;
+
     private String url;
+
     private int id;
+
     private List<ParticipantDTO> participantDTOList = new ArrayList<>();
-    @NotNull(message = "Field can't be empty")
+
+    @NotNull(message = NOT_EMPTY_FIELD_MESSAGE)
     private float latitude;
-    @NotNull(message = "Field can't be empty")
+
+    @NotNull(message = NOT_EMPTY_FIELD_MESSAGE)
     private float longitude;
+
 }
