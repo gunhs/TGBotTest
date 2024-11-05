@@ -6,30 +6,33 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  IMAGE_NAME: event-app
+
 jobs:
   build:
     name: Buld
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Login to GitHub Container Registry
-      run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin      
-    - name: Tag & publish to GitHub Container Registry
-      run: |
-        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-        VERSION=latest
-        docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-        docker push $IMAGE_ID:$VERSION
-        
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Tag & publish to GitHub Container Registry
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          VERSION=latest
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
