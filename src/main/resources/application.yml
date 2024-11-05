@@ -1,0 +1,32 @@
+telegram:
+  botName: ${BOT_NAME:SearchForMessagesBot}
+  token: ${TOKEN:5884719976:AAGv5wxiRSS5q4u6sXCpXGbhLN8VkRtCG0E}
+
+server:
+  port: ${PORT}
+  ssl:
+    enabled: ${SSL_ENABLED}
+    key-alias: 1
+    key-password: 123456
+    key-store: eventjavaspb.ru.jks
+    key-store-provider: SUN
+    key-store-type: JKS
+    key-store-password: 123456
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/events}?currentSchema=event_scheme
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    show-sql: false
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+chatAdminId: ${CHAT_ID:-892237827}

@@ -1,0 +1,21 @@
+version: '1'
+
+services:
+  example_app:
+    container_name: event_app
+    image: ghcr.io/gunhs/event_app:latest
+    volumes:
+      - ~/data:/app/data
+    environment:
+      IMAGE_NAME: event-app
+      BOT_NAME: EventBot
+      CHAT_ID: -1001796020160
+      DB_PASSWORD: u58sr7IS51
+      DB_USER: eventadmin
+      PORT: 443
+      SSL_ENABLED: true
+      TOKEN: 6082218143:AAF2cX5McrF-w6lIaAuoU0HCOwB8fjflLa0
+    expose:
+      - 443
+    ports:
+      - "443:443"
