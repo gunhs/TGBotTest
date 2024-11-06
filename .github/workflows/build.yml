@@ -28,6 +28,9 @@ jobs:
         run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Tag & publish to GitHub Container Registry
         run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          VERSION=latest
+          DOCKER_TAG=$IMAGE_ID:$VERSION
           docker build . --tag ${{ env.DOCKER_TAG }}
           docker push ${{ env.DOCKER_TAG }}
   #          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
