@@ -56,8 +56,8 @@ jobs:
           cat docker-compose.yml | envsubst > docker-compose-secret.yml
       - name: copy docker
         run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      # - name: Login to GitHub Container Registry
+      #   run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: connect and pull
         run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose pull && docker-compose up -d && exit"
       - name: cleanup keys
