@@ -2,8 +2,8 @@ version: '1'
 
 services:
   example_app:
-    container_name: event_app
-    image: ghcr.io/gunhs/event_app:latest
+    container_name: event-app
+    image: ghcr.io/gunhs/event-app:latest
     volumes:
       - ~/data:/app/data
     environment:
