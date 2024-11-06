@@ -12,6 +12,7 @@ services:
       CHAT_ID: -1001796020160
       DB_PASSWORD: u58sr7IS51
       DB_USER: eventadmin
+      DB_URL: jdbc:postgresql://172.17.0.1:5433/events
       PORT: 443
       SSL_ENABLED: true
       TOKEN: 6082218143:AAF2cX5McrF-w6lIaAuoU0HCOwB8fjflLa0
