@@ -20,3 +20,4 @@ services:
       - 443
     ports:
       - "443:443"
+    restart: always

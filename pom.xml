@@ -106,12 +106,6 @@
                     <include>**/*</include>
                 </includes>
             </resource>
-            <!--			<resource>-->
-            <!--				<directory>src/main/resources/database</directory>-->
-            <!--				<includes>-->
-            <!--					<include>*</include>-->
-            <!--				</includes>-->
-            <!--			</resource>-->
         </resources>
         <plugins>
             <plugin>
