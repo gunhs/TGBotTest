@@ -47,6 +47,8 @@ jobs:
       packages: write
 
     steps:
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - uses: actions/checkout@v4
       - name: install ssh keys
         run: |
@@ -58,8 +60,6 @@ jobs:
           cat docker-compose.yml | envsubst > docker-compose-secret.yml
       - name: copy docker
         run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       #      - name: Login to GitHub Packages
       #        uses: docker/login-action@v3
       #        with:
