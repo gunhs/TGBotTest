@@ -16,7 +16,7 @@ server:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${DB_URL}?currentSchema=event_scheme
+    url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   jpa:
