@@ -7,6 +7,7 @@ on:
     branches: [ "master" ]
 
 env:
+  REGISTRY: ghcr.io
   IMAGE_NAME: event-app
 
 jobs:
@@ -28,7 +29,7 @@ jobs:
         run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Tag & publish to GitHub Container Registry
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          IMAGE_ID=$REGISTRY/${{ github.repository_owner }}/$IMAGE_NAME
           VERSION=latest
           DOCKER_TAG=$IMAGE_ID:$VERSION
           docker build . --tag $DOCKER_TAG
@@ -42,7 +43,7 @@ jobs:
 
     steps:
       - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
       - uses: actions/checkout@v4
       - name: install ssh keys
         uses: kielabokkie/ssh-key-and-known-hosts-action@v1
@@ -53,6 +54,14 @@ jobs:
       #          install -m 600 -D /dev/null ~/.ssh/id_rsa
       #          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
       #          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: create docker context
+        run: |
+          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
       - name: create docker compose config
         run: |
           cat docker-compose.yml | envsubst > docker-compose-secret.yml
@@ -62,12 +71,15 @@ jobs:
         run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose rm -s -f $IMAGE_NAME"
       - name: connect and pull
         env:
-          CHAT_ID: ${{ secrets.CHAT_ID_PROD }}
-          DB_URL: ${{ secrets.DB_URL_PROD }}
-          DB_USER: ${{ secrets.DB_USER_PROD }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD_PROD }}
+          CHAT_ID_DOCKER: ${{ secrets.CHAT_ID_PROD }}
+          DB_URL_DOCKER: ${{ secrets.DB_URL_PROD }}
+          DB_USER_DOCKER: ${{ secrets.DB_USER_PROD }}
+          DB_PASSWORD_DOCKER: ${{ secrets.DB_PASSWORD_PROD }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose pull && docker-compose up -d && exit"
+          IMAGE_REF: ${{ steps.meta.outputs.tags }}
+        run: |
+          docker-compose --context remote -f docker-compose.yml up -d
+      #        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
       - name: cleanup keys
         if: always()
         run: rm -rf ~/.ssh docker-compose-secret.yml

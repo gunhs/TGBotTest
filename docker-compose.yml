@@ -3,16 +3,16 @@ version: '1'
 services:
   event-app:
     container_name: event-app
-    image: ghcr.io/gunhs/event-app:latest
+    image: ${IMAGE_REF}
     volumes:
       - ~/data:/app/data
     environment:
       IMAGE_NAME: event-app
       BOT_NAME: EventBot
-      CHAT_ID: ${CHAT_ID:-892237827}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_USER: ${DB_USER}
-      DB_URL: ${DB_URL}
+      CHAT_ID: ${CHAT_ID_DOCKER:-892237827}
+      DB_PASSWORD: ${DB_PASSWORD_DOCKER}
+      DB_USER: ${DB_USER_DOCKER}
+      DB_URL: ${DB_URL_DOCKER}
       PORT: 443
       SSL_ENABLED: true
       TOKEN: ${BOT_TOKEN}
