@@ -29,14 +29,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.REGISTRY }}/event-app:latest
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5.3.0
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.repository_owner }}/event-app:latest
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
@@ -70,7 +70,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.REGISTRY }}/event-app:latest
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: create docker compose config
         run: |
