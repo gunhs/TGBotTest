@@ -25,15 +25,20 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Tag & publish to GitHub Container Registry
-        run: |
-          IMAGE_ID=$REGISTRY/${{ github.repository_owner }}/$IMAGE_NAME
-          VERSION=latest
-          DOCKER_TAG=$IMAGE_ID:$VERSION
-          docker build . --tag $DOCKER_TAG
-          docker push $DOCKER_TAG
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5.3.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
   deploy:
     needs: build
     name: Deploy
@@ -44,7 +49,10 @@ jobs:
     steps:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
-      - uses: actions/checkout@v4
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: install ssh keys
         uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
@@ -54,19 +62,22 @@ jobs:
       #          install -m 600 -D /dev/null ~/.ssh/id_rsa
       #          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
       #          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+      - name: create docker context
+        run: |
+          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: create docker context
-        run: |
-          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+
       - name: create docker compose config
         run: |
           cat docker-compose.yml | envsubst > docker-compose-secret.yml
       - name: copy docker
         run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
+
       - name: connect and pull
         env:
           CHAT_ID_DOCKER: ${{ secrets.CHAT_ID_PROD }}
