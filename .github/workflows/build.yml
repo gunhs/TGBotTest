@@ -38,6 +38,8 @@ jobs:
           push: true
           tags: ${{ github.repository_owner }}/event-app:latest
           labels: ${{ steps.meta.outputs.labels }}
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.PAT }}
 
   deploy:
     needs: build
