@@ -25,8 +25,7 @@ public class ParticipantService {
     private final EventService eventService;
     private final ChatProperties chatProperties;
 
-    public void addParticipant(String eventId, long chatId, String firstName,
-                               String nickName, long userId) {
+    public void addParticipant(String eventId, long chatId, String firstName, String nickName, long userId) {
         boolean fromCurrentChat = chatId == Long.parseLong(chatProperties.getChatId());
         Participant participant = participantRepository.findParticipantsByUserId(userId);
         if (participant == null) {
@@ -92,11 +91,16 @@ public class ParticipantService {
     public String getNamesakes() {
         List<String> participants = participantRepository.findByBirthdayNotNull()
                 .stream().filter(ParticipantBirthdaysDto::getChatMember)
-                .filter(p -> DateTypeConverter.stringToLocalDateConverterForDB(p.getBirthday()).getMonthValue()
-                        == LocalDateTime.now().getMonthValue() &&
-                        DateTypeConverter.stringToLocalDateConverterForDB(p.getBirthday()).getDayOfMonth()
-                                == LocalDateTime.now().getDayOfMonth())
-                .map(ParticipantBirthdaysDto::getName).collect(Collectors.toList());
+                .filter(this::checkDate).map(ParticipantBirthdaysDto::getName).collect(Collectors.toList());
         return !participants.isEmpty() ? String.join(",", participants) : "";
+    }
+
+    private boolean checkDate(ParticipantBirthdaysDto p) {
+        return getDate(p.getBirthday()).getMonthValue() == LocalDateTime.now().getMonthValue() &&
+                getDate(p.getBirthday()).getDayOfMonth() == LocalDateTime.now().getDayOfMonth();
+    }
+
+    private LocalDate getDate(String birthday) {
+        return DateTypeConverter.stringToLocalDateConverterForDB(birthday);
     }
 }

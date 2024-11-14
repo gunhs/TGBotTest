@@ -84,6 +84,16 @@ public class EventService {
                 .map(eventsMapper::toDto).collect(Collectors.toList());
     }
 
+    public List<EventDTO> getAllEventsDtoBefore() {
+        return eventRepository.findByDateBefore().stream()
+                .map(eventsMapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<EventDTO> getAllEventsDtoAfter() {
+        return eventRepository.findByDateAfter().stream()
+                .map(eventsMapper::toDto).collect(Collectors.toList());
+    }
+
     public EventDTO getEventDTOById(int id) {
         Event event = getEventById(id);
         EventDTO eventDTO = eventsMapper.toDto(event);
@@ -140,11 +150,7 @@ public class EventService {
 
     @Scheduled(cron = "0 59 23 * * *")
     public void checkStatusEvent() {
-        List<Event> eventList = eventRepository.findAll();
-        if (!eventList.isEmpty()) {
-            eventList.stream().filter(e -> !e.getDate().isAfter(LocalDateTime.now())).forEach(f -> f.setDone(true));
-            eventRepository.saveAll(eventList);
-        }
+        eventRepository.updateDoneByDate();
     }
 
     public boolean checkParticipantInEvent(Long eventId, Long userId) {

@@ -9,13 +9,13 @@ services:
     environment:
       IMAGE_NAME: event-app
       BOT_NAME: EventBot
-      CHAT_ID: -1001796020160
-      DB_PASSWORD: u58sr7IS51
-      DB_USER: eventadmin
-      DB_URL: jdbc:postgresql://172.17.0.1:5433/events
+      CHAT_ID: ${CHAT_ID:-892237827}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      DB_URL: ${DB_URL}
       PORT: 443
       SSL_ENABLED: true
-      TOKEN: 6082218143:AAF2cX5McrF-w6lIaAuoU0HCOwB8fjflLa0
+      TOKEN: ${BOT_TOKEN:5884719976:AAGv5wxiRSS5q4u6sXCpXGbhLN8VkRtCG0E}
     expose:
       - 443
     ports:
