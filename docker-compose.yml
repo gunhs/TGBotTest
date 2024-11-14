@@ -12,7 +12,7 @@ services:
       CHAT_ID: ${CHAT_ID:-892237827}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_USER: ${DB_USER}
-      DB_URL: ${DB_URL}
+      DB_URL: jdbc:postgresql://80.90.191.154:5433/events?currentSchema=event_scheme
       PORT: 443
       SSL_ENABLED: true
       TOKEN: ${BOT_TOKEN}
