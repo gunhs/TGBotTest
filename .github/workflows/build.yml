@@ -25,6 +25,8 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -38,8 +40,6 @@ jobs:
           push: true
           tags: ${{ github.repository_owner }}/event-app:latest
           labels: ${{ steps.meta.outputs.labels }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy:
     needs: build
