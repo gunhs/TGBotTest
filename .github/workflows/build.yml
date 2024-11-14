@@ -59,7 +59,7 @@ jobs:
       - name: copy docker
         run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
       - name: delete container
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose rm -s -f ${{ IMAGE_NAME }}"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose rm -s -f $IMAGE_NAME"
       - name: connect and pull
         env:
           CHAT_ID: ${{ secrets.CHAT_ID }}
