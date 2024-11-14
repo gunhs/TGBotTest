@@ -15,7 +15,7 @@ services:
       DB_URL: ${DB_URL}
       PORT: 443
       SSL_ENABLED: true
-      TOKEN: ${BOT_TOKEN:5884719976:AAGv5wxiRSS5q4u6sXCpXGbhLN8VkRtCG0E}
+      TOKEN: ${BOT_TOKEN}
     expose:
       - 443
     ports:
