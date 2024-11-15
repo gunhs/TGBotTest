@@ -66,8 +66,14 @@ jobs:
       packages: write
 
     steps:
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
+#      - name: Login to GitHub Container Registry
+      #        run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -77,6 +83,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
+
       - name: create docker context
         run: |
           docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
@@ -90,11 +97,11 @@ jobs:
       - run: sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
       - run: sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: create docker compose config
-        run: |
-          cat docker-compose.yml | envsubst > docker-compose-secret.yml
-      - name: copy docker
-        run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
+      #      - name: create docker compose config
+      #        run: |
+      #          cat docker-compose.yml | envsubst > docker-compose-secret.yml
+      #      - name: copy docker
+      #        run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
 
       - name: connect and pull
         env:
@@ -105,8 +112,9 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           IMAGE_REF: ${{ steps.meta.outputs.tags }}
         run: |
-          docker-compose --context remote -f docker-compose.yml up -d
-      #        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
+          docker-compose --context remote up -d
+      #          docker-compose --context remote -f docker-compose.yml up -d
+      #              run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
       - name: cleanup keys
         if: always()
         run: rm -rf ~/.ssh docker-compose-secret.yml
