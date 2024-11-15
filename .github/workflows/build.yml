@@ -89,7 +89,8 @@ jobs:
 
       - name: check docker compose
         run: |
-          docker-compose --version  
+          sudo curl -L "<a href="https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname">https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname</a> -s)-$(uname -m)" -o /usr/local/bin/docker-compose 
+          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: create docker compose config
         run: |
