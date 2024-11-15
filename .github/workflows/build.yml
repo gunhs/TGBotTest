@@ -98,7 +98,6 @@ jobs:
       - run: sudo chmod +x /usr/local/bin/docker-compose
       - name: create docker context
         run: |
-          docker-compose --version
           docker-compose --context remote up -d        
 
       #      - name: create docker compose config
