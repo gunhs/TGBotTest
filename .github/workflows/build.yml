@@ -128,7 +128,7 @@ jobs:
         #        run: |
         #          docker-compose --context remote up -d
         #      #          docker-compose --context remote -f docker-compose.yml up -d
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose pull && docker-compose up -d && exit"
       - name: cleanup keys
         if: always()
         run: rm -rf ~/.ssh docker-compose-secret.yml
