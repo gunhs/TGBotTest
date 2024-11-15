@@ -36,11 +36,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
-                      - name: Extract metadata (tags, labels) for Docker
-                      id: meta
-                      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-                      with:
-                        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       #      - name: Tag & publish to GitHub Container Registry
       #        run: |
