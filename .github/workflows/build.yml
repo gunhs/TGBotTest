@@ -87,7 +87,7 @@ jobs:
       - name: create docker context
         run: |
           docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-
+          docker-compose --context remote up -d
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
