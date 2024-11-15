@@ -32,19 +32,27 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      #      - name: Extract metadata (tags, labels) for Docker
+      #        id: meta
+      #        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      #        with:
+      #          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ github.repository_owner }}/event-app:latest
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Tag & publish to GitHub Container Registry
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          VERSION=latest
+          DOCKER_TAG=$IMAGE_ID:$VERSION
+          docker build . --tag $DOCKER_TAG
+          docker push $DOCKER_TAG          
+
+  #      - name: Build and push Docker image
+  #        uses: docker/build-push-action@v6
+  #        with:
+  #          context: .
+  #          push: true
+  #          tags: ${{ github.repository_owner }}/event-app:latest
+  #          labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
     needs: build
@@ -65,10 +73,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
-      #        run: |
-      #          install -m 600 -D /dev/null ~/.ssh/id_rsa
-      #          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-      #          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
       - name: create docker context
         run: |
           docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
