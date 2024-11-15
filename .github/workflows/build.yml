@@ -84,6 +84,12 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
       - name: executing remote ssh commands to set env
         uses: appleboy/ssh-action@master
         with:
@@ -102,11 +108,7 @@ jobs:
       #        run: |
       #          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
 
       #      - run: sudo curl -L https://github.com/docker/compose/releases/download/2.30.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
       #      - run: sudo chmod +x /usr/local/bin/docker-compose
