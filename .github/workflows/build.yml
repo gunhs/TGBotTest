@@ -84,9 +84,23 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
 
-      - name: create docker context
-        run: |
-          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
+      - name: executing remote ssh commands to set env
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo CHAT_ID=${{ secrets.CHAT_ID_PROD }} > .env
+            echo DB_URL=${{ secrets.DB_URL_PROD }} >> .env
+            echo DB_USER=${{ secrets.DB_USER_PROD }} >> .env
+            echo DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }} >> .env
+            echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env
+            echo IMAGE_REF=${{ steps.meta.outputs.tags }} >> .env
+
+      #      - name: create docker context
+      #        run: |
+      #          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -94,27 +108,27 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - run: sudo curl -L https://github.com/docker/compose/releases/download/2.30.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-      - run: sudo chmod +x /usr/local/bin/docker-compose
+      #      - run: sudo curl -L https://github.com/docker/compose/releases/download/2.30.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+      #      - run: sudo chmod +x /usr/local/bin/docker-compose
 
-      #      - name: create docker compose config
-      #        run: |
-      #          cat docker-compose.yml | envsubst > docker-compose-secret.yml
-      #      - name: copy docker
-      #        run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
+      - name: create docker compose config
+        run: |
+          cat docker-compose.yml | envsubst > docker-compose-secret.yml
+      - name: copy docker
+        run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
 
       - name: connect and pull
-        env:
-          CHAT_ID_DOCKER: ${{ secrets.CHAT_ID_PROD }}
-          DB_URL_DOCKER: ${{ secrets.DB_URL_PROD }}
-          DB_USER_DOCKER: ${{ secrets.DB_USER_PROD }}
-          DB_PASSWORD_DOCKER: ${{ secrets.DB_PASSWORD_PROD }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          IMAGE_REF: ${{ steps.meta.outputs.tags }}
-        run: |
-          docker-compose --context remote up -d
-      #          docker-compose --context remote -f docker-compose.yml up -d
-      #              run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
+        #        env:
+        #          CHAT_ID_DOCKER: ${{ secrets.CHAT_ID_PROD }}
+        #          DB_URL_DOCKER: ${{ secrets.DB_URL_PROD }}
+        #          DB_USER_DOCKER: ${{ secrets.DB_USER_PROD }}
+        #          DB_PASSWORD_DOCKER: ${{ secrets.DB_PASSWORD_PROD }}
+        #          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        #          IMAGE_REF: ${{ steps.meta.outputs.tags }}
+        #        run: |
+        #          docker-compose --context remote up -d
+        #      #          docker-compose --context remote -f docker-compose.yml up -d
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
       - name: cleanup keys
         if: always()
         run: rm -rf ~/.ssh docker-compose-secret.yml
