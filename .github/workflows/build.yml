@@ -87,6 +87,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: check docker compose
+        run: |
+          docker-compose --version  
+
       - name: create docker compose config
         run: |
           cat docker-compose.yml | envsubst > docker-compose-secret.yml
@@ -102,7 +106,6 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           IMAGE_REF: ${{ steps.meta.outputs.tags }}
         run: |
-          docker-compose --version
           docker-compose --context remote -f docker-compose.yml up -d
       #        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker-compose --context remote docker-compose pull && docker-compose up -d && exit"
       - name: cleanup keys
