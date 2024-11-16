@@ -2,12 +2,13 @@ version: '3'
 
 services:
   event-app:
-    container_name: event-app
-    image: gunhs/event-app:latest
-    volumes:
-      - ~/data:/app/data
     env_file:
       - ./.env
+    container_name: event-app
+    #    image: gunhs/event-app:latest
+    image: ${IMAGE_NAME}
+    volumes:
+      - ~/data:/app/data
     environment:
       BOT_NAME: EventBot
       PORT: 443
