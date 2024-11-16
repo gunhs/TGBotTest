@@ -9,7 +9,7 @@ services:
     env_file:
       - ./.env
     environment:
-      IMAGE_NAME: event-app
+      IMAGE_NAME: ghcr.io/event-app
       BOT_NAME: EventBot
       #      CHAT_ID: ${CHAT_ID_DOCKER:-892237827}
       #      DB_PASSWORD: ${DB_PASSWORD_DOCKER}
