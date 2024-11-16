@@ -3,13 +3,13 @@ version: '1'
 services:
   event-app:
     container_name: event-app
-    image: event-app:latest
+    image: ghcr.io/event-app:latest
     volumes:
       - ~/data:/app/data
     env_file:
       - ./.env
     environment:
-      IMAGE_NAME: ghcr.io/event-app
+      IMAGE_NAME: event-app
       BOT_NAME: EventBot
       #      CHAT_ID: ${CHAT_ID_DOCKER:-892237827}
       #      DB_PASSWORD: ${DB_PASSWORD_DOCKER}
