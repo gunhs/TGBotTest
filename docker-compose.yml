@@ -5,8 +5,7 @@ services:
     env_file:
       - ./.env
     container_name: event-app
-    #    image: gunhs/event-app:latest
-    image: ${IMAGE_NAME}
+    image: gunhs/event-app:latest
     volumes:
       - ~/data:/app/data
     environment:
