@@ -91,7 +91,7 @@ jobs:
             echo DB_USER=${{ secrets.DB_USER_PROD }} >> .env
             echo DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }} >> .env
             echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env
-            echo IMAGE_REF= ghcr.io/event-app >> .env
+            echo "event-app:latest" >> .env
 
       #      - name: create docker context
       #        run: |

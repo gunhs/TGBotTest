@@ -3,7 +3,7 @@ version: '1'
 services:
   event-app:
     container_name: event-app
-    image: "${IMAGE_REF}"
+    image: ${IMAGE_REF}
     volumes:
       - ~/data:/app/data
     env_file:
