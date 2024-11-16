@@ -29,13 +29,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      #      - name: Login to GitHub Container Registry
-      #        run: echo "${{ secrets.PAT }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -91,15 +90,7 @@ jobs:
             echo DB_USER=${{ secrets.DB_USER_PROD }} >> .env
             echo DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }} >> .env
             echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env
-
-      #      - name: create docker context
-      #        run: |
-      #          docker context create remote --docker host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-
-
-
-      #      - run: sudo curl -L https://github.com/docker/compose/releases/download/2.30.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-      #      - run: sudo chmod +x /usr/local/bin/docker-compose
+            echo IMAGE_NAME=${{ github.repository_owner }}/event-app:latest >> .env
 
       - name: create docker compose config
         run: |
@@ -108,16 +99,6 @@ jobs:
         run: scp docker-compose-secret.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:docker-compose.yml
 
       - name: connect and pull
-        #        env:
-        #          CHAT_ID_DOCKER: ${{ secrets.CHAT_ID_PROD }}
-        #          DB_URL_DOCKER: ${{ secrets.DB_URL_PROD }}
-        #          DB_USER_DOCKER: ${{ secrets.DB_USER_PROD }}
-        #          DB_PASSWORD_DOCKER: ${{ secrets.DB_PASSWORD_PROD }}
-        #          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        #          IMAGE_REF: ${{ steps.meta.outputs.tags }}
-        #        run: |
-        #          docker-compose --context remote up -d
-        #      #          docker-compose --context remote -f docker-compose.yml up -d
         run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker compose pull && docker compose up -d && exit"
       - name: cleanup keys
         if: always()

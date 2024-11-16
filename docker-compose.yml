@@ -1,4 +1,4 @@
-version: '1'
+version: '3'
 
 services:
   event-app:
@@ -9,15 +9,9 @@ services:
     env_file:
       - ./.env
     environment:
-      #      IMAGE_NAME: event-app
       BOT_NAME: EventBot
-      #      CHAT_ID: ${CHAT_ID_DOCKER:-892237827}
-      #      DB_PASSWORD: ${DB_PASSWORD_DOCKER}
-      #      DB_USER: ${DB_USER_DOCKER}
-      #      DB_URL: ${DB_URL_DOCKER}
       PORT: 443
       SSL_ENABLED: true
-    #      TOKEN: ${BOT_TOKEN}
     expose:
       - 443
     ports:
