@@ -1,6 +1,6 @@
 telegram:
-  botName: ${BOT_NAME:SearchForMessagesBot}
-  token: ${TOKEN:5884719976:AAGv5wxiRSS5q4u6sXCpXGbhLN8VkRtCG0E}
+  botName: ${BOT_NAME}
+  token: ${BOT_TOKEN}
 
 server:
   port: ${PORT}
