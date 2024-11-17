@@ -23,9 +23,8 @@ public class AuthUserController {
 //        modelAndView.addObject("user", user);
     public ResponseEntity<String> newGuestFromBot(@RequestParam String username, @RequestParam String id) {
         try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, id)
-            );
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, id));
+            System.out.println(auth.getDetails());
             if (auth.isAuthenticated()) {
                 return ResponseEntity.ok("Authentication successful");
             }
