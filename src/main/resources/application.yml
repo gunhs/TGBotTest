@@ -30,4 +30,4 @@ spring:
         enabled: true
 
 chatAdminId: ${CHAT_ID:-892237827}
-admin_url: ${ADMIN_URL}
+admin_url: ${ADMIN_URL:https://eventjavaspb.ru/sign}
