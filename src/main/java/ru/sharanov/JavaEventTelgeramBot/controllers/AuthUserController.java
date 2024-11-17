@@ -22,6 +22,7 @@ public class AuthUserController {
 //        modelAndView.setViewName("sign");
 //        modelAndView.addObject("user", user);
     public ResponseEntity<String> newGuestFromBot(@RequestParam String username, @RequestParam String id) {
+        System.out.println(username + " " + id);
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, id)
