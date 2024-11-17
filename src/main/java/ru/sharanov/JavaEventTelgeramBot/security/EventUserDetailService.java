@@ -23,6 +23,7 @@ public class EventUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Participant checkParticipant = participantRepository.findParticipantByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        System.out.println("user was found");
         String[] roles = {"ROLE_USER", "ROLE_ADMIN"};
         return org.springframework.security.core.userdetails.User.builder()
                 .username(checkParticipant.getNickName())
