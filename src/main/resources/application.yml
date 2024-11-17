@@ -30,3 +30,4 @@ spring:
         enabled: true
 
 chatAdminId: ${CHAT_ID:-892237827}
+admin_url: ${ADMIN_URL}

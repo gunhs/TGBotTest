@@ -20,7 +20,7 @@ public class DateTypeConverter {
         return dateTime.format(dateTimeFormat);
     }
 
-    public static LocalDate stringToLocalDateConverterForDB(String date) {
+    public static LocalDate stringToLocalDateConverterFromDB(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         return LocalDate.parse(date, formatter);
     }

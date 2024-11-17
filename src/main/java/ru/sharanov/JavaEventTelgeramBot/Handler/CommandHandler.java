@@ -7,8 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.sharanov.JavaEventTelgeramBot.services.TelegramBot;
 
-import java.io.IOException;
-
 @Slf4j
 @Service
 public class CommandHandler {
@@ -18,7 +16,7 @@ public class CommandHandler {
         this.telegramBot = telegramBot;
     }
 
-    public void messageWatcherHandler(Update update) throws TelegramApiException, InterruptedException {
+    public void messageWatcherHandler(Update update) throws TelegramApiException {
         String textMessage = update.getMessage().getText();
         long chatIdMessage = update.getMessage().getChatId();
         if (textMessage.equals("/start")) {
@@ -35,7 +33,7 @@ public class CommandHandler {
         }
     }
 
-    public void callBackDataHandler(Update update) throws InterruptedException, TelegramApiException, IOException {
+    public void callBackDataHandler(Update update) throws Exception {
         long idUser = update.getCallbackQuery().getFrom().getId();
         String firstName = update.getCallbackQuery().getFrom().getFirstName();
         String userName = update.getCallbackQuery().getFrom().getUserName();

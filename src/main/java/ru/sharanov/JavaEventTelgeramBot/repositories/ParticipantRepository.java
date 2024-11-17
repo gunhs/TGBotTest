@@ -18,7 +18,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
 
     Optional<Participant> findParticipantByName(String name);
 
-    List<ParticipantBirthdaysDto> findByBirthdayNotNull();
+    List<ParticipantBirthdaysDto> findByBirthdayNotNullAndChatMemberTrue();
 
     boolean existsByUserIdAndChatMemberTrue(Long userId);
 

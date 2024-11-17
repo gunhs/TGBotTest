@@ -59,8 +59,7 @@ public class ParticipantService {
     }
 
     public boolean addBirthdayInDB(String text, Participant participant) {
-        text = text.replaceAll("мой день рождения", "").strip();
-        text = text.replaceAll("\\s+", ".");
+        text = text.replaceAll("мой день рождения", "").strip().replaceAll("\\s+", ".");
         if (!text.matches("\\d{1,2}\\.[А-яa-zA-Z0-9]{1,8}(\\.\\d{4})?")) {
             return false;
         }
@@ -70,8 +69,7 @@ public class ParticipantService {
         }
         int dayDigital = Integer.parseInt(components[0]);
         int yearDigital = components.length != 3 ? DEFAULT_AGE : Integer.parseInt(components[2]);
-        if (yearDigital > LocalDate.now().getYear() ||
-                ((yearDigital < LocalDate.now().getYear() - MAX_AGE) && (yearDigital != DEFAULT_AGE))) {
+        if (checkYear(yearDigital)) {
             return false;
         }
         String month = components[1];
@@ -84,13 +82,17 @@ public class ParticipantService {
         return true;
     }
 
+    private static boolean checkYear(int yearDigital) {
+        return yearDigital > LocalDate.now().getYear() ||
+                ((yearDigital < LocalDate.now().getYear() - MAX_AGE) && (yearDigital != DEFAULT_AGE));
+    }
+
     public List<ParticipantBirthdaysDto> getAllParticipantsBirthdays() {
-        return participantRepository.findByBirthdayNotNull();
+        return participantRepository.findByBirthdayNotNullAndChatMemberTrue();
     }
 
     public String getNamesakes() {
-        List<String> participants = participantRepository.findByBirthdayNotNull()
-                .stream().filter(ParticipantBirthdaysDto::getChatMember)
+        List<String> participants = getAllParticipantsBirthdays().stream()
                 .filter(this::checkDate).map(ParticipantBirthdaysDto::getName).collect(Collectors.toList());
         return !participants.isEmpty() ? String.join(",", participants) : "";
     }
@@ -100,7 +102,7 @@ public class ParticipantService {
                 getDate(p.getBirthday()).getDayOfMonth() == LocalDateTime.now().getDayOfMonth();
     }
 
-    private LocalDate getDate(String birthday) {
-        return DateTypeConverter.stringToLocalDateConverterForDB(birthday);
+    public LocalDate getDate(String birthday) {
+        return DateTypeConverter.stringToLocalDateConverterFromDB(birthday);
     }
 }
