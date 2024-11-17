@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.sharanov.JavaEventTelgeramBot.model.Participant;
 import ru.sharanov.JavaEventTelgeramBot.repositories.ParticipantRepository;
 
-import java.util.Optional;
-
 @Service
 public class EventUserDetailService implements UserDetailsService {
     private final ParticipantRepository participantRepository;
@@ -22,10 +20,8 @@ public class EventUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Participant> checkParticipant = participantRepository.findParticipantByName(username);
-        if (checkParticipant.isEmpty()) {
-            throw new UsernameNotFoundException("user not found");
-        }
-        return new EventUserDetail(checkParticipant.get(), passwordEncoder);
+        Participant checkParticipant = participantRepository.findParticipantByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        return new EventUserDetail(checkParticipant, passwordEncoder);
     }
 }
