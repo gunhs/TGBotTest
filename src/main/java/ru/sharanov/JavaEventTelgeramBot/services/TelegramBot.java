@@ -25,6 +25,7 @@ import ru.sharanov.JavaEventTelgeramBot.model.Participant;
 import ru.sharanov.JavaEventTelgeramBot.utils.DateTypeConverter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import java.util.Map;
@@ -287,8 +288,9 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        }
 //    }
 
-    @Scheduled(cron = "0 45 11 * * *")
+    @Scheduled(cron = "0 15 11 * * *")
     public void congratulation() throws TelegramApiException {
+        log.info("Проверка именинников {}", LocalDateTime.now());
         String namesakes = participantService.getNamesakes();
         if (!namesakes.isEmpty()) {
             showMessage(Long.parseLong(chatProperties.getChatId()), "Сегодня день рождения у " + namesakes +
