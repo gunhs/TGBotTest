@@ -1,5 +1,6 @@
 package ru.sharanov.JavaEventTelgeramBot.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -7,8 +8,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.sharanov.JavaEventTelgeramBot.dto.EventDTO;
 import ru.sharanov.JavaEventTelgeramBot.services.EventService;
 import ru.sharanov.JavaEventTelgeramBot.services.ModelAndViewService;
-
-import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,6 +1,7 @@
 package ru.sharanov.JavaEventTelgeramBot.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.sharanov.JavaEventTelgeramBot.config.ChatProperties;
 import ru.sharanov.JavaEventTelgeramBot.dto.ParticipantBirthdaysDto;
@@ -24,10 +25,12 @@ public class ParticipantService {
     private final ParticipantRepository participantRepository;
     private final EventService eventService;
     private final ChatProperties chatProperties;
+    private final PasswordEncoder passwordEncoder;
 
     public void addParticipant(String eventId, long chatId, String firstName, String nickName, long userId) {
         boolean fromCurrentChat = chatId == Long.parseLong(chatProperties.getChatId());
         Participant participant = participantRepository.findParticipantsByUserId(userId);
+        System.out.println(passwordEncoder.encode(String.valueOf(userId)));
         if (participant == null) {
             participant = createParticipantIfNotExist(firstName, nickName, userId, fromCurrentChat);
         } else if (fromCurrentChat && !participant.getChatMember()) {
@@ -43,6 +46,8 @@ public class ParticipantService {
         participant.setNickName(nickName);
         participant.setUserId(userId);
         participant.setChatMember(chatMember);
+        participant.setRole("USER");
+        participant.setPassword(passwordEncoder.encode(String.valueOf(userId)));
         return participantRepository.save(participant);
     }
 

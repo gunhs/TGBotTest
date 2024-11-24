@@ -16,7 +16,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = {"events"})
     Participant findParticipantsByUserId(long id);
 
-    Optional<Participant> findParticipantByName(String name);
+    Optional<Participant> findByNickName(String nickName);
 
     List<ParticipantBirthdaysDto> findByBirthdayNotNullAndChatMemberTrue();
 

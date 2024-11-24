@@ -1,5 +1,6 @@
 package ru.sharanov.JavaEventTelgeramBot.model;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,7 +8,6 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +28,8 @@ public class Participant {
     private Long userId;
     private String birthday;
     private Boolean chatMember;
+    private String role;
+    private String password;
 
     @ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
     @ToString.Exclude

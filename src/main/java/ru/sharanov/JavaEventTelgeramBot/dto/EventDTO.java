@@ -1,11 +1,11 @@
 package ru.sharanov.JavaEventTelgeramBot.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +36,9 @@ public class EventDTO {
     private List<ParticipantDTO> participantDTOList = new ArrayList<>();
 
     @NotNull(message = NOT_EMPTY_FIELD_MESSAGE)
-    private float latitude;
+    private Float latitude;
 
     @NotNull(message = NOT_EMPTY_FIELD_MESSAGE)
-    private float longitude;
+    private Float longitude;
 
 }

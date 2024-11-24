@@ -17,18 +17,18 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Transactional
     @Modifying
-    @Query("update Event e set e.done = true where e.date < now()")
+    @Query("update Event e set e.done = true where e.date < CURRENT_TIME")
     void updateDoneByDate();
 
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = {"participants"})
     List<Event> findAllByOrderByDateAsc();
 
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = {"participants"})
-    @Query("select e from Event e where e.date < now() order by e.date")
+    @Query("select e from Event e where e.date < CURRENT_TIME order by e.date")
     List<Event> findByDateBefore();
 
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = {"participants"})
-    @Query("select e from Event e where e.date > now() order by e.date")
+    @Query("select e from Event e where e.date > CURRENT_TIME order by e.date")
     List<Event> findByDateAfter();
 
     @Override

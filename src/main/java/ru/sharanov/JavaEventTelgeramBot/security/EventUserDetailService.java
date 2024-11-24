@@ -12,24 +12,15 @@ import ru.sharanov.JavaEventTelgeramBot.repositories.ParticipantRepository;
 @RequiredArgsConstructor
 public class EventUserDetailService implements UserDetailsService {
     private final ParticipantRepository participantRepository;
-//    private final BCryptPasswordEncoder passwordEncoder;
-
-//    public EventUserDetailService(ParticipantRepository participantRepository, BCryptPasswordEncoder passwordEncoder) {
-//        this.participantRepository = participantRepository;
-//        this.passwordEncoder = passwordEncoder;
-//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Participant checkParticipant = participantRepository.findParticipantByName(username)
+        Participant checkParticipant = participantRepository.findByNickName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
-        String[] roles = {"ROLE_USER", "ROLE_ADMIN"};
         return org.springframework.security.core.userdetails.User.builder()
                 .username(checkParticipant.getNickName())
-                .password(String.valueOf(checkParticipant.getUserId()))
-                .roles(roles)
+                .password(checkParticipant.getPassword())
+                .roles(checkParticipant.getRole())
                 .build();
-
-//        return new EventUserDetail(checkParticipant, passwordEncoder);
     }
 }
