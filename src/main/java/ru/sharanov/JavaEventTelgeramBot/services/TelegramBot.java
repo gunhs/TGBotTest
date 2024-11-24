@@ -287,7 +287,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        }
 //    }
 
-    @Scheduled(cron = "0 30 13 * * *")
+    @Scheduled(cron = "0 45 11 * * *")
     public void congratulation() throws TelegramApiException {
         String namesakes = participantService.getNamesakes();
         if (!namesakes.isEmpty()) {
